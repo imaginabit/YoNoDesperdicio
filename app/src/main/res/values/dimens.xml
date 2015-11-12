@@ -1,0 +1,21 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. horizontal 16dp vertical 16dp-->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!-- sp mejor para es texto -->
+    <dimen name="ad_title">25sp</dimen>
+    <dimen name="ad_body">20sp</dimen>
+    <dimen name="popup_message">25sp</dimen>
+
+    <!-- from cheese app -->
+    <dimen name="detail_backdrop_height">256dp</dimen>
+    <dimen name="card_margin">16dp</dimen>
+    <dimen name="articulo_card_margin">16dp</dimen>
+    <dimen name="list_item_avatar_size">40dp</dimen>
+
+</resources>

@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Yo No Desperdicio</string>
+
+    <string name="navigation_drawer_open">Abrir menu lateral</string>
+    <string name="navigation_drawer_close">Cerrar menu lateral</string>
+
+    <string name="action_settings">Opicones</string>
+
+    <string name="main_search_title">Buscar</string>
+    <string name="main_add_title">Nuevo</string>
+    <string name="main_delete_database">Delete database</string>
+    <string name="save">Save</string>
+    <string name="email_address">email address</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="search_title">Enter name</string>
+    <string name="add_ad_title">Add Ad</string>
+    <string name="edit_ad_title">edit_ad_title</string>
+    <string name="search_ad_title">search_ad_title</string>
+    <string name="user_name">Nombre de usuario</string>
+    <string name="title_activity_base">Base</string>
+
+    <string name="cheese_ipsum">Jarlsberg lancashire edam. Dolcelatte hard cheese brie st. agur blue
+    cheese caerphilly bavarian bergkase cheese and biscuits mascarpone. Cheeseburger swiss bavarian
+    bergkase cream cheese fromage frais cheesy feet port-salut airedale. St. agur blue cheese rubber
+    cheese caerphilly cheddar cheesecake cream cheese manchego lancashire. Roquefort squirty cheese
+    the big cheese.</string>
+
+
+
+
+</resources>
