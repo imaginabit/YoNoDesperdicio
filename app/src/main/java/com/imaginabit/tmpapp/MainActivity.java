@@ -31,6 +31,7 @@ public class MainActivity extends Base
         mContext = getApplicationContext();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageDrawable(R.drawable.ic_add_black);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
