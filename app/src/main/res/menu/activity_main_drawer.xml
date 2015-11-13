@@ -4,27 +4,27 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_anuncios"
-            android:icon="@android:drawable/ic_input_add"
+            android:icon="@drawable/ic_store_black"
             android:title="Anuncios"/>
         <item
             android:id="@+id/nav_favoritos"
-            android:icon="@android:drawable/btn_star_big_off"
+            android:icon="@drawable/ic_favorite_black"
             android:title="Favoritos"/>
         <item
             android:id="@+id/nav_perfil"
-            android:icon="@android:drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_face_black"
             android:title="Mi Perfil"/>
         <item
             android:id="@+id/nav_mensajes"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_question_answer_black"
             android:title="Mensajes"/>
         <item
             android:id="@+id/nav_masinfo"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_info_outline_black"
             android:title="Más Info"/>
         <item
             android:id="@+id/nav_ajustes"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_settings_black"
             android:title="Ajustes"/>
     </group>
 
