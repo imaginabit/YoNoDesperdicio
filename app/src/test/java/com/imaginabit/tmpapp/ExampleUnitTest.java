@@ -1,4 +1,4 @@
-package com.imaginabit.tmpapp;
+package com.imaginabit.yonodesperdicion;
 
 import org.junit.Test;
 
