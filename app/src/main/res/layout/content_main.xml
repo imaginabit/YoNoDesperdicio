@@ -9,6 +9,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main"
+    android:background="@color/activity_background"
     >
 
     <LinearLayout
@@ -17,11 +18,10 @@
         android:orientation="vertical"
         >
         <android.support.v7.widget.CardView
-            android:id="@+id/articulo2"
+            android:id="@+id/articulo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/card_margin"
-            android:padding="0dp"
+            android:layout_margin="@dimen/articulo_card_margin"
             android:layout_marginTop="0dp"
             >
 
@@ -29,9 +29,7 @@
                 style="@style/Widget.CardContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="0dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"
+                android:padding="10dp"
                 android:orientation="horizontal"
                 >
 
@@ -40,10 +38,6 @@
                     android:id="@+id/anuncio_list_textos"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:padding="0dp"
-                    android:paddingBottom="0dp"
-                    android:layout_marginBottom="0dp"
                     android:orientation="vertical"
                     android:layout_weight="0.9"
                     >
@@ -54,15 +48,18 @@
                         android:padding="0dp"
                         android:paddingTop="@dimen/card_margin"
                         android:text="Titulo"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:textSize="28dp"
+                        />
 
                     <TextView
-                        android:id="@+id/anuncio_list_localizacion"
+                        android:id="@+id/anuncio_list_peso"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="@dimen/card_margin"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:text="28080, Madrid"
+                        android:paddingBottom="20dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:text="1.5 Kg"
+                        android:textSize="18dp"
                         />
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -89,6 +86,7 @@
                             android:text="Expira en 5 días"
                             android:enabled="true"
                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="@color/secondary_text"
                             />
                         <TextView
                             android:id="@+id/anuncio_list_distancia"
@@ -98,7 +96,9 @@
                             android:enabled="true"
                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
                             android:gravity="right"
-                             />
+                            android:textColor="@color/secondary_text"
+
+                            />
 
                     </LinearLayout>
                     <!--<TextView-->
@@ -118,12 +118,12 @@
 
                 <ImageView
                     android:id="@+id/otrafoto2"
-                    android:layout_width="100dp"
+                    android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:adjustViewBounds="true"
                     android:contentDescription="foto del articulo"
-                    android:layout_marginLeft="0dp"
-                    android:layout_weight="0.1"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="0.35"
                     android:scaleType="centerCrop"
                     android:src="@drawable/food"
                     />
