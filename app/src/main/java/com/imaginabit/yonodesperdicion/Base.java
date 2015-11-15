@@ -61,14 +61,13 @@ public abstract class Base extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_anuncios) {
-//               Snackbar.make( new View(getBaseContext()) , "Replace with your own action", Snackbar.LENGTH_LONG)
-//                       .setAction("Action", null).show();
-
 //            CharSequence text = "Base act!";
 //            int duration = Toast.LENGTH_SHORT;
 //            Toast toast = Toast.makeText(mContext, text, duration);
 //            toast.show();
-
+            Intent itntMain = new Intent(mContext, MainActivity.class);
+            itntMain.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(itntMain);
         } else if (id == R.id.nav_perfil) {
             Intent itntPerfil = new Intent(mContext, Settigns.class);
             startActivity( itntPerfil );
@@ -85,6 +84,7 @@ public abstract class Base extends AppCompatActivity
             //cargar ajustes
             Intent itntSettings = new Intent(mContext, Settigns.class);
             startActivity( itntSettings );
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -24,9 +24,9 @@ public class MainActivity extends Base
         setSupportActionBar(toolbar);
         mContext = getApplicationContext();
 
-        Drawable add_pic = ContextCompat.getDrawable(mContext, R.drawable.ic_add_black);
+        //Drawable add_pic = ContextCompat.getDrawable(mContext, R.drawable.ic_add_black);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageDrawable(add_pic);
+        //fab.setImageDrawable(add_pic);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
