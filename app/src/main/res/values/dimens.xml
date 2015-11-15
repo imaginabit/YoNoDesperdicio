@@ -15,7 +15,7 @@
     <!-- from cheese app -->
     <dimen name="detail_backdrop_height">256dp</dimen>
     <dimen name="card_margin">16dp</dimen>
-    <dimen name="articulo_card_margin">16dp</dimen>
+    <dimen name="articulo_card_margin">13dp</dimen>
     <dimen name="list_item_avatar_size">40dp</dimen>
 
 </resources>
