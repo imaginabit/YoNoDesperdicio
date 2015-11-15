@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -62,19 +63,28 @@ public abstract class Base extends AppCompatActivity
         if (id == R.id.nav_anuncios) {
 //               Snackbar.make( new View(getBaseContext()) , "Replace with your own action", Snackbar.LENGTH_LONG)
 //                       .setAction("Action", null).show();
-            CharSequence text = "Base act!";
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(mContext, text, duration);
-            toast.show();
+
+//            CharSequence text = "Base act!";
+//            int duration = Toast.LENGTH_SHORT;
+//            Toast toast = Toast.makeText(mContext, text, duration);
+//            toast.show();
 
         } else if (id == R.id.nav_perfil) {
-
+            Intent itntPerfil = new Intent(mContext, Settigns.class);
+            startActivity( itntPerfil );
         } else if (id == R.id.nav_favoritos) {
-
+            Intent itntFav = new Intent(mContext, Settigns.class);
+            startActivity( itntFav );
         } else if (id == R.id.nav_mensajes) {
+            Intent itntMsgs = new Intent(mContext, Settigns.class);
+            startActivity( itntMsgs );
         } else if (id == R.id.nav_masinfo) {
+            Intent itntInfo = new Intent(mContext, Settigns.class);
+            startActivity( itntInfo );
         } else if (id == R.id.nav_ajustes) {
             //cargar ajustes
+            Intent itntSettings = new Intent(mContext, Settigns.class);
+            startActivity( itntSettings );
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
