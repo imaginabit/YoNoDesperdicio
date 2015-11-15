@@ -73,27 +73,32 @@
                         android:layout_alignParentBottom="true"
                         android:layout_margin="0dp"
                         android:orientation="horizontal">
-                        <CircleImageView
+
+                        <ImageView
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-
+                            android:src="@drawable/acircle"
+                            android:tint="@color/ad_disponible"
+                            android:layout_marginRight="5dp"
+                            android:layout_gravity="center"
                             />
                         <TextView
                             android:id="@+id/anuncio_list_caducidad"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="Expira en 5 días"
                             android:enabled="true"
                             android:textAppearance="@style/TextAppearance.AppCompat.Small"
                             />
                         <TextView
-                        android:id="@+id/anuncio_list_distancia"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Expira en 5 días"
-                        android:enabled="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        />
+                            android:id="@+id/anuncio_list_distancia"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="2.1 Km"
+                            android:enabled="true"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:gravity="right"
+                             />
 
                     </LinearLayout>
                     <!--<TextView-->
@@ -117,13 +122,10 @@
                     android:layout_height="fill_parent"
                     android:adjustViewBounds="true"
                     android:contentDescription="foto del articulo"
-
                     android:layout_marginLeft="0dp"
                     android:layout_weight="0.1"
-
                     android:scaleType="centerCrop"
                     android:src="@drawable/food"
-
                     />
 
 
