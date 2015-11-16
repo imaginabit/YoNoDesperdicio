@@ -66,17 +66,17 @@ public abstract class Base extends AppCompatActivity
 //            Toast toast = Toast.makeText(mContext, text, duration);
 //            toast.show();
             Intent itntMain = new Intent(mContext, MainActivity.class);
-            itntMain.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            //itntMain.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(itntMain);
         } else if (id == R.id.nav_perfil) {
             Intent itntPerfil = new Intent(mContext, Settigns.class);
-            startActivity( itntPerfil );
+            startActivity(itntPerfil);
         } else if (id == R.id.nav_favoritos) {
             Intent itntFav = new Intent(mContext, Settigns.class);
-            startActivity( itntFav );
+            startActivity(itntFav);
         } else if (id == R.id.nav_mensajes) {
             Intent itntMsgs = new Intent(mContext, Settigns.class);
-            startActivity( itntMsgs );
+            startActivity(itntMsgs);
         } else if (id == R.id.nav_masinfo) {
             Intent itntInfo = new Intent(mContext, Settigns.class);
             startActivity( itntInfo );
