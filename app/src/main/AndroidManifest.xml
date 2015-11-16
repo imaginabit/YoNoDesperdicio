@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.imaginabit.yonodesperdicion.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
@@ -19,14 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.imaginabit.yonodesperdicion.Base"
-            android:label="@string/title_activity_base"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
-        <activity
-            android:name="com.imaginabit.yonodesperdicion.Settigns"
+            android:name=".Settigns"
             android:label="@string/title_activity_settigns"
-            android:parentActivityName="com.imaginabit.yonodesperdicion.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
