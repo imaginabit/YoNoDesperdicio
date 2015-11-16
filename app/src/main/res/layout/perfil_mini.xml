@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <!--
+    redondear la imagen del avatar por codigo ,ejemplo:
+    //get bitmap of the image
+    Bitmap imageBitmap=BitmapFactory.decodeResource(getResources(),  R.drawable.large_icon);
+    RoundedBitmapDrawable roundedBitmapDrawable=RoundedBitmapDrawableFactory.create(getResources(), imageBitmap);
+    //setting radius
+    roundedBitmapDrawable.setCornerRadius(50.0f);
+    roundedBitmapDrawable.setAntiAlias(true);
+    profilePic.setImageDrawable(roundedBitmapDrawable);
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        >
+
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginRight="16dp"
+            >
+
+            <ImageView
+                android:id="@+id/avatar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/food"
+                />
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/circle"
+                android:tint="@color/black"
+                />
+
+            <ImageView
+                android:layout_width="99dp"
+                android:layout_height="99dp"
+                android:padding="1dp"
+                android:src="@drawable/circle"
+                android:tint="@color/white"
+                />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre Usuario"
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Localidad"
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                />
+
+            <TextView
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="13 Kg"
+                android:textColor="@color/primary"
+                />
+            <!--
+                    <AppCompatRatingBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:rating="2"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        style="@style/Base.Widget.AppCompat.RatingBar"
+                        />
+            -->
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

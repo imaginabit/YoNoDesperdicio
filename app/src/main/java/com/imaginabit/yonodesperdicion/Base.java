@@ -72,7 +72,7 @@ public abstract class Base extends AppCompatActivity
             Intent itntPerfil = new Intent(mContext, Settigns.class);
             startActivity(itntPerfil);
         } else if (id == R.id.nav_favoritos) {
-            Intent itntFav = new Intent(mContext, Settigns.class);
+            Intent itntFav = new Intent(mContext, TestAdDetail.class);
             startActivity(itntFav);
         } else if (id == R.id.nav_mensajes) {
             Intent itntMsgs = new Intent(mContext, Settigns.class);
