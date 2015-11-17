@@ -23,4 +23,10 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="blueStartsRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/start_rate_full</item>
+        <item name="android:minHeight">22dp</item>
+        <item name="android:maxHeight">22dp</item>
+    </style>
+
 </resources>
