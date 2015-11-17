@@ -76,6 +76,7 @@
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 />
 
+
             <TextView
                 android:textStyle="bold"
                 android:textSize="16dp"
@@ -83,6 +84,16 @@
                 android:layout_height="wrap_content"
                 android:text="13 Kg"
                 android:textColor="@color/primary"
+                />
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                style="@style/blueStartsRatingBar"
+                android:numStars="5"
+                android:stepSize="1.0"
+                android:rating="2.0"
+                android:isIndicator="true"
                 />
             <!--
                     <AppCompatRatingBar
