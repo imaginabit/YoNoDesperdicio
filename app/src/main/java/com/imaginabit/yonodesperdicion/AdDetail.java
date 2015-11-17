@@ -3,18 +3,13 @@ package com.imaginabit.yonodesperdicion;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-
-import com.imaginabit.yonodesperdicion.Base;
-import com.imaginabit.yonodesperdicion.R;
-
-public class TestAdDetail extends Base
+public class AdDetail extends Base
         implements NavigationView.OnNavigationItemSelectedListener
 {
 
@@ -53,7 +48,7 @@ public class TestAdDetail extends Base
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_favorite ) {
-            Toast.makeText(TestAdDetail.this, "pulsado añadir a favoritos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AdDetail.this, "pulsado añadir a favoritos", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);

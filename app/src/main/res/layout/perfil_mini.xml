@@ -25,40 +25,17 @@
         android:padding="16dp"
         >
 
-        <FrameLayout
+
+        <com.imaginabit.yonodesperdicion.RoundedImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginRight="16dp"
-            >
-
-            <ImageView
-                android:id="@+id/avatar"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/food"
-                />
-
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/circle"
-                android:tint="@color/black"
-                />
-
-            <ImageView
-                android:layout_width="99dp"
-                android:layout_height="99dp"
-                android:padding="1dp"
-                android:src="@drawable/circle"
-                android:tint="@color/white"
-                />
-        </FrameLayout>
+            android:src="@drawable/food"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
             >
 
@@ -75,38 +52,39 @@
                 android:text="Localidad"
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 />
-
-
-            <TextView
-                android:textStyle="bold"
-                android:textSize="16dp"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="13 Kg"
-                android:textColor="@color/primary"
-                />
-            <RatingBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                style="@style/blueStartsRatingBar"
-                android:numStars="5"
-                android:stepSize="1.0"
-                android:rating="2.0"
-                android:isIndicator="true"
-                />
-            <!--
-                    <AppCompatRatingBar
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:rating="2"
-                        android:numStars="5"
-                        android:stepSize="1"
-                        style="@style/Base.Widget.AppCompat.RatingBar"
-                        />
-            -->
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                >
 
+                <TextView
+                    android:textStyle="bold"
+                    android:textSize="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="13 Kg"
+                    android:textColor="@color/primary"
+                    android:gravity="bottom"
+                    android:layout_gravity="bottom"
+                    />
+                <RatingBar
+                    android:id="@+id/ad_reputacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="19dp"
+                    style="@style/blueStartsRatingBar"
+                    android:layout_marginLeft="16dp"
+                    android:numStars="5"
+                    android:stepSize="1.0"
+                    android:rating="2.0"
+                    android:isIndicator="true"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="0dp"
+                    android:padding="0dp"
+                    />
 
+            </LinearLayout>
         </LinearLayout>
 
 

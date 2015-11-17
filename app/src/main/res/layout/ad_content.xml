@@ -183,22 +183,20 @@
                             android:id="@+id/ad_body"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/texto_caritas"
-                            />
-
-                        <!-- ahora iria el Mapa -->
-
-
-                        <TextView
-                            android:id="@+id/ad_body"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/texto_caritas"
+                            android:text="@string/cheese_ipsum"
                             />
 
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
+
+                <!-- ahora iria el Mapa -->
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="150dp"
+                    android:background="@color/primary_light"
+                    />
 
                 <include layout="@layout/perfil_mini"/>
 
@@ -224,7 +222,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer"/>
+        app:menu="@menu/activity_main_drawer"
+        />
 
 
 </android.support.v4.widget.DrawerLayout>
