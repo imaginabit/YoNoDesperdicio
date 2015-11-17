@@ -38,11 +38,11 @@
             android:name=".AdDetail"
             android:label="Anuncio Titulo"
             android:parentActivityName=".MainActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Profile"
+            android:label=""
+            android:parentActivityName=".MainActivity" >
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -56,6 +56,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".profile" >
+        </activity>
+        <activity android:name=".ad_mini" >
+        </activity>
     </application>
 
 </manifest>
