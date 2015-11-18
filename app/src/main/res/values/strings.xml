@@ -28,12 +28,25 @@
     <string name="title_activity_settigns">Settigns</string>
     <string name="title_activity_intro">intro</string>
     <string name="save_fav">Guardar como favorito</string>
-    <string name="texto_caritas">eo ? ajaj </string>
+    <string name="texto_caritas">texto ramdom intetne añadir caras unicode pero no</string>
+
     <string name="title_activity_maps">Map</string>
+
     <string name="edit_location">Editar ubicación</string>
     <string name="edit_wallpic">Cambiar foto de portada</string>
     <string name="edic_avatarpic">Cambiar foto de perfil</string>
     <string name="edic_name">Modificar nombre</string>
+
+    <string name="desc_imagen_anuncio">imagen del anuncio</string>
+
+    <string name="label_title">Título</string>
+    <string name="label_cantidad">Cantidad</string>
+    <string name="label_limite_recogida_fecha">Fecha límite de recogida</string>
+    <string name="label_limite_recogida_hora">Hora</string>
+    <string name="label_ciudad">Ciudad</string>
+    <string name="label_codigo_postal">Codigo Postal</string>
+
+    <string name="action_done">Hecho</string>
 
 
 </resources>
