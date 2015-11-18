@@ -66,15 +66,22 @@ public abstract class Base extends AppCompatActivity
         } else if (id == R.id.nav_perfil) {
             Intent itntPerfil = new Intent(mContext, Profile.class);
             startActivity(itntPerfil);
+
         } else if (id == R.id.nav_favoritos) {
+            // TODO: quitar pruebas ambiar para que haga lo que de verdad tiene que hacer
+            // he puesto ver el detalle del anuncio aqui como prueba
             Intent itntFav = new Intent(mContext, AdDetail.class);
             startActivity(itntFav);
         } else if (id == R.id.nav_mensajes) {
-            Intent itntMsgs = new Intent(mContext, Settigns.class);
+            // TODO: quitar pruebas
+            // he puesto ver el formulaciro de crear el anuncio aqui como prueba
+            Intent itntMsgs = new Intent(mContext, AdCreate.class);
             startActivity(itntMsgs);
+
         } else if (id == R.id.nav_masinfo) {
             Intent itntInfo = new Intent(mContext, Settigns.class);
             startActivity( itntInfo );
+
         } else if (id == R.id.nav_ajustes) {
             //cargar ajustes
             Intent itntSettings = new Intent(mContext, Settigns.class);

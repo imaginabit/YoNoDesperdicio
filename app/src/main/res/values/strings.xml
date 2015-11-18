@@ -28,12 +28,26 @@
     <string name="title_activity_settigns">Settigns</string>
     <string name="title_activity_intro">intro</string>
     <string name="save_fav">Guardar como favorito</string>
-    <string name="texto_caritas">eo ? ajaj </string>
+    <string name="texto_caritas">texto ramdom intetne añadir caras unicode pero no</string>
+
     <string name="title_activity_maps">Map</string>
+
     <string name="edit_location">Editar ubicación</string>
     <string name="edit_wallpic">Cambiar foto de portada</string>
     <string name="edic_avatarpic">Cambiar foto de perfil</string>
     <string name="edic_name">Modificar nombre</string>
+
+    <string name="description_ad_image">imagen del anuncio</string>
+
+    <string name="label_title">Título</string>
+    <string name="label_weight">Cantidad</string>
+    <string name="label_expiration_date">Fecha límite de recogida</string>
+    <string name="label_expiration_time">Hora</string>
+    <string name="label_city">Ciudad</string>
+    <string name="label_postal_code">Codigo Postal</string>
+
+    <string name="action_done">Hecho</string>
+    <string name="delete_ad">Eliminar Anuncio</string>
 
 
 </resources>
