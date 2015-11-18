@@ -12,10 +12,11 @@ public class AdCreate extends Base {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView( R.layout.ad_edit );
+        setContentView(R.layout.ad_edit);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        //todo: color negro del texto
         setSupportActionBar(toolbar);
         mContext = getApplicationContext();
     }
