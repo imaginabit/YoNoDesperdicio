@@ -45,7 +45,15 @@
         </activity>
         <activity
             android:name=".AdCreate"
-            android:label="Nuevo Anuncio">
+            android:label="Nuevo Anuncio"
+            android:parentActivityName=".MainActivity" >
+            >
+        </activity>
+        <activity
+            android:name=".AdEdit"
+            android:label="Editar Anuncio"
+            android:parentActivityName=".AdDetail" >
+            >
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
