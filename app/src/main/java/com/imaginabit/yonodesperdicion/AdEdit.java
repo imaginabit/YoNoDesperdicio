@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class AdCreate extends Base {
+public class AdEdit extends Base {
 
 
     @Override
@@ -34,7 +34,7 @@ public class AdCreate extends Base {
         int id = item.getItemId();
 
         if (id == R.id.action_done ) {
-            Toast.makeText(AdCreate.this, "guardar", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AdEdit.this, "guardar", Toast.LENGTH_SHORT).show();
             return true;
         }
         if (id == android.R.id.home ) {

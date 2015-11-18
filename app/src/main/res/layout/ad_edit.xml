@@ -9,11 +9,12 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/Base.V7.Theme.AppCompat.Light"
+        >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/Base.V7.Theme.AppCompat.Light"
+
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/cardview_light_background"
@@ -51,14 +52,6 @@
                 android:orientation="vertical"
                 >
 
-                <!--
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_title"
-
-                />
-                -->
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_title"
                     android:layout_width="match_parent"
@@ -173,14 +166,11 @@
 
                 <android.support.v7.widget.SwitchCompat
                     android:id="@+id/switch_localizacion_auto"
-                    style="@style/Base.V12.Widget.AppCompat.EditText"
+                    style="@style/yndSwitch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Activar localizacion automatica"
-
                     />
-
-
             </LinearLayout>
 
             <Button
@@ -198,7 +188,4 @@
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
-    >
-
-
 </LinearLayout>
