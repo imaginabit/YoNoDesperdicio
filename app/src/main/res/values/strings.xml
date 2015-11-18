@@ -40,11 +40,12 @@
     <string name="description_ad_image">imagen del anuncio</string>
 
     <string name="label_title">Título</string>
-    <string name="label_weight">Cantidad</string>
+    <string name="label_weight">Cantidad (Kg)</string>
     <string name="label_expiration_date">Fecha límite de recogida</string>
     <string name="label_expiration_time">Hora</string>
     <string name="label_city">Ciudad</string>
     <string name="label_postal_code">Codigo Postal</string>
+    <string name="label_ad_description">Descripcion del anuncio, añade un comentario</string>
 
     <string name="action_done">Hecho</string>
     <string name="delete_ad">Eliminar Anuncio</string>
