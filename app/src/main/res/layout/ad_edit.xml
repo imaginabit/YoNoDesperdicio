@@ -1,126 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+    >
 
     <android.support.design.widget.AppBarLayout
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            style="@style/Base.V7.Theme.AppCompat.Light"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/cardview_light_background"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            />
 
     </android.support.design.widget.AppBarLayout>
 
-
-    <ImageView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:src="@drawable/food"
-        android:scaleType="centerCrop"
-        android:contentDescription="@string/desc_imagen_anuncio"
-    />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/card_margin"
-        style="@style/CardView.Dark"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_light_background"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <!--
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_title"
-
-        />
-        -->
-        <EditText
-            android:id="@+id/titulo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/label_title"
-            />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/cantidad"
-            android:hint="@string/label_cantidad"
-            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             >
-            <EditText
-                android:layout_height="match_parent"
-                android:layout_width="0dp"
-                android:layout_weight="0.7"
-                android:id="@+id/limite_recogida_fecha"
-                android:hint="@string/label_limite_recogida_fecha"
-                android:inputType="date"
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:contentDescription="@string/description_ad_image"
+                android:minHeight="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/food"
                 />
 
-            <EditText
-                android:layout_height="match_parent"
-                android:layout_width="0dp"
-                android:layout_weight="0.4"
-                android:id="@+id/limite_recogida_hora"
-                android:hint="@string/label_limite_recogida_hora"
-                android:inputType="time"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/card_margin"
+                android:orientation="vertical"
+                >
+
+                <!--
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_title"
+
+                />
+                -->
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_title"
+                        android:singleLine="true"
+
+                        />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_weight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/weight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_weight"
+                        android:singleLine="true"
+                        />
+                </android.support.design.widget.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/input_layout_expiration_date"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.7"
+                        >
+
+                        <EditText
+                            android:id="@+id/expiration_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/label_expiration_date"
+                            android:inputType="date"
+                            android:singleLine="true"
+
+                            />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/input_layout_expiration_time"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        >
+
+                        <EditText
+                            android:id="@+id/expiration_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/label_expiration_time"
+                            android:inputType="time"
+                            android:singleLine="true"
+
+                            />
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/input_layout_city"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.7"
+                        >
+
+                        <EditText
+                            android:id="@+id/ciudad"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/label_city"
+                            android:singleLine="true"
+                            />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/input_layout_postal_code"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        >
+
+                        <EditText
+                            android:id="@+id/postal_code"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/label_postal_code"
+                            android:inputType="numberDecimal"
+                            android:singleLine="true"
+                            />
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_localizacion_auto"
+                    style="@style/Base.V12.Widget.AppCompat.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Activar localizacion automatica"
+
+                    />
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/delete_ad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:background="@color/cardview_light_background"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:text="@string/delete_ad"
+                android:textColor="@color/accent"
                 />
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-            <EditText
-                android:layout_height="match_parent"
-                android:layout_width="0dp"
-                android:layout_weight="0.7"
-                android:hint="@string/label_ciudad"
-                android:id="@+id/ciudad"/>
-            <EditText
-                android:layout_height="match_parent"
-                android:layout_width="0dp"
-                android:layout_weight="0.4"
-                android:hint="@string/label_codigo_postal"
-                android:inputType="numberDecimal"
-                android:id="@+id/codigo_postal"/>
-        </LinearLayout>
 
-        <Switch
-            style="@style/Base.V12.Widget.AppCompat.EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Activar localizacion automatica"
-            android:id="@+id/switch_localizacion_auto"/>
-
-
-    </LinearLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Eliminar Anuncio"
-        android:layout_gravity="center"
-        android:textColor="@color/accent"
-        android:background="@color/cardview_light_background"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        />
-
+    </android.support.v4.widget.NestedScrollView>
+    >
 
 
 </LinearLayout>
