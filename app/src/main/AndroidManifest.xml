@@ -21,7 +21,6 @@
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -44,6 +43,18 @@
             android:label=""
             android:parentActivityName=".MainActivity" >
         </activity>
+        <activity
+            android:name=".AdCreate"
+            android:label="Nuevo Anuncio"
+            android:parentActivityName=".MainActivity" >
+            >
+        </activity>
+        <activity
+            android:name=".AdEdit"
+            android:label="Editar Anuncio"
+            android:parentActivityName=".AdDetail" >
+            >
+        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -56,10 +67,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".profile" >
-        </activity>
-        <activity android:name=".ad_mini" >
-        </activity>
+
+
     </application>
 
 </manifest>

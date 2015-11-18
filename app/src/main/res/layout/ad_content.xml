@@ -198,6 +198,7 @@
                     android:background="@color/primary_light"
                     />
 
+
                 <include layout="@layout/perfil_mini"/>
 
             </LinearLayout>
