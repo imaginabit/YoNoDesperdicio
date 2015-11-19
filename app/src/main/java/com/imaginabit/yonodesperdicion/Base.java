@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.imaginabit.yonodesperdicion.activity.MoreInfo;
+
 
 public abstract class Base extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -68,7 +70,7 @@ public abstract class Base extends AppCompatActivity
             startActivity(itntPerfil);
 
         } else if (id == R.id.nav_favoritos) {
-            // TODO: quitar pruebas ambiar para que haga lo que de verdad tiene que hacer
+            // TODO: quitar pruebas para que haga lo que de verdad tiene que hacer
             // he puesto ver el detalle del anuncio aqui como prueba
             Intent itntFav = new Intent(mContext, AdDetail.class);
             startActivity(itntFav);
@@ -79,7 +81,7 @@ public abstract class Base extends AppCompatActivity
             startActivity(itntMsgs);
 
         } else if (id == R.id.nav_masinfo) {
-            Intent itntInfo = new Intent(mContext, Settigns.class);
+            Intent itntInfo = new Intent(mContext, MoreInfo.class);
             startActivity( itntInfo );
 
         } else if (id == R.id.nav_ajustes) {
