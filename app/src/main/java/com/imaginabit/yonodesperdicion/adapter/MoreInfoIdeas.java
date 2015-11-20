@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion.adapter;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.model.Idea;
+import com.imaginabit.yonodesperdicion.util.Constants;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
@@ -17,7 +20,9 @@ import java.util.List;
  * Created by fer2015julio on 19/11/15.
  */
 public class MoreInfoIdeas extends RecyclerView.Adapter<MoreInfoIdeas.ViewHolder> {
+    private String TAG = MoreInfoIdeas.class.getSimpleName();
     private List<Idea> ideas;
+
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -43,7 +48,11 @@ public class MoreInfoIdeas extends RecyclerView.Adapter<MoreInfoIdeas.ViewHolder
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public MoreInfoIdeas(List<Idea> myDataset) {
+
         this.ideas = myDataset;
+
+        // Create global configuration and initialize ImageLoader with this config
+
     }
 
     // Create new views (invoked by the layout manager)
@@ -68,8 +77,21 @@ public class MoreInfoIdeas extends RecyclerView.Adapter<MoreInfoIdeas.ViewHolder
         holder.body.setText( ideas.get(position).getBody() );
         holder.category.setText( ideas.get(position).getCategory() );
         holder.intro.setText(ideas.get(position).getIntroduction());
-        //todo: get image from website
-        holder.image.setImageResource(R.drawable.food);
+
+        //get image from website
+        ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
+        String imageUri = Constants.HOME_URL + ideas.get(position).getImageUrl();
+        Log.i(TAG, "onBindViewHolder:" + imageUri );
+        imageLoader.displayImage(imageUri, holder.image);
+
+//        imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
+//            @Override
+//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+//                // Do whatever you want with Bitmap
+//            }
+//        });
+
+        //holder.image.setImageResource(R.drawable.food);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
