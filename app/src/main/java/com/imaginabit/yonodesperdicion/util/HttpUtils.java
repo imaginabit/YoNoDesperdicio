@@ -77,7 +77,7 @@ public class HttpUtils {
             c.setRequestProperty("Accept", "application/json");
 
             // User-Agent
-            c.addRequestProperty("User-Agent", "movesafer-android/1.0");
+            c.addRequestProperty("User-Agent", "yonodesperdicio-android/1.0");
 
             // Open
             c.connect();
