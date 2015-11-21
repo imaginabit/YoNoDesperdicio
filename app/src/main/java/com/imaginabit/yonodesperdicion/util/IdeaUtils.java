@@ -1,0 +1,265 @@
+package com.imaginabit.yonodesperdicion.util;
+
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.imaginabit.yonodesperdicion.model.Idea;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by fer2015julio on 21/11/15.
+ */
+public class IdeaUtils {
+    String TAG = "IdeaUtils ";
+    public static List<Idea> ideas;
+
+    public static List<Idea> getIdeas() {
+        return ideas;
+    }
+
+    public static void setIdeas(List<Idea> ideas) {
+        IdeaUtils.ideas = ideas;
+    }
+
+
+    public static void fetchIdeas(final Activity activity, final FetchIdeasCallback callback ){
+        //new DownloadIdeasTask().execute(Constants.IDEAS_API_URL);
+        String TAG = "IdeaUtils fetchIdeas";
+
+        AsyncTask<Void, Void, Void> fetchIdeasTask = new AsyncTask<Void, Void, Void>() {
+            JSONObject jObj = null;
+            String TAG = "IdeaUtils DownloadIdeasTask";
+            public List<Idea> ideas = null;
+            private Exception e = null;
+
+
+            //            @Override
+//            protected void onPreExecute() {
+//                if (activity != null) {
+//                    pd = ProgressDialog.show(activity, "", message, false, true);
+//                }
+//            }
+            @Override
+            protected Void doInBackground(Void... params) {
+                String json = null;
+                try {
+                    json = downloadJsonUrl(Constants.IDEAS_API_URL);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+                // try parse the string to a JSON object
+                try {
+                    jObj = new JSONObject(json);
+                } catch (JSONException e) {
+                    Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+                } catch (Throwable t) {
+                    Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
+                }
+
+                ideas = new ArrayList<Idea>();
+                try {
+                    if (jObj.has("ideas")) {
+                        Log.d(TAG,"has Ideas");
+                        JSONArray jsonItems = null;
+                        try {
+                            jsonItems = jObj.getJSONArray("ideas");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (jsonItems.length() > 0) {
+                            for (int i = 0; i < jsonItems.length(); i++) {
+                                JSONObject jsonItem = null;
+                                try {
+                                    jsonItem = jsonItems.getJSONObject(i);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                // Extract properties
+                                // title, id, category, image_url, introduction
+                                //long idea_id = jsonItem.optLong("id", 0L);
+                                String idea_id = jsonItem.optString("id", "");
+                                String title = jsonItem.optString("username", "");
+                                String category = jsonItem.optString("category", "");
+                                String image_url = jsonItem.optString("image_url", "");
+                                String introduction = jsonItem.optString("introduction", "");
+
+                                // Validate and fill ideas array!
+                                if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
+                                    ideas.add(new Idea(title, idea_id, category, image_url, introduction));
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+//                Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+//                if (pd != null && pd.isShowing()) {
+//                    pd.dismiss();
+//                }
+
+                if (e == null) {
+                    callback.done(ideas, null);
+                } else {
+                    callback.done(null, e);
+                }
+
+            }
+
+
+        };
+        TasksUtils.execute(fetchIdeasTask);
+
+
+    }
+
+    private static String downloadJsonUrl(String myurl) throws IOException {
+        String TAG = "IdeaUtils fetchIdeas downloadJsonUrl";
+
+        Log.d(TAG, "Start downloadJsonUrl");
+        Log.d(TAG, "myurl  " + myurl);
+
+        InputStream is = null;
+        String json = "";
+
+        try {
+            URL url = new URL(myurl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setReadTimeout(10000 /* milliseconds */);
+            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+
+            conn.connect();
+            int response = conn.getResponseCode();
+            Log.d(TAG, "The response is: " + response);
+            is = conn.getInputStream();
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    is, "iso-8859-1"), 8);
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "n");
+            }
+            is.close();
+            json = sb.toString();
+        } catch (Exception e) {
+            Log.e("Buffer Error", "Error converting result " + e.toString());
+        }
+
+        return json;
+    }
+
+
+    private static class DownloadIdeasTask extends AsyncTask<String, Void, String> {
+        JSONObject jObj = null;
+        String TAG = "IdeaUtils DownloadIdeasTask";
+        public List<Idea> ideas;
+
+        @Override
+        protected String doInBackground(String... urls) {
+            // params comes from the execute() call: params[0] is the url.
+            try {
+                return IdeaUtils.downloadJsonUrl(urls[0]);
+            } catch (IOException e) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            // try parse the string to a JSON object
+            try {
+                jObj = new JSONObject(result);
+            } catch (JSONException e) {
+                Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+            } catch (Throwable t) {
+                Log.e(TAG, "Could not parse malformed JSON: \"" + result + "\"");
+            }
+
+            ideas = new ArrayList<Idea>();
+            try {
+                if (jObj.has("ideas")) {
+                    Log.d(TAG,"has Ideas");
+                    JSONArray jsonItems = null;
+                    try {
+                        jsonItems = jObj.getJSONArray("ideas");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    if (jsonItems.length() > 0) {
+                        for (int i = 0; i < jsonItems.length(); i++) {
+                            JSONObject jsonItem = null;
+                            try {
+                                jsonItem = jsonItems.getJSONObject(i);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            // Extract properties
+
+                            // String title,        String id,      String category,
+                            //   String image_url,      String introduction
+                            //long idea_id = jsonItem.optLong("id", 0L);
+                            String idea_id = jsonItem.optString("id", "");
+                            String title = jsonItem.optString("username", "");
+                            String category = jsonItem.optString("category", "");
+                            String image_url = jsonItem.optString("image_url", "");
+                            String introduction = jsonItem.optString("introduction", "");
+
+                            // Validate and fill ideas array!
+                            if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
+                                ideas.add(new Idea(title, idea_id, category, image_url, introduction));
+                            }
+                        }
+                    }
+                    IdeaUtils.setIdeas(ideas);
+                    //callback()
+                }
+                //Toast.makeText(MoreInfo.this, result, Toast.LENGTH_SHORT).show();
+                //textView.setText(result);
+            } catch (Exception e) {
+                e.printStackTrace();
+//                Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+
+            }
+        }
+
+
+    }
+
+    public interface FetchIdeasCallback {
+        public void done(List<Idea> ideas, Exception e);
+    }
+
+}

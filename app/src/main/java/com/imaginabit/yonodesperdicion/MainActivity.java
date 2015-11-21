@@ -1,21 +1,16 @@
 package com.imaginabit.yonodesperdicion;
 
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.view.View;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.rubengees.introduction.IntroductionBuilder;
-import com.rubengees.introduction.entity.Option;
 import com.rubengees.introduction.entity.Slide;
 
 import java.util.ArrayList;
@@ -61,6 +56,10 @@ public class MainActivity extends Base
         if(firstTime) {
             new IntroductionBuilder(this).withSlides(generateSlides()).introduceMyself();
         }
+
+
+        // fetch Ideas
+//        IdeaUtils.fetchIdeas();
     }
 
     private List<Slide> generateSlides() {
