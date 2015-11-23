@@ -266,4 +266,6 @@ public class AppUtils {
 			return 0.0d;
 		}
 	}
+
+
 }
