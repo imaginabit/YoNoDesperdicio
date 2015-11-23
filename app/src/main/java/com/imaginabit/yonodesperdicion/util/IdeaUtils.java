@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class IdeaUtils {
     String TAG = "IdeaUtils ";
-    public static List<Idea> ideas;
+    public static List<Idea> ideas = new ArrayList<>();
 
     public static List<Idea> getIdeas() {
         return ideas;
@@ -45,7 +45,6 @@ public class IdeaUtils {
             String TAG = "IdeaUtils DownloadIdeasTask";
             public List<Idea> ideas = null;
             private Exception e = null;
-
 
             //            @Override
 //            protected void onPreExecute() {
@@ -71,43 +70,60 @@ public class IdeaUtils {
                     Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
                 }
 
-                ideas = new ArrayList<Idea>();
+
                 try {
                     if (jObj.has("ideas")) {
                         Log.d(TAG,"has Ideas");
                         JSONArray jsonItems = null;
                         try {
                             jsonItems = jObj.getJSONArray("ideas");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        } catch (JSONException e2) {
+                            e = e2;
+                            //e2.printStackTrace();
                         }
+//                        Log.d(TAG, jObj.toString() );
+                        Log.d(TAG,"has Ideas " + jsonItems.length());
                         if (jsonItems.length() > 0) {
-                            for (int i = 0; i < jsonItems.length(); i++) {
+                            ideas = new ArrayList<>();
+                            //only the two last ideas no jsonItems.length()
+                            for (int i = 0; i < 2; i++) {
                                 JSONObject jsonItem = null;
                                 try {
                                     jsonItem = jsonItems.getJSONObject(i);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                } catch (JSONException e3) {
+                                    e = e3;
+                                    //e.printStackTrace();
                                 }
 
                                 // Extract properties
                                 // title, id, category, image_url, introduction
                                 //long idea_id = jsonItem.optLong("id", 0L);
                                 String idea_id = jsonItem.optString("id", "");
-                                String title = jsonItem.optString("username", "");
+                                String title = jsonItem.optString("title", "");
                                 String category = jsonItem.optString("category", "");
-                                String image_url = jsonItem.optString("image_url", "");
+                                String image_url = jsonItem.optString("image", "");
                                 String introduction = jsonItem.optString("introduction", "");
 
-                                // Validate and fill ideas array!
-                                if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
-                                    ideas.add(new Idea(title, idea_id, category, image_url, introduction));
+                                Log.d(TAG, "add idea " + jsonItem.toString()  );
+
+                                Log.d(TAG, "add idea id:" + idea_id + " title:" + title + " cat:" + category + " image:" + image_url + " ");
+                                Log.d(TAG, "add idea id:" + idea_id + " intro: " + introduction);
+
+                                try {
+                                    if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
+                                        Idea itemIdea = new Idea(title, idea_id, category, image_url, introduction);
+                                        ideas.add(itemIdea);
+                                    }
+                                } catch ( Exception e ){
+                                    e.printStackTrace();
                                 }
+                                Log.d(TAG,"added " + ideas.size() );
                             }
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception e4) {
+                    //e.printStackTrace();
+                    e = e4;
 //                Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
                 }
 
@@ -136,7 +152,7 @@ public class IdeaUtils {
     }
 
     private static String downloadJsonUrl(String myurl) throws IOException {
-        String TAG = "IdeaUtils fetchIdeas downloadJsonUrl";
+        String TAG = "IdeaUtils-Dowload";
 
         Log.d(TAG, "Start downloadJsonUrl");
         Log.d(TAG, "myurl  " + myurl);
@@ -160,12 +176,18 @@ public class IdeaUtils {
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            Log.d(TAG, " unsopported encoding Exeption -----");
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d(TAG, " IO Exeption ----- timeout");
         }
+//        } catch (SocketTimeoutException e ){
+//            Log.d(TAG, " time out -----");
+//            e.printStackTrace();
+//        }
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    is, "iso-8859-1"), 8);
+            // BufferedReader reader = new BufferedReader(new InputStreamReader( is, "ISO- ), 8);
+            BufferedReader reader = new BufferedReader(new InputStreamReader( is  ), 8);
             StringBuilder sb = new StringBuilder();
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -218,11 +240,14 @@ public class IdeaUtils {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    Log.d(TAG,"has Ideas " + jsonItems.length() );
+
                     if (jsonItems.length() > 0) {
                         for (int i = 0; i < jsonItems.length(); i++) {
                             JSONObject jsonItem = null;
                             try {
                                 jsonItem = jsonItems.getJSONObject(i);
+                                Log.d( TAG, jsonItem.toString() );
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -237,9 +262,14 @@ public class IdeaUtils {
                             String image_url = jsonItem.optString("image_url", "");
                             String introduction = jsonItem.optString("introduction", "");
 
+                            //Log.d(TAG, "se va a crear la idea " + title );
+
+                            ideas.add(new Idea(title, idea_id, category, image_url, introduction));
+                            Log.d(TAG, "creada idea " + ideas.toString());
+
                             // Validate and fill ideas array!
                             if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
-                                ideas.add(new Idea(title, idea_id, category, image_url, introduction));
+
                             }
                         }
                     }

@@ -63,7 +63,7 @@ public abstract class Base extends AppCompatActivity
 //            Toast toast = Toast.makeText(mContext, text, duration);
 //            toast.show();
             Intent itntMain = new Intent(mContext, MainActivity.class);
-            //itntMain.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            itntMain.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(itntMain);
         } else if (id == R.id.nav_perfil) {
             Intent itntPerfil = new Intent(mContext, Profile.class);
@@ -82,6 +82,7 @@ public abstract class Base extends AppCompatActivity
 
         } else if (id == R.id.nav_masinfo) {
             Intent itntInfo = new Intent(mContext, MoreInfo.class);
+            itntInfo.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity( itntInfo );
 
         } else if (id == R.id.nav_ajustes) {
