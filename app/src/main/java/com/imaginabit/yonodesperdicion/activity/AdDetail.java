@@ -1,4 +1,4 @@
-package com.imaginabit.yonodesperdicion;
+package com.imaginabit.yonodesperdicion.activity;
 
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -8,6 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.imaginabit.yonodesperdicion.Base;
+import com.imaginabit.yonodesperdicion.R;
 
 public class AdDetail extends Base
         implements NavigationView.OnNavigationItemSelectedListener

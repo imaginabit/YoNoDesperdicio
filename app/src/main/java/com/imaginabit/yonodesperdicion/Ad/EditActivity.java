@@ -17,7 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.imaginabit.yonodesperdicion.MainActivity;
+import com.imaginabit.yonodesperdicion.activity.MainActivity;
 import com.imaginabit.yonodesperdicion.R;
 
 //import imaginabit.yonodesperdicio_db.MainActivity;

@@ -15,7 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.imaginabit.yonodesperdicion.MainActivity;
+import com.imaginabit.yonodesperdicion.activity.MainActivity;
 import com.imaginabit.yonodesperdicion.R;
 
 //import imaginabit.yonodesperdicio_db.MainActivity;

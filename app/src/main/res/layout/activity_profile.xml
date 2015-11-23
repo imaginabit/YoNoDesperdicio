@@ -171,7 +171,7 @@ tools:openDrawer="start">
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
-    <com.imaginabit.yonodesperdicion.RoundedImageView
+    <com.imaginabit.yonodesperdicion.util.RoundedImageView
         android:id="@+id/avatarpic"
         style="@style/Widget.Design.FloatingActionButton"
         android:layout_width="100dp"

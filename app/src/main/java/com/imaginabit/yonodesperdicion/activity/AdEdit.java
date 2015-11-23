@@ -1,4 +1,4 @@
-package com.imaginabit.yonodesperdicion;
+package com.imaginabit.yonodesperdicion.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -6,7 +6,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class AdCreate extends Base {
+import com.imaginabit.yonodesperdicion.Base;
+import com.imaginabit.yonodesperdicion.R;
+
+public class AdEdit extends Base {
 
 
     @Override
@@ -34,7 +37,7 @@ public class AdCreate extends Base {
         int id = item.getItemId();
 
         if (id == R.id.action_done ) {
-            Toast.makeText(AdCreate.this, "guardar", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AdEdit.this, "guardar", Toast.LENGTH_SHORT).show();
             return true;
         }
         if (id == android.R.id.home ) {

@@ -1,4 +1,4 @@
-package com.imaginabit.yonodesperdicion;
+package com.imaginabit.yonodesperdicion.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.imaginabit.yonodesperdicion.Base;
+import com.imaginabit.yonodesperdicion.R;
 import com.rubengees.introduction.IntroductionBuilder;
 import com.rubengees.introduction.entity.Slide;
 
