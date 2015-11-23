@@ -26,7 +26,7 @@
         >
 
 
-        <com.imaginabit.yonodesperdicion.RoundedImageView
+        <com.imaginabit.yonodesperdicion.util.RoundedImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginRight="16dp"

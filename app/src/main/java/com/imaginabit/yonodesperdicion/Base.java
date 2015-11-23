@@ -9,7 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.imaginabit.yonodesperdicion.activity.AdCreate;
+import com.imaginabit.yonodesperdicion.activity.AdDetail;
+import com.imaginabit.yonodesperdicion.activity.MainActivity;
 import com.imaginabit.yonodesperdicion.activity.MoreInfo;
+import com.imaginabit.yonodesperdicion.activity.Profile;
+import com.imaginabit.yonodesperdicion.activity.Settigns;
 
 
 public abstract class Base extends AppCompatActivity

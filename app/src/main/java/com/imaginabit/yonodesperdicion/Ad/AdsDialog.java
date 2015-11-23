@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.imaginabit.yonodesperdicion.MainActivity;
+import com.imaginabit.yonodesperdicion.activity.MainActivity;
 import com.imaginabit.yonodesperdicion.R;
 
 
