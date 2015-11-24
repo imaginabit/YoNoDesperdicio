@@ -21,8 +21,8 @@ import java.util.List;
 /**
  * Created by fer2015julio on 19/11/15.
  */
-public class MoreInfoIdeas extends RecyclerView.Adapter<MoreInfoIdeas.ViewHolder> {
-    private String TAG = MoreInfoIdeas.class.getSimpleName();
+public class IdeaAdapter extends RecyclerView.Adapter<IdeaAdapter.ViewHolder> {
+    private String TAG = IdeaAdapter.class.getSimpleName();
     private List<Idea> ideas = new ArrayList<>();
 
 
@@ -49,7 +49,7 @@ public class MoreInfoIdeas extends RecyclerView.Adapter<MoreInfoIdeas.ViewHolder
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MoreInfoIdeas(List<Idea> myDataset) {
+    public IdeaAdapter(List<Idea> myDataset) {
 
         this.ideas = myDataset;
 
@@ -59,7 +59,7 @@ public class MoreInfoIdeas extends RecyclerView.Adapter<MoreInfoIdeas.ViewHolder
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MoreInfoIdeas.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public IdeaAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())

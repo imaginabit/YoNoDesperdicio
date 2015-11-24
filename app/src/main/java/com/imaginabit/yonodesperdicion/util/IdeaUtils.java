@@ -10,13 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +50,7 @@ public class IdeaUtils {
             protected Void doInBackground(Void... params) {
                 String json = null;
                 try {
-                    json = downloadJsonUrl(Constants.IDEAS_API_URL);
+                    json = AppUtils.downloadJsonUrl(Constants.IDEAS_API_URL);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -151,58 +145,7 @@ public class IdeaUtils {
 
     }
 
-    private static String downloadJsonUrl(String myurl) throws IOException {
-        String TAG = "IdeaUtils-Dowload";
-
-        Log.d(TAG, "Start downloadJsonUrl");
-        Log.d(TAG, "myurl  " + myurl);
-
-        InputStream is = null;
-        String json = "";
-
-        try {
-            URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-
-            conn.connect();
-            int response = conn.getResponseCode();
-            Log.d(TAG, "The response is: " + response);
-            is = conn.getInputStream();
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Log.d(TAG, " unsopported encoding Exeption -----");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d(TAG, " IO Exeption ----- timeout");
-        }
-//        } catch (SocketTimeoutException e ){
-//            Log.d(TAG, " time out -----");
-//            e.printStackTrace();
-//        }
-        try {
-            // BufferedReader reader = new BufferedReader(new InputStreamReader( is, "ISO- ), 8);
-            BufferedReader reader = new BufferedReader(new InputStreamReader( is  ), 8);
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "n");
-            }
-            is.close();
-            json = sb.toString();
-        } catch (Exception e) {
-            Log.e("Buffer Error", "Error converting result " + e.toString());
-        }
-
-        return json;
-    }
-
-
+    /*
     private static class DownloadIdeasTask extends AsyncTask<String, Void, String> {
         JSONObject jObj = null;
         String TAG = "IdeaUtils DownloadIdeasTask";
@@ -212,7 +155,7 @@ public class IdeaUtils {
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
             try {
-                return IdeaUtils.downloadJsonUrl(urls[0]);
+                return AppUtils.downloadJsonUrl(urls[0]);
             } catch (IOException e) {
                 return "Unable to retrieve web page. URL may be invalid.";
             }
@@ -285,9 +228,9 @@ public class IdeaUtils {
             }
         }
 
-
     }
 
+    */
     public interface FetchIdeasCallback {
         public void done(List<Idea> ideas, Exception e);
     }

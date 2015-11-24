@@ -15,13 +15,9 @@ import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.Base;
 import com.imaginabit.yonodesperdicion.R;
-import com.imaginabit.yonodesperdicion.adapter.MoreInfoIdeas;
+import com.imaginabit.yonodesperdicion.adapter.IdeaAdapter;
 import com.imaginabit.yonodesperdicion.model.Idea;
 import com.imaginabit.yonodesperdicion.util.IdeaUtils;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,12 +55,12 @@ public class MoreInfo extends Base {
 
         // Initialize Universal Image Loader
         //ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
-                .threadPoolSize(4)
-                .memoryCache(new WeakMemoryCache())
-                .imageDownloader(new BaseImageDownloader(mContext,10 * 1000, 30 * 1000))
-                .build();
-        ImageLoader.getInstance().init(config);
+//        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
+//                .threadPoolSize(4)
+//                .memoryCache(new WeakMemoryCache())
+//                .imageDownloader(new BaseImageDownloader(mContext,10 * 1000, 30 * 1000))
+//                .build();
+//        ImageLoader.getInstance().init(config);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
@@ -72,7 +68,7 @@ public class MoreInfo extends Base {
 
         // This method creates an ArrayList that has three ideas objects saved in ideas
         //initializeData();
-        mAdapter = new MoreInfoIdeas(mIdeas);
+        mAdapter = new IdeaAdapter(mIdeas);
         mRecyclerView.setAdapter(mAdapter);
 
         getIdeasFromWeb();
@@ -102,7 +98,7 @@ public class MoreInfo extends Base {
                         Log.e(TAG,"obtenidas las Ideas!");
                         if ( ideas != null ) {
                             mIdeas = ideas;
-                            mAdapter = new MoreInfoIdeas(mIdeas);
+                            mAdapter = new IdeaAdapter(mIdeas);
                             mRecyclerView.setAdapter(mAdapter);
                             mAdapter.notifyDataSetChanged();
 //                        mAdapter.notifyItemInserted(mIdeas.size-mIdeasOldSize);
