@@ -37,7 +37,7 @@ android:layout_marginTop="0dp"
             />
 
         <TextView
-            android:id="@+id/ad_peso"
+            android:id="@+id/ad_weight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="20dp"
@@ -56,6 +56,7 @@ android:layout_marginTop="0dp"
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/status_image"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
                 android:src="@drawable/acircle"
@@ -64,7 +65,7 @@ android:layout_marginTop="0dp"
                 android:layout_gravity="center"
                 />
             <TextView
-                android:id="@+id/ad_caducidad"
+                android:id="@+id/ad_expiration"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Expira en 5 días"
@@ -73,7 +74,7 @@ android:layout_marginTop="0dp"
                 android:textColor="@color/secondary_text"
                 />
             <TextView
-                android:id="@+id/anuncio_list_distancia"
+                android:id="@+id/ad_distance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="2.1 Km"
@@ -101,7 +102,7 @@ android:layout_marginTop="0dp"
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/otrafoto2"
+        android:id="@+id/ad_image"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:adjustViewBounds="true"

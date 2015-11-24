@@ -21,6 +21,13 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -28,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
  * @author Antonio de Sousa Barroso
  */
 public class AppUtils {
+	private static final String TAG = "AppUtils";
 	public static ConnectivityManager connectivityManager = null;
 
 	public static final String extractKeyHash(final Context context, final String packageName) {
@@ -265,6 +273,54 @@ public class AppUtils {
 		} catch (NumberFormatException e) {
 			return 0.0d;
 		}
+	}
+
+
+	public static String downloadJsonUrl(String myurl) throws IOException {
+
+		Log.d(TAG, "Start downloadJsonUrl");
+		Log.d(TAG, "myurl  " + myurl);
+
+		InputStream is = null;
+		String json = "";
+
+		try {
+			URL url = new URL(myurl);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setReadTimeout(10000 /* milliseconds */);
+			conn.setConnectTimeout(15000 /* milliseconds */);
+			conn.setRequestMethod("GET");
+			conn.setDoInput(true);
+
+			conn.connect();
+			int response = conn.getResponseCode();
+			Log.d(TAG, "The response is: " + response);
+			is = conn.getInputStream();
+
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			Log.d(TAG, " unsopported encoding Exeption -----");
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.d(TAG, " IO Exeption ----- timeout");
+		}
+
+		try {
+			// BufferedReader reader = new BufferedReader(new InputStreamReader( is, "ISO- ), 8);
+			BufferedReader reader = new BufferedReader(new InputStreamReader( is  ), 8);
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "n");
+			}
+			is.close();
+			json = sb.toString();
+		} catch (Exception e) {
+			Log.e("Buffer Error", "Error converting result " + e.toString());
+		}
+
+		return json;
 	}
 
 

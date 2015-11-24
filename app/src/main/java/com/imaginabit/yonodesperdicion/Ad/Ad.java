@@ -1,24 +1,35 @@
 package com.imaginabit.yonodesperdicion.Ad;
 
+import java.util.Date;
+
 /**
  * Created by fer2015julio on 2/09/15.
  */
 public class Ad {
 
-    public static enum Type { GIVE, WANT };
+//    public static enum Type { GIVE, WANT };
     public static enum Status { AVAILABLE, BOOKED, DELIVERED };
 
     private int _id;
     private String title;
     private String body;
+
     private String username;
-    private Ad.Type type;
+    private int postal_code;
+
+
     private int woeid;
     private String date_created;
     private String image_file_name;
+
+    private int weight;
+    private Date expiration;
+
     private Ad.Status status;
     private boolean comments_enabled;
     private boolean favorite;
+
+    //private Ad.Type type;
 
     public int getId() {
         return _id;
@@ -52,13 +63,7 @@ public class Ad {
         this.username = username;
     }
 
-    public Ad.Type getType() {
-        return type;
-    }
 
-    public void setType(Ad.Type type) {
-        this.type = type;
-    }
 
     public int getWoeid() {
         return woeid;

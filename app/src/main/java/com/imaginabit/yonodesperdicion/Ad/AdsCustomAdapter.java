@@ -1,3 +1,4 @@
+/*
 package com.imaginabit.yonodesperdicion.Ad;
 
 import android.content.Context;
@@ -18,9 +19,11 @@ import java.util.List;
 
 
 
+*/
 /**
  * Created by fer2015julio on 2/09/15.
- */
+ *//*
+
 public class AdsCustomAdapter extends ArrayAdapter<Ad> {
     private static FragmentManager sFragmentManager;
     private LayoutInflater mLayoutInflater;
@@ -98,3 +101,4 @@ public class AdsCustomAdapter extends ArrayAdapter<Ad> {
         }
     }
 }
+*/

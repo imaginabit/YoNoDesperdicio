@@ -94,7 +94,7 @@
                                 />
 
                             <TextView
-                                android:id="@+id/ad_peso"
+                                android:id="@+id/ad_weight"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="0,6 Kg"
@@ -122,7 +122,7 @@
                                 />
 
                             <TextView
-                                android:id="@+id/ad_disponible"
+                                android:id="@+id/ad_status"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="disponible"
@@ -151,7 +151,7 @@
                                 />
 
                             <TextView
-                                android:id="@+id/ad_caducidad"
+                                android:id="@+id/ad_expiration"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Fecha límite de entrega 20.11.2015"
