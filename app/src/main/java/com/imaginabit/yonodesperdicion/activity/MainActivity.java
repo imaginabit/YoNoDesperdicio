@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -29,17 +30,21 @@ import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.rubengees.introduction.IntroductionBuilder;
 import com.rubengees.introduction.entity.Slide;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Base
 {
-    private static final String TAG = "MainActivity";
+    private final String TAG = this.getClass().getSimpleName();
     private static final String PREFS_NAME = "YoNoDesperdicioPrefs";
 
     private RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerViewIdeas;
     private RecyclerView.Adapter mAdapter;
+    private RecyclerView.Adapter mAdapterIdeas;
     private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView.LayoutManager mLayoutManagerIdeas;
 
     private List<Ad> mAds;
 
@@ -101,11 +106,47 @@ public class MainActivity extends Base
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-//        mAdapter = new AdAdapter(mContext,mAds);
-//        mRecyclerView.setAdapter(mAdapter);
+//        Log.d(TAG, "onCreate: ahora initialize data:");
+//        initializeData();
+
+        mAdapter = new AdAdapter(mContext, mAds);
+        mRecyclerView.setAdapter(mAdapter);
 
         //Get Ads
         getAdsFromWeb();
+
+//        mRecyclerViewIdeas = (RecyclerView) findViewById(R.id.recycler_ideas);
+//        mRecyclerViewIdeas.setHasFixedSize(true);
+//        mLayoutManagerIdeas = new LinearLayoutManager(this);
+//        mRecyclerViewIdeas.setLayoutManager(mLayoutManagerIdeas);
+//        ArrayList<Idea> ideas = IdeaUtils.sampleData();
+//        mAdapterIdeas = new IdeaAdapter(ideas);
+//        mRecyclerViewIdeas.setAdapter(mAdapterIdeas);
+
+//        mAdapter.notifyDataSetChanged();
+//        mAdapterIdeas.notifyDataSetChanged();
+
+    }
+
+    private void initializeData() {
+        Log.d(TAG, "initializeData: start");
+
+        mAds = new ArrayList<>();
+        // String title, String id, String category, String image_url, String introduction
+        //Ad(String title, String body, String imageUrl, int weightGrams, String expiration, String postalCode, int status, int userId, String userName)
+
+        try {
+            mAds.add( new Ad("title", "body", "String imageUrl", 100, "2010-10-23", "3241234", 1, 10, "uaoeu"));
+            mAds.add( new Ad("tomate", "asoneuhaoete", "/system/ideas/images/000/000/001/original/croquetas-pollo.jpg", 100, "2000-10-15", "28080", 2, 1, "pepito" ) );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+//        mAdapter = new AdAdapter(mContext, mAds);
+//        mRecyclerView.setAdapter(mAdapter);
+//        mAdapter.notifyDataSetChanged();
+
+        Log.d(TAG, "ideas : " + mAds.size());
     }
 
     private List<Slide> generateSlides() {
@@ -140,6 +181,8 @@ public class MainActivity extends Base
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        final Handler handler = new Handler();
+
         if (networkInfo != null && networkInfo.isConnected()) {
             AdUtils.fetchAds(this, new AdUtils.FetchAdsCallback() {
                 @Override
@@ -155,8 +198,15 @@ public class MainActivity extends Base
                         }
 
                     } else {
-                        Log.e(TAG, "error al obtener las Ideas");
+                        Log.e(TAG, "error al obtener los Anuncios");
                         e.printStackTrace();
+                        //wait 5 secons to try again
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                getAdsFromWeb();
+                            }
+                        }, 5000);
                     }
                 }
             });
@@ -164,5 +214,9 @@ public class MainActivity extends Base
             Toast.makeText(this, "No hay conexion a internet.", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
+
 
 }

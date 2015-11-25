@@ -1,6 +1,9 @@
 package com.imaginabit.yonodesperdicion.model;
 
+import android.util.Log;
+
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.util.AppUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,6 +17,9 @@ import java.util.Locale;
  */
 public class Ad {
 
+    private static final String TAG = "Ad Model";
+
+    //disponible, reservado, entregado
     public static enum Status {AVAILABLE, BOOKED, DELIVERED}
 
     private String mTitle;
@@ -61,11 +67,20 @@ public class Ad {
         mBody = body;
         mImageUrl = imageUrl;
         mWeightGrams = weightGrams;
-        //2015-12-15
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        mExpiration = format.parse(expiration);
+        Log.d(TAG, "Ad: expiration "+expiration);
+        if (AppUtils.isNotEmptyOrNull(expiration) && expiration!="null" ) {
+
+            //2015-12-15
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            mExpiration = format.parse(expiration);
+        } else {
+            //if there is no date (this must not happends! but...) set date to now
+            //mExpiration = new Date();
+            mExpiration = null;
+
+        }
         mPostalCode = Integer.parseInt(postalCode);
-        mStatus = Status.values()[status];
+        mStatus = Status.values()[status-1];
         mUserId = userId;
         mUserName = userName;
         mFavorite = false;
@@ -128,14 +143,33 @@ public class Ad {
     }
 
     public String getExpirationStrLong(){
-        String txt = "Fecha límite de entrega ";
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        String t = df.format(mExpiration);
+        if( mExpiration != null) {
+            //            String txt = "Fecha límite de entrega ";
+            String txt = "hasta el ";
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            String t = df.format(mExpiration);
 
-        return txt+t;
+            return txt + t;
+        }
+        return "";
     }
 
+    /**
+     * Return string that indicate the date relative to today
+     * pe. : In 2 days, 5 days ago...
+     * @return
+     */
+    public String getExpirationStrRelative(){
+        if( mExpiration != null) {
+//            String txt = "Fecha límite de entrega ";
+            String txt = "Disponible hasta ";
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            String t = df.format(mExpiration);
 
+            return txt + t;
+        }
+        return "";
+    }
 
     public void setExpiration(Date expiration) {
         mExpiration = expiration;

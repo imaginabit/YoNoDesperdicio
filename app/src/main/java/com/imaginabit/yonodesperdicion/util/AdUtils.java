@@ -62,8 +62,7 @@ public class AdUtils {
                         Log.d(TAG,"has Ads " + jsonItems.length());
                         if (jsonItems.length() > 0) {
                             ads = new ArrayList<>();
-                            //only the two last ideas no jsonItems.length()
-                            for (int i = 0; i < 2; i++) {
+                            for (int i = 0; i < jsonItems.length(); i++) {
                                 JSONObject jsonItem = null;
                                 try {
                                     jsonItem = jsonItems.getJSONObject(i);
@@ -119,9 +118,9 @@ public class AdUtils {
                             }
                         }
                     }
-                } catch (Exception e4) {
+                } catch (Exception e) {
                     //e.printStackTrace();
-                    e = e4;
+                    this.e = e;
 //                Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
                 }
 
