@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,7 +20,6 @@ import com.imaginabit.yonodesperdicion.adapter.IdeaAdapter;
 import com.imaginabit.yonodesperdicion.model.Idea;
 import com.imaginabit.yonodesperdicion.util.IdeaUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MoreInfo extends Base {
@@ -67,22 +67,11 @@ public class MoreInfo extends Base {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // This method creates an ArrayList that has three ideas objects saved in ideas
-        //initializeData();
+        //mIdeas = initializeData();
         mAdapter = new IdeaAdapter(mIdeas);
         mRecyclerView.setAdapter(mAdapter);
 
         getIdeasFromWeb();
-    }
-
-
-
-
-    private void initializeData() {
-        mIdeas = new ArrayList<>();
-        // String title, String id, String category, String image_url, String introduction
-        mIdeas.add(new Idea("Sopa de aprovechamiento de verduras", "10", "recetas", "/system/ideas/images/000/000/010/original/sopa_aprovechamiento_verduras.jpg", "intro"));
-        mIdeas.add(new Idea("Hojaldre relleno de mandarinas y nata", "10", "recetas", "propias/d_brick_original.png", "intro"));
-        mIdeas.add(new Idea("Una idea", "10", "recetas", "/system/ideas/images/000/000/001/original/croquetas-pollo.jpg?1443097172", "intro"));
     }
 
     private void getIdeasFromWeb() {
@@ -90,6 +79,8 @@ public class MoreInfo extends Base {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        final Handler handler = new Handler();
+
         if (networkInfo != null && networkInfo.isConnected()) {
             IdeaUtils.fetchIdeas(this, new IdeaUtils.FetchIdeasCallback() {
                 @Override
@@ -109,6 +100,13 @@ public class MoreInfo extends Base {
                     } else{
                         Log.e(TAG,"error al obtener las Ideas");
                         e.printStackTrace();
+                        //wait 5 secons to try again
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                getIdeasFromWeb();
+                            }
+                        }, 5000);
                     }
                 }
             });

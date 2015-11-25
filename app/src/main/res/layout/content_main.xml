@@ -17,6 +17,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
+        <include layout="@layout/ad_mini" />
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_ads"
             android:layout_width="match_parent"
@@ -24,7 +25,14 @@
             >
 
         </android.support.v7.widget.RecyclerView>
-        <!--<include layout="@layout/ad_mini" />-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_ideas"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            >
+
+        </android.support.v7.widget.RecyclerView>
+
 
     </LinearLayout>
 

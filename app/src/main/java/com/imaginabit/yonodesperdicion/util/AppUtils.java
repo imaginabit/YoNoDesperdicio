@@ -302,7 +302,7 @@ public class AppUtils {
 			e.printStackTrace();
 			Log.d(TAG, " unsopported encoding Exeption -----");
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			Log.d(TAG, " IO Exeption ----- timeout");
 		}
 

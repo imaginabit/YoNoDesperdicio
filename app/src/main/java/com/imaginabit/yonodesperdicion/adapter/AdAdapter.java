@@ -24,14 +24,12 @@ import java.util.List;
  * Created by fer2015julio on 19/11/15.
  */
 public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
-    private String TAG = AdAdapter.class.getSimpleName();
+    private static String TAG = AdAdapter.class.getSimpleName();
     private List<Ad> ads = new ArrayList<Ad>();
     Context mContext;
 
-
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
         CardView cv;
         TextView title;
         ImageView status;
@@ -42,7 +40,8 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
 
         public ViewHolder(View itemView) {
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.articulo);
+            Log.d(TAG, "ViewHolder: view" + itemView.toString());
+            cv = (CardView)itemView.findViewById(R.id.ad_item);
             title = (TextView)itemView.findViewById(R.id.ad_title);
             status = (ImageView)itemView.findViewById(R.id.status_image);
             expiration = (TextView)itemView.findViewById(R.id.ad_expiration);
@@ -55,6 +54,8 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public AdAdapter(Context context,List<Ad> myDataset) {
+        Log.d(TAG, "AdAdapter: Constructor --");
+        
         mContext = context;
         this.ads = myDataset;
     }
@@ -63,9 +64,10 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
     @Override
     public AdAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
+        Log.d(TAG, "onCreateViewHolder: hi , parent"+ parent.toString());
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.activity_main , parent, false);
+                .inflate(R.layout.ad_mini , parent, false);
         // set the view's size, margins, paddings and layout parameters
 
         ViewHolder vh = new ViewHolder(v);

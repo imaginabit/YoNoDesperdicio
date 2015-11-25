@@ -18,7 +18,7 @@ import java.util.List;
  * Created by fer2015julio on 21/11/15.
  */
 public class IdeaUtils {
-    String TAG = "IdeaUtils ";
+    private static final String TAG = "IdeaUtils ";
     public static List<Idea> ideas = new ArrayList<>();
 
     public static List<Idea> getIdeas() {
@@ -233,6 +233,18 @@ public class IdeaUtils {
     */
     public interface FetchIdeasCallback {
         public void done(List<Idea> ideas, Exception e);
+    }
+
+    public static ArrayList<Idea> sampleData() {
+
+        Log.d(TAG, "sampleData: Load sample data for Ideas");
+        ArrayList<Idea> ideas = new ArrayList<>();
+        // String title, String id, String category, String image_url, String introduction
+        ideas.add(new Idea("Sopa de aprovechamiento de verduras", "10", "recetas", "/system/ideas/images/000/000/010/original/sopa_aprovechamiento_verduras.jpg", "intro"));
+        ideas.add(new Idea("Hojaldre relleno de mandarinas y nata", "10", "recetas", "propias/d_brick_original.png", "intro"));
+        ideas.add(new Idea("Una idea", "10", "recetas", "/system/ideas/images/000/000/001/original/croquetas-pollo.jpg?1443097172", "intro"));
+
+        return ideas;
     }
 
 }
