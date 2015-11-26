@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.activity.AdDetail;
 import com.imaginabit.yonodesperdicion.model.Ad;
 import com.imaginabit.yonodesperdicion.util.Constants;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -76,14 +78,16 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.title.setText(ads.get(position).getTitle());
-        //holder.status.setText(ads.get(position).getStatus() );
-        holder.status.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ads.get(position).getStatusColor()),
-                android.graphics.PorterDuff.Mode.MULTIPLY);
-        holder.weight.setText(ads.get(position).getWeightKgStr());
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        holder.expiration.setText(ads.get(position).getExpirationStrLong() );
+        Ad ad = ads.get(position);
+
+        holder.title.setText(ad.getTitle());
+        //holder.status.setText(ads.get(position).getStatus() );
+        holder.status.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ad.getStatusColor()),
+                android.graphics.PorterDuff.Mode.MULTIPLY);
+        holder.weight.setText(ad.getWeightKgStr());
+        holder.expiration.setText(ad.getExpirationStrLong());
 
         //TODO: calcular distancia
         //holder.distance
@@ -91,11 +95,22 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
 
         //get image from website
         ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
-        String imageUri = Constants.HOME_URL + ads.get(position).getImageUrl();
+        String imageUri = Constants.HOME_URL + ad.getImageUrl();
         Log.i(TAG, "onBindViewHolder:" + imageUri);
 
         ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
         imageLoader.displayImage(imageUri, holder.image );
+
+        holder.cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(mContext, AdDetail.class);
+                intent.putExtra("ad", (android.os.Parcelable) ads.get(position));
+                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+            }
+        });
 
     }
 

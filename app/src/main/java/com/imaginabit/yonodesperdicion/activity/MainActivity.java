@@ -126,6 +126,9 @@ public class MainActivity extends Base
 //        mAdapter.notifyDataSetChanged();
 //        mAdapterIdeas.notifyDataSetChanged();
 
+
+
+
     }
 
     private void initializeData() {
@@ -214,6 +217,8 @@ public class MainActivity extends Base
             Toast.makeText(this, "No hay conexion a internet.", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
 
 
