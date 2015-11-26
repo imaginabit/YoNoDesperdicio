@@ -112,6 +112,7 @@
                             >
 
                             <ImageView
+                                android:id="@+id/ad_image_status"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:layout_marginLeft="3dp"

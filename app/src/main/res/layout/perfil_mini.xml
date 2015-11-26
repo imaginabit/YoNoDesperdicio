@@ -27,6 +27,7 @@
 
 
         <com.imaginabit.yonodesperdicion.util.RoundedImageView
+            android:id="@+id/user_avatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginRight="16dp"
@@ -40,6 +41,7 @@
             >
 
             <TextView
+                android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Nombre Usuario"
@@ -47,6 +49,7 @@
                 />
 
             <TextView
+                android:id="@+id/user_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Localidad"
@@ -60,6 +63,7 @@
                 >
 
                 <TextView
+                    android:id="@+id/user_weight"
                     android:textStyle="bold"
                     android:textSize="16dp"
                     android:layout_width="wrap_content"
@@ -70,7 +74,7 @@
                     android:layout_gravity="bottom"
                     />
                 <RatingBar
-                    android:id="@+id/ad_reputacion"
+                    android:id="@+id/user_ratting"
                     android:layout_width="wrap_content"
                     android:layout_height="19dp"
                     style="@style/blueStartsRatingBar"

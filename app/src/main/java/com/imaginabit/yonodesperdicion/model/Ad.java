@@ -1,5 +1,7 @@
 package com.imaginabit.yonodesperdicion.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.R;
@@ -15,13 +17,15 @@ import java.util.Locale;
  * Created by fer2015julio on 24/11/15.
  * Model of Ads Data
  */
-public class Ad {
+public class Ad implements Parcelable {
+
 
     private static final String TAG = "Ad Model";
 
     //disponible, reservado, entregado
     public static enum Status {AVAILABLE, BOOKED, DELIVERED}
 
+    private int mId;
     private String mTitle;
     private String mBody;
     private String mImageUrl;
@@ -46,23 +50,31 @@ public class Ad {
         mUserName = userName;
     }
 
-    @Override
-    public String toString() {
-        return "Ad{" +
-                "mTitle='" + mTitle + '\'' +
-                ", mBody='" + mBody + '\'' +
-                ", mImageUrl='" + mImageUrl + '\'' +
-                ", mWeightGrams=" + mWeightGrams +
-                ", mExpiration=" + mExpiration +
-                ", mPostalCode=" + mPostalCode +
-                ", mStatus=" + mStatus +
-                ", mUserId=" + mUserId +
-                ", mFavorite=" + mFavorite +
-                ", mUserName='" + mUserName + '\'' +
-                '}';
-    }
-
     public Ad(String title, String body, String imageUrl, int weightGrams, String expiration, String postalCode, int status, int userId, String userName) throws ParseException {
+        mTitle = title;
+        mBody = body;
+        mImageUrl = imageUrl;
+        mWeightGrams = weightGrams;
+        Log.d(TAG, "Ad: expiration "+expiration);
+        if (AppUtils.isNotEmptyOrNull(expiration) && expiration!="null" ) {
+
+            //2015-12-15
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            mExpiration = format.parse(expiration);
+        } else {
+            //if there is no date (this must not happends! but...) set date to now
+            //mExpiration = new Date();
+            mExpiration = null;
+
+        }
+        mPostalCode = Integer.parseInt(postalCode);
+        mStatus = Status.values()[status-1];
+        mUserId = userId;
+        mUserName = userName;
+        mFavorite = false;
+    }
+    public Ad(int Id, String title, String body, String imageUrl, int weightGrams, String expiration, String postalCode, int status, int userId, String userName) throws ParseException {
+        mId = Id;
         mTitle = title;
         mBody = body;
         mImageUrl = imageUrl;
@@ -186,6 +198,23 @@ public class Ad {
     public Status getStatus() {
         return mStatus;
     }
+    public int getStatusInt() {
+        int r;
+        switch (mStatus){
+            case AVAILABLE:
+                r = 0;
+                break;
+            case BOOKED:
+                r = 1;
+                break;
+            case DELIVERED:
+                r = 2;
+                break;
+            default:
+                r=0;
+        }
+        return r;
+    }
 
     public String getStatusStr() {
         String r;
@@ -248,4 +277,75 @@ public class Ad {
     public void setFavorite(boolean favorite) {
         mFavorite = favorite;
     }
+
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "mId='" + mId + '\'' +
+                ", mTitle='" + mTitle + '\'' +
+                ", mBody='" + mBody + '\'' +
+                ", mImageUrl='" + mImageUrl + '\'' +
+                ", mWeightGrams=" + mWeightGrams +
+                ", mExpiration=" + mExpiration +
+                ", mPostalCode=" + mPostalCode +
+                ", mStatus=" + mStatus +
+                ", mUserId=" + mUserId +
+                ", mFavorite=" + mFavorite +
+                ", mUserName='" + mUserName + '\'' +
+                '}';
+    }
+
+    public int getId() {
+        return mId;
+    }
+    public void setId(int id) {
+        mId = id;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.mId);
+        dest.writeString(this.mTitle);
+        dest.writeString(this.mBody);
+        dest.writeString(this.mImageUrl);
+        dest.writeInt(this.mWeightGrams);
+        dest.writeLong(mExpiration != null ? mExpiration.getTime() : -1);
+        dest.writeInt(this.mPostalCode);
+        dest.writeInt(this.mStatus == null ? -1 : this.mStatus.ordinal());
+        dest.writeInt(this.mUserId);
+        dest.writeByte(mFavorite ? (byte) 1 : (byte) 0);
+        dest.writeString(this.mUserName);
+    }
+
+    protected Ad(Parcel in) {
+        this.mId = in.readInt();
+        this.mTitle = in.readString();
+        this.mBody = in.readString();
+        this.mImageUrl = in.readString();
+        this.mWeightGrams = in.readInt();
+        long tmpMExpiration = in.readLong();
+        this.mExpiration = tmpMExpiration == -1 ? null : new Date(tmpMExpiration);
+        this.mPostalCode = in.readInt();
+        int tmpMStatus = in.readInt();
+        this.mStatus = tmpMStatus == -1 ? null : Status.values()[tmpMStatus];
+        this.mUserId = in.readInt();
+        this.mFavorite = in.readByte() != 0;
+        this.mUserName = in.readString();
+    }
+
+    public static final Creator<Ad> CREATOR = new Creator<Ad>() {
+        public Ad createFromParcel(Parcel source) {
+            return new Ad(source);
+        }
+
+        public Ad[] newArray(int size) {
+            return new Ad[size];
+        }
+    };
 }
