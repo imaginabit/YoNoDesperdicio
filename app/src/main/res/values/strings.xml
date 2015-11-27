@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Yo No Desperdicio</string>
+    <string name="web_url">http://beta.yonodesperdicio.com/</string>
 
     <string name="navigation_drawer_open">Abrir menu lateral</string>
     <string name="navigation_drawer_close">Cerrar menu lateral</string>
 
-    <string name="action_settings">Opicones</string>
+    <string name="action_settings">Opciones</string>
 
     <string name="main_search_title">Buscar</string>
     <string name="main_add_title">Nuevo</string>
@@ -25,8 +26,30 @@
     bergkase cream cheese fromage frais cheesy feet port-salut airedale. St. agur blue cheese rubber
     cheese caerphilly cheddar cheesecake cream cheese manchego lancashire. Roquefort squirty cheese
     the big cheese.</string>
+    <string name="title_activity_settigns">Settigns</string>
+    <string name="title_activity_intro">intro</string>
+    <string name="save_fav">Guardar como favorito</string>
+    <string name="texto_caritas">texto ramdom intetne añadir caras unicode pero no</string>
 
+    <string name="title_activity_maps">Map</string>
 
+    <string name="edit_location">Editar ubicación</string>
+    <string name="edit_wallpic">Cambiar foto de portada</string>
+    <string name="edic_avatarpic">Cambiar foto de perfil</string>
+    <string name="edic_name">Modificar nombre</string>
+
+    <string name="description_ad_image">imagen del anuncio</string>
+
+    <string name="label_title">Título</string>
+    <string name="label_weight">Cantidad (Kg)</string>
+    <string name="label_expiration_date">Fecha límite de recogida</string>
+    <string name="label_expiration_time">Hora</string>
+    <string name="label_city">Ciudad</string>
+    <string name="label_postal_code">Codigo Postal</string>
+    <string name="label_ad_description">Descripcion del anuncio, añade un comentario</string>
+
+    <string name="action_done">Hecho</string>
+    <string name="delete_ad">Eliminar Anuncio</string>
 
 
 </resources>

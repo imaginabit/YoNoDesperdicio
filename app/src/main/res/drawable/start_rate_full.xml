@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+android:id/secondaryProgress"
+        android:gravity="center"
+        android:width="35dp"
+        android:height="35dp"
+        >
+        <bitmap
+            android:src="@drawable/ic_star_rate_black"
+            android:tint="@color/activity_background"
+            />
+        </item>
+    <item android:id="@+android:id/background"
+        android:width="40dp"
+        android:height="40dp"
+        android:gravity="center"
+        >
+        <bitmap
+            android:src="@drawable/ic_star_border_black"
+            android:tint="@color/primary"
+            />
+    </item>
+    <item android:id="@+android:id/progress"
+        android:width="48dp"
+        android:height="48dp"
+        android:gravity="center"
+        >
+        <bitmap
+            android:src="@drawable/ic_star_rate_black"
+            android:tint="@color/primary"
+            />
+    </item>
+
+</layer-list>
