@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.imaginabit.yonodesperdicion.activity.AdCreate;
-import com.imaginabit.yonodesperdicion.activity.AdDetail;
 import com.imaginabit.yonodesperdicion.activity.MainActivity;
 import com.imaginabit.yonodesperdicion.activity.MoreInfo;
 import com.imaginabit.yonodesperdicion.activity.Profile;
@@ -75,10 +74,8 @@ public abstract class Base extends AppCompatActivity
             startActivity(itntPerfil);
 
         } else if (id == R.id.nav_favoritos) {
-            // TODO: quitar pruebas para que haga lo que de verdad tiene que hacer
-            // he puesto ver el detalle del anuncio aqui como prueba
-            Intent itntFav = new Intent(mContext, AdDetail.class);
-            startActivity(itntFav);
+//            Intent itntFav = new Intent(mContext, .class);
+//            startActivity(itntFav);
         } else if (id == R.id.nav_mensajes) {
             // TODO: quitar pruebas
             // he puesto ver el formulaciro de crear el anuncio aqui como prueba
