@@ -51,8 +51,9 @@ public class IdeaUtils {
                 String json = null;
                 try {
                     json = AppUtils.downloadJsonUrl(Constants.IDEAS_API_URL);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    this.e = e;
                 }
 
                 // try parse the string to a JSON object
