@@ -21,7 +21,8 @@ tools:openDrawer="start">
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_backdrop_height"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        >
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -49,7 +50,8 @@ tools:openDrawer="start">
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -174,13 +176,14 @@ tools:openDrawer="start">
     <com.imaginabit.yonodesperdicion.util.RoundedImageView
         android:id="@+id/avatarpic"
         style="@style/Widget.Design.FloatingActionButton"
+        android:src="@drawable/brick_avatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="true"
-        android:src="@drawable/food"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|center|center_horizontal"
+        android:scaleType="fitCenter"
         />
 
 </android.support.design.widget.CoordinatorLayout>
