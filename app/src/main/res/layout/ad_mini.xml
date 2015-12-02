@@ -6,21 +6,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 android:id="@+id/ad_item"
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
-
-
-android:layout_marginTop="@dimen/articulo_card_margin"
-android:layout_marginLeft="@dimen/articulo_card_margin"
-android:layout_marginRight="@dimen/articulo_card_margin"
-
-android:layout_marginBottom="0dp"
-android:layout_alignParentBottom="@dimen/articulo_card_margin"
-
-android:layout_marginStart="@dimen/articulo_card_margin"
-android:layout_marginEnd="@dimen/articulo_card_margin"
-
-style="@style/CardView.Light"
-    >
-
+style="@style/AdCard"
+>
+    <!--style="@style/AdCard"-->
 <LinearLayout
     style="@style/Widget.CardContent"
     android:layout_width="match_parent"
