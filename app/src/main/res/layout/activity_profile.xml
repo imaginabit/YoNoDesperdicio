@@ -163,11 +163,12 @@ tools:openDrawer="start">
                     />
 
                 <!-- Include lista de anuncios del usuario -->
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    >
                 <include layout="@layout/ad_mini"/>
-                </FrameLayout>
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
