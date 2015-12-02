@@ -41,5 +41,14 @@
         <item name="android:paddingEnd">10dp</item>
     </style>
 
+    <style name="yndHeaderTitleStyle" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">30dp</item>
+    </style>
+    <style name="TextAppearance.Collapsed"
+           parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">#FFF</item>
+    </style>
+
 
 </resources>
