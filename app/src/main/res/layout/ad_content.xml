@@ -7,7 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    tools:openDrawer="start"
+    >
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/main_content"
@@ -20,7 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/detail_backdrop_height"
             android:fitsSystemWindows="true"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:theme="@style/AppTheme.AppBarOverlay"
+            >
 
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -30,7 +33,9 @@
                 app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleMarginEnd="64dp"
                 app:expandedTitleMarginStart="48dp"
+                app:expandedTitleTextAppearance="@style/yndHeaderTitleStyle"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:theme="@style/AppTheme.AppBarOverlay"
                 >
 
                 <ImageView
@@ -48,7 +53,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                    app:theme="@style/AppTheme.AppBarOverlay"
+                    />
 
             </android.support.design.widget.CollapsingToolbarLayout>
 
