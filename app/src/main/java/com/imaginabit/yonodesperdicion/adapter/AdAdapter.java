@@ -84,8 +84,8 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
 
         holder.title.setText(ad.getTitle());
         //holder.status.setText(ads.get(position).getStatus() );
-        holder.status.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ad.getStatusColor()),
-                android.graphics.PorterDuff.Mode.MULTIPLY);
+        //holder.status.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ad.getStatusColor()),                android.graphics.PorterDuff.Mode.MULTIPLY);
+        holder.status.setImageDrawable(ContextCompat.getDrawable(mContext,ad.getStatusImage()));
         holder.weight.setText(ad.getWeightKgStr());
         holder.expiration.setText(ad.getExpirationStrLong());
 
