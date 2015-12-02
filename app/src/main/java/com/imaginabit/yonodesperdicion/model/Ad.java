@@ -248,6 +248,21 @@ public class Ad implements Parcelable {
         }
         return r;
     }
+    public int getStatusImage(){
+        int r;
+        switch (mStatus){
+            case AVAILABLE:
+                r = R.drawable.circle_available;
+                break;
+            case BOOKED:
+                r = R.drawable.circle_booked;
+                break;
+            default:
+                r = R.drawable.circle_white;
+        }
+        return r;
+
+    }
 
 
     public void setStatus(Status status) {

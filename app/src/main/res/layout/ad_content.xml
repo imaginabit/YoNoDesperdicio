@@ -118,7 +118,7 @@
                                 android:layout_marginLeft="3dp"
                                 android:layout_marginRight="16dp"
                                 android:layout_marginTop="4dp"
-                                android:src="@drawable/acircle"
+                                android:src="@drawable/circle_white"
                                 android:tint="@color/ad_disponible"
                                 />
 
