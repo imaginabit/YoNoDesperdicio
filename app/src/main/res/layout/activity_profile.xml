@@ -51,7 +51,7 @@ tools:openDrawer="start">
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                />
+                app:theme="@style/AppTheme.AppBarOverlay"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -183,7 +183,9 @@ tools:openDrawer="start">
         android:clickable="true"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|center|center_horizontal"
-        android:scaleType="fitCenter"
+        android:scaleType="center"
+        android:adjustViewBounds="true"
+
         />
 
 </android.support.design.widget.CoordinatorLayout>

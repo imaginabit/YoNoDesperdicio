@@ -2,13 +2,23 @@
 <android.support.v7.widget.CardView
 xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools"
+xmlns:app="http://schemas.android.com/apk/res-auto"
 android:id="@+id/ad_item"
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
+
+
+android:layout_marginTop="@dimen/articulo_card_margin"
+android:layout_marginLeft="@dimen/articulo_card_margin"
+android:layout_marginRight="@dimen/articulo_card_margin"
+
+android:layout_marginBottom="0dp"
+android:layout_alignParentBottom="@dimen/articulo_card_margin"
+
 android:layout_marginStart="@dimen/articulo_card_margin"
-android:layout_marginTop="6dp"
-android:layout_marginBottom="6dp"
 android:layout_marginEnd="@dimen/articulo_card_margin"
+
+style="@style/CardView.Light"
     >
 
 <LinearLayout
@@ -18,7 +28,6 @@ android:layout_marginEnd="@dimen/articulo_card_margin"
     android:padding="10dp"
     android:orientation="horizontal"
     >
-
 
     <LinearLayout
         android:id="@+id/ad_textos"
