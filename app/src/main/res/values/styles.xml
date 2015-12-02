@@ -37,8 +37,6 @@
         <item name="android:paddingBottom">20dp</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">10dp</item>
-        <item name="android:paddingStart">10dp</item>
-        <item name="android:paddingEnd">10dp</item>
     </style>
 
     <style name="yndHeaderTitleStyle" parent="@android:style/TextAppearance">
@@ -48,6 +46,39 @@
     <style name="TextAppearance.Collapsed"
            parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">#FFF</item>
+    </style>
+
+<!--    <style name="yndAdCard" parent="CardView.Light">
+        <item name="cardCornerRadius">0dp</item>
+        <item name="cardElevation">5dp</item>
+    </style>-->
+
+    <style name="CardView">
+        <item name="cardCornerRadius">0dp</item>
+        <item name="cardElevation">3dp</item>
+
+        <!--<item name="android:layout_marginLeft">@dimen/articulo_card_margin</item>-->
+        <!--<item name="android:layout_marginRight">@dimen/articulo_card_margin</item>-->
+        <!--<item name="android:layout_marginBottom">@dimen/articulo_card_margin</item>-->
+        <!--<item name="android:layout_marginTop">0dp</item>-->
+    </style>
+
+
+    <style name="AdCard" parent="CardView">
+        <item name="android:layout_marginLeft">@dimen/articulo_card_margin</item>
+        <item name="android:layout_marginRight">@dimen/articulo_card_margin</item>
+        <item name="android:layout_marginTop">@dimen/articulo_card_margin</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <!--<item name="android:layout_alignParentBottom">@dimen/articulo_card_margin</item>-->
+
+    </style>
+    <style name="IdeaCard" parent="CardView">
+        <item name="android:layout_marginLeft">@dimen/articulo_card_margin</item>
+        <item name="android:layout_marginRight">@dimen/articulo_card_margin</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">@dimen/card_margin_tiny</item>
+        <item name="android:layout_alignParentBottom">@dimen/articulo_card_margin</item>
+
     </style>
 
 
