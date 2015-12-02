@@ -18,4 +18,6 @@
     <dimen name="articulo_card_margin">13dp</dimen>
     <dimen name="list_item_avatar_size">40dp</dimen>
 
+    <dimen name="card_margin_tiny">6dp</dimen>
+
 </resources>
