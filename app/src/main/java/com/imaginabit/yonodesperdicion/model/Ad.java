@@ -249,30 +249,41 @@ public class Ad implements Parcelable {
 
     public int getStatusColor() {
         int r;
+        String t;
         switch (mStatus){
             case AVAILABLE:
                 r = R.color.ad_disponible;
+                t = "disponible";
                 break;
             case BOOKED:
                 r = R.color.ad_reservado;
+                t = "reservado";
                 break;
             default:
-                r = R.color.white;;
+                r = R.color.white;
+                t = "blanco ";
+
         }
+        Log.d(TAG, "getStatusColor: "+ r );
         return r;
     }
     public int getStatusImage(){
         int r;
+        String t;
         switch (mStatus){
             case AVAILABLE:
                 r = R.drawable.circle_available;
+                t= "disponible";
                 break;
             case BOOKED:
                 r = R.drawable.circle_booked;
+                t = "reservado";
                 break;
             default:
                 r = R.drawable.circle_white;
+                t = "blanco";
         }
+        Log.d(TAG, "getStatusImage: "+ r);
         return r;
 
     }

@@ -56,11 +56,14 @@ public class AdDetail extends Base
         bodyView.setText(ad.getBody());
 
         TextView statusView = (TextView) findViewById(R.id.ad_status);
-        statusView.setText(ad.getStatusStr());
+        statusView.setText( ad.getStatusStr() );
+        statusView.setTextColor(ContextCompat.getColor(mContext, ad.getStatusColor()));
 
         ImageView statusImageView = (ImageView) findViewById(R.id.ad_image_status);
-        statusImageView.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ad.getStatusColor()),
-                android.graphics.PorterDuff.Mode.MULTIPLY);
+        statusImageView.setImageDrawable(ContextCompat.getDrawable(mContext,ad.getStatusImage()));
+
+//        statusImageView.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ad.getStatusColor()),
+//                android.graphics.PorterDuff.Mode.MULTIPLY);
 
         TextView expirationText = (TextView) findViewById(R.id.ad_expiration);
         expirationText.setText(ad.getExpirationStrLong());

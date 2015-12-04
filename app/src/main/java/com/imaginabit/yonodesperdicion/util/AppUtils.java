@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -20,6 +22,7 @@ import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * @author Antonio de Sousa Barroso
@@ -37,8 +41,9 @@ import java.security.NoSuchAlgorithmException;
 public class AppUtils {
 	private static final String TAG = "AppUtils";
 	public static ConnectivityManager connectivityManager = null;
+    private static String sZip;
 
-	public static final String extractKeyHash(final Context context, final String packageName) {
+    public static final String extractKeyHash(final Context context, final String packageName) {
 		try {
 			PackageInfo info = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
 			for (Signature signature : info.signatures) {
@@ -321,6 +326,42 @@ public class AppUtils {
 		}
 
 		return json;
+	}
+
+
+	/**
+	 * Get the location of a place based in the zipcode
+	 * @param zip zip code
+	 * @return Address form android.location.Address
+     * @author Fernando
+	 *
+	 * example json from googleapis
+	 * http://maps.googleapis.com/maps/api/geocode/json?components=postal_code:35011&region=es
+	 *
+	 *
+	 */
+	public static Address getGPSfromZip(Context context,int zip){
+        final Geocoder geocoder = new Geocoder( context );
+		try {
+			List<Address> addresses = geocoder.getFromLocationName( Integer.toString(zip), 1);
+			if (addresses != null && !addresses.isEmpty()) {
+				Address address = addresses.get(0);
+				// Use the address as needed
+				String message = String.format("Latitude: %f, Longitude: %f",
+						address.getLatitude(), address.getLongitude());
+//				Toast.makeText(context , message, Toast.LENGTH_LONG).show();
+				Log.d(TAG, "getGPSfromZip: " + message);
+				return address;
+			} else {
+				// Display appropriate message when Geocoder services are not available
+				Toast.makeText(context, "Unable to geocode zipcode", Toast.LENGTH_SHORT).show();
+				Log.d(TAG, "getGPSfromZip: Unable to geocode zipcode");
+				return null;
+			}
+		} catch (IOException e) {
+			// handle exception
+		}
+		return null;
 	}
 
 
