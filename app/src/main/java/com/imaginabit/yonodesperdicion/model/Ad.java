@@ -7,7 +7,9 @@ import android.util.Log;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.util.AppUtils;
 
+import java.math.RoundingMode;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -140,11 +142,22 @@ public class Ad implements Parcelable {
     public int getWeightGrams() {
         return mWeightGrams;
     }
+
     public String getWeightKgStr(){
-        float kilos = mWeightGrams / 1000;
+        float kilos = (float) (mWeightGrams / 1000.0);
+
+        DecimalFormat df = new DecimalFormat("0.0#");
+        df.setRoundingMode(RoundingMode.HALF_DOWN);
+
         String txt =  " Kg";
-        return kilos+txt;
+        String strKilos = df.format(kilos);
+        txt = strKilos + txt;
+
+//        Log.d(TAG, "getWeightKgStr: "+mTitle + " :" + Integer.toString(mWeightGrams) + " " + kilos + " "+ txt );
+
+        return txt;
     }
+
 
     public void setWeightGrams(int weightGrams) {
         mWeightGrams = weightGrams;
