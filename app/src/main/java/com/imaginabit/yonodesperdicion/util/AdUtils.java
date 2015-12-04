@@ -71,22 +71,6 @@ public class AdUtils {
                                     //e.printStackTrace();
                                 }
 
-                                // Extract properties
-//                                    "id":11,
-//                                    "title":"Lata de tomate",
-//                                    "body": "El tomate triturado puede ser útil para macarrones con un poco de cebolla. Sus ingredientes son 99,5% tomate, sal y acidulante: ácido cítrico. Valor energético 102 kJ/24 kcal. Su vencimiento es en el 2018. Lo comparto porque tengo muchas conservas de mi huerta en la despensa y la etiqueta está rompiéndose. ",
-//                                    "status": 1,
-//                                    "grams":800,
-//                                    "expiration_date":null,
-//                                    "pick_up_date": "2015-12-15",
-//                                    "comments_enabled":1,
-//                                    "image": "/system/ads/images/000/000/011/original/lata-de-tomate.jpg?1446554898",
-//                                    "zipcode":"28012",
-//                                    "city":"madrid",
-//                                    "province":"madrid",
-//                                    "food_category": "conservas",
-//                                    "user_id":10
-
                                 // title, id, category, image_url, introduction
                                 //long idea_id = jsonItem.optLong("id", 0L);
                                 int ad_id = jsonItem.optInt("id", 0);
@@ -101,7 +85,6 @@ public class AdUtils {
                                 String zipcode =jsonItem.optString("zipcode", "");
 
                                 Log.v(TAG, "add ad " + jsonItem.toString()  );
-
                                 Log.v(TAG, "add Ad id:" + ad_id + " title:" + title + " cat:" + category + " image:" + image_url + " ");
                                 Log.v(TAG, "add Ad id:" + ad_id + " intro: " + zipcode.toString());
 

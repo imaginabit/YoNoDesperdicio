@@ -2,6 +2,8 @@ package com.imaginabit.yonodesperdicion.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Location;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activity.AdDetail;
 import com.imaginabit.yonodesperdicion.model.Ad;
+import com.imaginabit.yonodesperdicion.util.AppUtils;
 import com.imaginabit.yonodesperdicion.util.Constants;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -84,13 +87,34 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.ViewHolder> {
 
         holder.title.setText(ad.getTitle());
         //holder.status.setText(ads.get(position).getStatus() );
-        //holder.status.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ad.getStatusColor()),                android.graphics.PorterDuff.Mode.MULTIPLY);
+
         holder.status.setImageDrawable(ContextCompat.getDrawable(mContext,ad.getStatusImage()));
+        holder.status.getDrawable().setColorFilter(ContextCompat.getColor(mContext, ad.getStatusColor()), android.graphics.PorterDuff.Mode.MULTIPLY);
+
         holder.weight.setText(ad.getWeightKgStr());
         holder.expiration.setText(ad.getExpirationStrLong());
 
         //TODO: calcular distancia
         //holder.distance
+        // get user location , get ad location in base of zipcode, calculate distance
+        double distance = 0; //distance in meters
+        try {
+            Address adAddress = AppUtils.getGPSfromZip( mContext, ad.getPostalCode() );
+            //TODO get user location
+            Address userAddress = AppUtils.getGPSfromZip( mContext, ad.getPostalCode() );
+            Location adLocation = new Location("Articulo Anuncio");
+            adLocation.setLatitude(adAddress.getLatitude());
+            adLocation.setLongitude(adAddress.getLongitude() );
+            Location userLocation = new Location("User");
+            userLocation.setLatitude( userAddress.getLatitude() );
+            userLocation.setLongitude( userAddress.getLongitude() );
+
+            distance = adLocation.distanceTo(userLocation);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        holder.distance.setText( Double.toString(distance) + "m");
 
 
         //get image from website
