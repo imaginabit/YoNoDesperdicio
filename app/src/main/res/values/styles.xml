@@ -1,6 +1,5 @@
 <resources>
-
-    <!-- Base application theme. -->
+    <!-- NavigationBaseActivity application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary</item>
@@ -36,4 +35,16 @@
         <item name="android:paddingEnd">10dp</item>
     </style>
 
+    <!-- Google -->
+    
+    <style name="ThemeOverlay.NoTitleActivity" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- Dark Buttons -->
+    <style name="ThemeOverlay.DarkButton" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/blue_grey_500</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

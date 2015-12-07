@@ -7,14 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.imaginabit.yonodesperdicion.activity.MainActivity"
+    tools:context="com.imaginabit.yonodesperdicion.activities.MainActivity"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        >
+        android:fitsSystemWindows="true">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
@@ -27,27 +26,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+            />
 
         </android.support.design.widget.AppBarLayout>
-
-
 
         <LinearLayout
             android:paddingTop="?attr/actionBarSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:nestedScrollingEnabled="true"
-            >
+            android:nestedScrollingEnabled="true">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_ads"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
-                >
+            />
 
-            </android.support.v7.widget.RecyclerView>
         </LinearLayout>
 
         <android.support.design.widget.FloatingActionButton
@@ -58,7 +54,8 @@
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_add"
 
-            />
+        />
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
@@ -69,36 +66,6 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer"
-        />
-
+    />
 
 </android.support.v4.widget.DrawerLayout>
-    <!--
-    <?xml version="1.0" encoding="utf-8"?>
-    <android.support.v4.widget.DrawerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        tools:openDrawer="start">
-
-        <include
-            layout="@layout/app_bar_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <android.support.design.widget.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/activity_main_drawer"/>
-
-
-    </android.support.v4.widget.DrawerLayout>
-    -->
