@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,177 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
+    tools:context=".activities.MainActivity"
     tools:showIn="@layout/app_bar_main"
-    >
+    android:background="@color/activity_background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
-        <!-- Version con realative layout no consigo que la imagen ocupe todo el alto -->
-        <!--  <android.support.v7.widget.CardView
-            android:id="@+id/articulo"
+        <include layout="@layout/ad_mini" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_ads"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/card_margin"
-            android:padding="0dp"
-            android:layout_marginTop="0dp"
-            >
+            android:layout_height="fill_parent"
+        />
 
-            <RelativeLayout
-                style="@style/Widget.CardContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="0dp"
-                android:layout_marginTop="0dp"
-                >
-
-                <RelativeLayout
-                    android:id="@+id/textos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/foto_articulo"
-                    android:padding="16dp"
-                    >
-
-                    <TextView
-                        android:id="@+id/titulo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/card_margin"
-                        android:text="Info"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
-
-                    <TextView
-                        android:id="@+id/descripcion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/titulo"
-                        android:paddingBottom="@dimen/card_margin"
-                        android:text="@string/cheese_ipsum"
-                        />
-                </RelativeLayout>
-
-                <ImageView
-                    android:id="@id/foto_articulo"
-                    android:layout_width="100dp"
-                    android:layout_height="fill_parent"
-                    android:contentDescription="foto del articulo"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/food"
-                    android:adjustViewBounds="true"
-
-
-                    />
-            </RelativeLayout>
-        </android.support.v7.widget.CardView>-->
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/articulo2"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_ideas"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/card_margin"
-            android:padding="0dp"
-            android:layout_marginTop="0dp"
-            >
+            android:layout_height="fill_parent"
+        />
 
-            <LinearLayout
-                style="@style/Widget.CardContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="0dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"
-                android:orientation="horizontal"
-                >
-                <!-- la imagen no se ve a no ser que se ponga antes del texto :(
-                 TODO: poner la imagen despues y que se vea bien
-                -->
-                <!--<ImageView-->
-                    <!--android:id="@+id/otrafoto"-->
-                    <!--android:layout_width="100dp"-->
-                    <!--android:layout_height="fill_parent"-->
-                    <!--android:adjustViewBounds="true"-->
-                    <!--android:contentDescription="foto del articulo"-->
-                    <!--android:layout_alignParentRight="true"-->
-                    <!--android:layout_alignParentTop="true"-->
-                    <!--android:scaleType="centerCrop"-->
-                    <!--android:src="@drawable/food"-->
-                <!--/>-->
-
-                <LinearLayout
-                    android:id="@+id/anuncio_list_textos"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:padding="0dp"
-                    android:paddingBottom="0dp"
-                    android:layout_marginBottom="0dp"
-                    android:orientation="vertical"
-                    android:layout_weight="0.9"
-                    >
-                    <TextView
-                        android:id="@+id/anuncio_list_titulo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="0dp"
-                        android:paddingTop="@dimen/card_margin"
-                        android:text="Titulo"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
-
-                    <TextView
-                        android:id="@+id/anuncio_list_localizacion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="@dimen/card_margin"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-
-                        android:text="28080, Madrid"
-                        />
-                    <TextView
-                        android:id="@+id/anuncio_list_caducidad"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="0dp"
-                        android:text="Expira en 5 días"
-                        android:enabled="true"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-
-
-                        android:layout_gravity="bottom"
-                        android:layout_marginBottom="0dp"
-                        android:paddingBottom="0dp"
-                        android:layout_alignParentBottom="true"
-
-
-                        />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/otrafoto2"
-                    android:layout_width="100dp"
-                    android:layout_height="fill_parent"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="foto del articulo"
-
-                    android:layout_marginLeft="0dp"
-                    android:layout_weight="0.1"
-
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/food"
-
-                    />
-
-
-            </LinearLayout>
-
-
-        </android.support.v7.widget.CardView>
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>
