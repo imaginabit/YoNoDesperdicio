@@ -7,14 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.imaginabit.yonodesperdicion.activity.MainActivity"
+    tools:context="com.imaginabit.yonodesperdicion.activities.MainActivity"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        >
+        android:fitsSystemWindows="true">
 
         <include layout="@layout/appbar" />
 
@@ -30,9 +29,9 @@
                 android:id="@+id/recycler_ads"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
-                >
+            />
 
-            </android.support.v7.widget.RecyclerView>
+
         </LinearLayout>
 
         <android.support.design.widget.FloatingActionButton
