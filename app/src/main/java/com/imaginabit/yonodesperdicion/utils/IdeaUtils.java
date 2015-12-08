@@ -103,7 +103,7 @@ public class IdeaUtils {
                                 Log.d(TAG, "add idea id:" + idea_id + " intro: " + introduction);
 
                                 try {
-                                    if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
+                                    if (Utils.isNotEmptyOrNull(title) && Utils.isNotEmptyOrNull(idea_id)) {
                                         Idea itemIdea = new Idea(title, idea_id, category, image_url, introduction);
                                         ideas.add(itemIdea);
                                     }
@@ -154,7 +154,7 @@ public class IdeaUtils {
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
             try {
-                return AppUtils.downloadJsonUrl(urls[0]);
+                return Utils.downloadJsonUrl(urls[0]);
             } catch (IOException e) {
                 return "Unable to retrieve web page. URL may be invalid.";
             }
