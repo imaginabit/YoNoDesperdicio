@@ -11,6 +11,6 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_base"
-    tools:context="com.imaginabit.yonodesperdicion.Base">
+    tools:context=".activities.NavigationBaseActivity">
 
-</RelativeLayout>
+    </RelativeLayout>
