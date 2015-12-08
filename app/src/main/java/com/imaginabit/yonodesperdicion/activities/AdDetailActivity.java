@@ -28,19 +28,19 @@ public class AdDetailActivity extends NavigationBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ad_content);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        context = getApplicationContext();
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+        //context = getApplicationContext();
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        //        this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        //drawer.setDrawerListener(toggle);
+        //toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        //NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        //navigationView.setNavigationItemSelectedListener(this);
         //------------------------
 
 
@@ -51,7 +51,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
         } else {
             // Fix action bar and drawer
-            toolbar = setSupportedActionBar();
+            Toolbar toolbar = setSupportedActionBar();
             toolbar.setTitle(ad.getTitle());
             setDrawerLayout(toolbar);
 
@@ -115,7 +115,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.ad, menu);
+        getMenuInflater().inflate( R.menu.ad , menu);
         return true;
     }
 
@@ -125,7 +125,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_favorite) {
+        if (id == R.id.action_favorite ) {
             Toast.makeText(AdDetailActivity.this, "pulsado añadir a favoritos", Toast.LENGTH_SHORT).show();
             return true;
         }

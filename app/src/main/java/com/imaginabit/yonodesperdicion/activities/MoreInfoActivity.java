@@ -11,11 +11,10 @@ import android.widget.Toast;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.IdeasAdapter;
 import com.imaginabit.yonodesperdicion.models.Idea;
+import com.imaginabit.yonodesperdicion.utils.IdeaUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import java.util.List;
-
-;
 
 public class MoreInfoActivity extends NavigationBaseActivity {
     private final String TAG = getClass().getSimpleName();
@@ -64,7 +63,7 @@ public class MoreInfoActivity extends NavigationBaseActivity {
         Log.d(TAG, "get Ideas From Web");
         // Check if network link is available
         if (Utils.isActiveNetworkConnection(this)) {
-            com.imaginabit.yonodesperdicion.utils.IdeaUtils.fetchIdeas(this, new com.imaginabit.yonodesperdicion.utils.IdeaUtils.FetchIdeasCallback() {
+            IdeaUtils.fetchIdeas(this, new IdeaUtils.FetchIdeasCallback() {
                 @Override
                 public void done(List<Idea> ideas, Exception e) {
                     if (e == null) {

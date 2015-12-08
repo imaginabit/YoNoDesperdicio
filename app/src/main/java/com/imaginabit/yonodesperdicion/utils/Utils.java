@@ -53,6 +53,15 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Dismiss the progress dialog passed
+	 */
+	public static void dismissProgressDialog(ProgressDialog pd) {
+		if (pd != null && pd.isShowing()) {
+			pd.dismiss();
+		}
+	}
+
 	public static final String extractKeyHash(final Context context, final String packageName) {
 		try {
 			PackageInfo info = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
