@@ -1,4 +1,4 @@
-package com.imaginabit.yonodesperdicion.util;
+package com.imaginabit.yonodesperdicion.utils;
 
 /**
  * Created by fer2015julio on 20/11/15.
