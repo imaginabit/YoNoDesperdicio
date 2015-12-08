@@ -40,8 +40,6 @@
                 android:layout_height="fill_parent"
             />
 
-
-        <!--<include layout="@layout/more_info_ideas" />-->
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 

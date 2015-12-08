@@ -103,7 +103,7 @@ public class IdeaUtils {
                                 Log.d(TAG, "add idea id:" + idea_id + " intro: " + introduction);
 
                                 try {
-                                    if (Utils.isNotEmptyOrNull(title) && Utils.isNotEmptyOrNull(idea_id)) {
+                                    if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
                                         Idea itemIdea = new Idea(title, idea_id, category, image_url, introduction);
                                         ideas.add(itemIdea);
                                     }
@@ -210,7 +210,7 @@ public class IdeaUtils {
                             Log.d(TAG, "creada idea " + ideas.toString());
 
                             // Validate and fill ideas array!
-                            if (AppUtils.isNotEmptyOrNull(title) && AppUtils.isNotEmptyOrNull(idea_id)) {
+                            if (Utils.isNotEmptyOrNull(title) && Utils.isNotEmptyOrNull(idea_id)) {
 
                             }
                         }
@@ -218,7 +218,7 @@ public class IdeaUtils {
                     IdeaUtils.setIdeas(ideas);
                     //callback()
                 }
-                //Toast.makeText(MoreInfo.this, result, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MoreInfoActivity.this, result, Toast.LENGTH_SHORT).show();
                 //textView.setText(result);
             } catch (Exception e) {
                 e.printStackTrace();
