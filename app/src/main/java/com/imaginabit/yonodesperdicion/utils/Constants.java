@@ -13,5 +13,7 @@ public class Constants {
 
     public static final String USER_ADS_API_URS = ADS_API_URL + "?user_id="; // pe: + "10"
 
+    public static boolean isLoged = false;
+
 
 }

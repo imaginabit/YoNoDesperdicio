@@ -87,6 +87,10 @@
         <item name="android:layout_alignParentBottom">@dimen/articulo_card_margin</item>
 
     </style>
+    <style name="loginTextView">
+        <item name="android:color">@color/white</item>
+        <item name="android:tint">@color/white</item>
+    </style>
 
 
 </resources>

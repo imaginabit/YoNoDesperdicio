@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.imaginabit.yonodesperdicion">
+<manifest package="com.imaginabit.yonodesperdicion"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <!-- Include following permission if you load images from Internet -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Include following permission if you want to cache images on SD card -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
         android:allowBackup="true"
@@ -29,25 +33,22 @@
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
-         -->
+        -->
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"
-        />
+            android:value="@string/google_maps_key"/>
 
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settigns"
@@ -55,44 +56,37 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity"
-            />
+                android:value=".activities.MainActivity"/>
         </activity>
-
         <activity
             android:name=".activities.AdDetailActivity"
             android:label="Anuncio Titulo"
-            android:parentActivityName=".activities.MainActivity"
-        />
-
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".activities.ProfileActivity"
             android:label=""
-            android:parentActivityName=".activities.MainActivity"
-        />
-
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".activities.AdCreateActivity"
             android:label="Nuevo Anuncio"
-            android:parentActivityName=".activities.MainActivity"
-        />
-
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".activities.AdEditActivity"
             android:label="Editar Anuncio"
-            android:parentActivityName=".activities.AdDetailActivity"
-        />
-
-        <activity android:name=".activities.MoreInfoActivity"
-
-        />
-
+            android:parentActivityName=".activities.AdDetailActivity"/>
+        <activity android:name=".activities.MoreInfoActivity"/>
         <activity
             android:name=".activities.GoogleSignInActivity"
             android:label="CONTINUAR CON GOOGLE"
-            android:theme="@style/ThemeOverlay.NoTitleActivity"
-        />
-
+            android:theme="@style/ThemeOverlay.NoTitleActivity"/>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imaginabit.yonodesperdicion.activities.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

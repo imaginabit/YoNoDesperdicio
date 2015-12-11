@@ -92,20 +92,26 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         holder.weight.setText(ad.getWeightKgStr());
         holder.expiration.setText(ad.getExpirationDateLong());
 
-        //TODO: calcular distancia
         //holder.distance
         // get user location , get ad location in base of zipcode, calculate distance
         double distance = 0; //distance in meters
         try {
             Address adAddress = Utils.getGPSfromZip(context, ad.getPostalCode());
-            //TODO get user location
-            Address userAddress = Utils.getGPSfromZip( context, ad.getPostalCode() );
+
             Location adLocation = new Location("Articulo Anuncio");
             adLocation.setLatitude(adAddress.getLatitude());
             adLocation.setLongitude(adAddress.getLongitude() );
+
+            Address userAddress;
+
             Location userLocation = new Location("User");
+
+            //get user adress from user zip code:
+            userAddress = Utils.getGPSfromZip( context, ad.getPostalCode() );
             userLocation.setLatitude( userAddress.getLatitude() );
-            userLocation.setLongitude( userAddress.getLongitude() );
+            userLocation.setLongitude(userAddress.getLongitude());
+
+            //TODO: get user address from GPS
 
             distance = adLocation.distanceTo(userLocation);
         } catch (Exception e){
@@ -113,7 +119,6 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         }
 
         holder.distance.setText( Double.toString(distance) + "m");
-
 
         //get image from website
         ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance

@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.utils.Constants;
 
 
 public abstract class NavigationBaseActivity extends AppCompatActivity
@@ -24,6 +25,9 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         // Set the context
         this.context = getApplicationContext();
+
+        //call to recreate menu
+        invalidateOptionsMenu();
     }
 
     /**
@@ -92,6 +96,14 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             itntMain.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(itntMain);
         }
+        else if (id == R.id.login){
+            Intent itntLogin = new Intent(context, LoginActivity.class);
+            startActivity(itntLogin);
+        }
+        else if (id == R.id.login_google){
+            Intent itntLoginG = new Intent(context, GoogleSignInActivity.class);
+            startActivity(itntLoginG);
+        }
         else if (id == R.id.nav_perfil) {
             Intent itntPerfil = new Intent(context, ProfileActivity.class);
             startActivity(itntPerfil);
@@ -136,5 +148,36 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+
+        MenuItem loginGoogle = menu.findItem(R.id.login_google);
+        MenuItem login = menu.findItem(R.id.login);
+        MenuItem perfil = menu.findItem(R.id.nav_perfil);
+        MenuItem mensajes = menu.findItem(R.id.nav_mensajes);
+        MenuItem masinfo = menu.findItem(R.id.nav_masinfo);
+
+
+        if (Constants.isLoged) {
+            loginGoogle.setVisible(true);
+            login.setVisible(true);
+            mensajes.setVisible(false);
+            masinfo.setVisible(false);
+            perfil.setVisible(false);
+        } else {
+            try {
+                loginGoogle.setVisible(false);
+                login.setVisible(false);
+                mensajes.setVisible(false);
+                masinfo.setVisible(false);
+                perfil.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 }

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/nav_menu" android:checkableBehavior="single">
+        <item
+            android:id="@+id/login"
+            android:icon="@drawable/ic_face_black"
+            android:title="@string/login"/>
+        <item
+            android:id="@+id/login_google"
+            android:icon="@drawable/common_google_signin_btn_icon_dark_normal"
+            android:title="@string/login"/>
         <item
             android:id="@+id/nav_anuncios"
             android:icon="@drawable/ic_store_black"
@@ -14,14 +22,17 @@
             android:id="@+id/nav_perfil"
             android:icon="@drawable/ic_face_black"
             android:title="Mi Perfil"/>
+
         <item
             android:id="@+id/nav_mensajes"
             android:icon="@drawable/ic_question_answer_black"
             android:title="Mensajes"/>
+
         <item
             android:id="@+id/nav_masinfo"
             android:icon="@drawable/ic_info_outline_black"
             android:title="Más Info"/>
+
         <item
             android:id="@+id/nav_ajustes"
             android:icon="@drawable/ic_settings_black"
