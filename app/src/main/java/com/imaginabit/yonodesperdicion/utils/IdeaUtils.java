@@ -80,7 +80,7 @@ public class IdeaUtils {
                         if (jsonItems.length() > 0) {
                             ideas = new ArrayList<>();
                             //only the two last ideas no jsonItems.length()
-                            for (int i = 0; i < 2; i++) {
+                            for (int i = 0; i < 3; i++) {
                                 JSONObject jsonItem = null;
                                 try {
                                     jsonItem = jsonItems.getJSONObject(i);
