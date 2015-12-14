@@ -1,4 +1,4 @@
-package com.imaginabit.yonodesperdicion.model;
+package com.imaginabit.yonodesperdicion.models;
 
 /**
  * Created by Fernando on 29/11/15.
@@ -13,14 +13,21 @@ public class User {
     private String mAddress;
     private String mZipCode;
     private int mGrams;
-    private float mRatting;
+    private Double mRatting;
 
-    public User(int userId, String name, String userName, String address, String zipCode, int grams, float ratting) {
+    public User(int userId, String name, String userName, String address, String zipCode, int grams, Double ratting) {
         mUserId = userId;
         mName = name;
         mUserName = userName;
         mAddress = address;
         mZipCode = zipCode;
+        mGrams = grams;
+        mRatting = ratting;
+    }
+
+    public User(int userId, String userName, int grams, Double ratting) {
+        mUserId = userId;
+        mUserName = userName;
         mGrams = grams;
         mRatting = ratting;
     }
@@ -73,11 +80,11 @@ public class User {
         mGrams = grams;
     }
 
-    public float getRatting() {
+    public Double getRatting() {
         return mRatting;
     }
 
-    public void setRatting(float ratting) {
+    public void setRatting(Double ratting) {
         mRatting = ratting;
     }
 }

@@ -3,8 +3,7 @@ package com.imaginabit.yonodesperdicion.utils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.imaginabit.yonodesperdicion.model.User;
-
+import com.imaginabit.yonodesperdicion.models.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,6 +40,25 @@ public class UserUtils {
                     Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
                 } catch (Throwable t) {
                     Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
+                }
+
+                if (jObj.has("session_user")) {
+                    JSONObject user = null;
+                    try {
+                        user = jObj.getJSONObject("session_user");
+
+                        String username = user.optString("username");
+                        String email = user.optString("email");
+                        Double rating = user.optDouble("rating");
+                        int total_quanty = user.optInt("total_quantity");
+                        user.optString("created_at");
+
+                        mUser = new User(userId,username,total_quanty,rating);
+
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    }
+
                 }
 
                 return null;
