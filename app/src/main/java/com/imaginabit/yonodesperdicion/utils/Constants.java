@@ -13,5 +13,9 @@ public class Constants {
 
     public static final String USER_ADS_API_URS = ADS_API_URL + "?user_id="; // pe: + "10"
 
+    public static final String WEIGHT_TOTAL_KG_URL = HOME_URL + "/api/total_kg";
+
+    public static Double weightTotal;
+
 
 }

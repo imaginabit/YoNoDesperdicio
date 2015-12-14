@@ -17,6 +17,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -24,6 +25,9 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -374,6 +378,64 @@ public class Utils {
 		}
 		return null;
 	}
+
+
+	public static void fetchWeightTotal(final FetchWeightTotalCallback callback ){
+		String TAG = "Utils fetchWeightTotal";
+
+		final AsyncTask<Void, Void, Void> fecthWeightTotalTask = new AsyncTask<Void, Void, Void>() {
+			JSONObject jObj = null;
+			public Double wTotal = null;
+			private Exception e = null;
+            String TAG = "Utils fetchWeightTotalTask";
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				String json = null;
+				try {
+					json = Utils.downloadJsonUrl(Constants.WEIGHT_TOTAL_KG_URL);
+				} catch (IOException e) {
+					e.printStackTrace();
+					this.e = e;
+				}
+
+                try {
+					jObj = new JSONObject(json);
+				} catch (JSONException e) {
+					Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+				} catch (Throwable t) {
+					Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
+				}
+
+
+				try {
+                    wTotal = jObj.optDouble("total_kg", 0.0);
+                    Log.d(TAG, "Weight Total " + wTotal.toString()  );
+
+				} catch (Exception e) {
+					this.e = e;
+                    Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				if (e == null) {
+					callback.done(wTotal, null);
+				} else {
+					callback.done(null, e);
+				}
+			}
+		};
+		TasksUtils.execute(fecthWeightTotalTask);
+	}
+
+    public interface FetchWeightTotalCallback {
+        public void done(Double weight_total, Exception e);
+    }
 
 
 }
