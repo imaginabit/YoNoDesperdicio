@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.IdeasAdapter;
 import com.imaginabit.yonodesperdicion.models.Idea;
+import com.imaginabit.yonodesperdicion.utils.Constants;
 import com.imaginabit.yonodesperdicion.utils.IdeaUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
@@ -38,15 +39,6 @@ public class MoreInfoActivity extends NavigationBaseActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_ideas);
         recyclerView.setHasFixedSize(true);
 
-        // Initialize Universal Image Loader
-        //ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
-//        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
-//                .threadPoolSize(4)
-//                .memoryCache(new WeakMemoryCache())
-//                .imageDownloader(new BaseImageDownloader(mContext,10 * 1000, 30 * 1000))
-//                .build();
-//        ImageLoader.getInstance().init(config);
-
         // Use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -57,6 +49,8 @@ public class MoreInfoActivity extends NavigationBaseActivity {
         recyclerView.setAdapter(adapter);
 
         getIdeasFromWeb();
+        getTotalWeightFromWeb();
+
     }
 
     private void getIdeasFromWeb() {
@@ -70,8 +64,13 @@ public class MoreInfoActivity extends NavigationBaseActivity {
                         Log.e(TAG, "obtenidas las Ideas!");
                         if (ideas != null) {
                             ideasList = ideas;
+                            if (Constants.weightTotal == null){
+                                adapter = new IdeasAdapter(ideasList);
+                            } else {
+                                adapter = new IdeasAdapter(ideasList,Constants.weightTotal);
+                                Log.d(TAG, "done: peso :::: " + Constants.weightTotal );
+                            }
 
-                            adapter = new IdeasAdapter(ideasList);
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
 
@@ -99,5 +98,29 @@ public class MoreInfoActivity extends NavigationBaseActivity {
         else {
             Toast.makeText(MoreInfoActivity.this, "No hay conexion a internet.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void getTotalWeightFromWeb() {
+        Log.d(TAG, "get total weight from Web");
+        // Check if network link is available
+        Utils.fetchWeightTotal(new Utils.FetchWeightTotalCallback() {
+            @Override
+            public void done(Double weight, Exception e) {
+                if (e == null) {
+                    if (weight != null) {
+                        Log.d(TAG, "done: obtenido peso");
+                        Constants.weightTotal = weight;
+                        adapter = new IdeasAdapter(ideasList,weight);
+                        recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                } else {
+                    Log.e(TAG, "error al obtener las Ideas");
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 }
