@@ -115,6 +115,7 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // TEST
+/*
         userFullnameEdit.setText("Antonio de Sousa");
         userNameEdit.setText("adesousa");
         userEmailEdit.setText("adesousa@ono.com");
@@ -123,6 +124,7 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
         userCityEdit.setText("Ciudad");
         userProvinceEdit.setText("Provincia");
         userZipCodeEdit.setText("35001");
+*/
     }
 
     @Override
