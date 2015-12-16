@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-    >
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Base.V7.Theme.AppCompat.Light"
-        >
+        android:theme="@style/Base.V7.Theme.AppCompat.Light">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/cardview_light_background"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            />
+        />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -27,27 +25,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/cardview_light_background"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@color/activity_background"
-                >
+                android:background="@color/activity_background">
+
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:src="@drawable/ic_image_white"
+                    android:src="@drawable/ic_image_black"
                     android:tint="@color/grey_500"
                     android:layout_gravity="center"
-                    />
+                />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -56,7 +53,8 @@
                     android:layout_gravity="center_horizontal"
                     android:textColor="@color/grey_500"
                     android:textStyle="bold"
-                    />
+                />
+
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -64,18 +62,15 @@
                     android:minHeight="200dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/food"
-                    />
-
+                />
 
             </FrameLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/card_margin"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_title"
@@ -88,8 +83,8 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/label_title"
                         android:singleLine="true"
+                    />
 
-                        />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -103,21 +98,20 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/label_weight"
                         android:singleLine="true"
-                        />
+                    />
+
                 </android.support.design.widget.TextInputLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/input_layout_expiration_date"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.7"
-                        >
+                        android:layout_weight="0.7">
 
                         <EditText
                             android:id="@+id/expiration_date"
@@ -127,15 +121,15 @@
                             android:inputType="date"
                             android:singleLine="true"
 
-                            />
+                        />
+
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/input_layout_expiration_time"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.4"
-                        >
+                        android:layout_weight="0.4">
 
                         <EditText
                             android:id="@+id/expiration_time"
@@ -144,23 +138,22 @@
                             android:hint="@string/label_expiration_time"
                             android:inputType="time"
                             android:singleLine="true"
+                        />
 
-                            />
                     </android.support.design.widget.TextInputLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/input_layout_city"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.7"
-                        >
+                        android:layout_weight="0.7">
 
                         <EditText
                             android:id="@+id/ciudad"
@@ -168,15 +161,15 @@
                             android:layout_height="match_parent"
                             android:hint="@string/label_city"
                             android:singleLine="true"
-                            />
+                        />
+
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/input_layout_postal_code"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.4"
-                        >
+                        android:layout_weight="0.4">
 
                         <EditText
                             android:id="@+id/postal_code"
@@ -185,8 +178,10 @@
                             android:hint="@string/label_postal_code"
                             android:inputType="numberDecimal"
                             android:singleLine="true"
-                            />
+                        />
+
                     </android.support.design.widget.TextInputLayout>
+
                 </LinearLayout>
 
                 <android.support.v7.widget.SwitchCompat
@@ -195,12 +190,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Activar localizacion automatica"
-                    />
+                />
+
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_ad_description"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:id="@+id/ad_description"
@@ -208,7 +203,8 @@
                         android:layout_height="match_parent"
                         android:hint="@string/label_ad_description"
                         android:lines="5"
-                        />
+                    />
+
                 </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>
@@ -224,8 +220,10 @@
                 android:paddingStart="20dp"
                 android:text="@string/delete_ad"
                 android:textColor="@color/accent"
-                />
+            />
+
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
 </LinearLayout>

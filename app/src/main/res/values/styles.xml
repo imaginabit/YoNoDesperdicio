@@ -1,21 +1,21 @@
 <resources>
-
-    <!-- Base application theme. -->
+    <!-- NavigationBaseActivity application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
-
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <!-- TODO: Revisar colores y tamanos  -->
+    <!-- TODO: Revisar colores y tamaños  -->
     <style name="Widget.CardContent" parent="android:Widget">
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
@@ -33,10 +33,36 @@
     <style name="yndSwitch" parent="Widget.Design.TextInputLayout">
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingBottom">20dp</item>
-        <item name="android:paddingLeft">10dp</item>
-        <item name="android:paddingRight">10dp</item>
-        <item name="android:paddingStart">10dp</item>
-        <item name="android:paddingEnd">10dp</item>
+        <item name="paddingStart">10dp</item>
+        <item name="paddingEnd">10dp</item>
     </style>
 
+    <!-- Google -->
+    
+    <style name="ThemeOverlay.NoTitleActivity" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- Dark Buttons -->
+    <style name="ThemeOverlay.DarkButton" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/blue_grey_500</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <!-- Create User -->
+    <style name="AppTheme.CreateUser" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/create_user_color</item>
+        <item name="colorPrimaryDark">@color/create_user_color</item>
+        <item name="colorAccent">@android:color/white</item>
+
+        <item name="android:windowBackground">@color/create_user_color</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
+    <!-- Messages -->
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="textAllCaps">false</item>
+    </style>
 </resources>

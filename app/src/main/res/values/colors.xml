@@ -4,6 +4,8 @@
     <color name="ad_body">#BABABA</color>
     <color name="window_background">#fafAfA</color>
 
+    <color name="create_user_color">#2196f3</color>
+
     <color name="red_50">#FFEBEE</color>
     <color name="red_100">#FFCDD2</color>
     <color name="red_200">#EF9A9A</color>
