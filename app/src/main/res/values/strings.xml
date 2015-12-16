@@ -51,5 +51,35 @@
     <string name="action_done">Hecho</string>
     <string name="delete_ad">Eliminar Anuncio</string>
 
+    <!-- User -->
+    <string name="user_auth_message">Validando credenciales, espere...</string>
+    <string name="user_create_message">Creando cuenta, espere...</string>
 
+    <!-- Content Description for images -->
+    <string name="desc_google_icon">Logo de Google</string>
+
+    <string name="title_text">CONTINUAR CON GOOGLE</string>
+
+    <string name="loading">Cargando…</string>
+    <string name="auth_code_fmt">Auth Code: %s</string>
+
+    <!-- Sign-in status messages -->
+    <string name="signed_in_fmt">SESIÓN INICIADA\n\n%s</string>
+    <string name="signed_in">Ingresar</string>
+    <string name="signing_in">Ingresando…</string>
+    <string name="signed_out">SESIÓN NO INICIADA</string>
+    <string name="signed_in_err">"Error: please check logs."</string>
+
+    <!-- Button labels -->
+    <string name="sign_out">Cerrar Sesión</string>
+    <string name="disconnect">Revocar</string>
+    <string name="sign_in_continue">Continuar</string>
+
+    <!-- Google Play Services error for Toast -->
+    <string name="play_services_error_fmt">Google Play Services Error: %i</string>
+
+    <!-- Volley Error -->
+    <string name="volley_error_timeout">Agotado el tiempo de conexión con el backend.</string>
+    <string name="volley_error_no_internet">No hay conexión a Internet.</string>
+    <string name="volley_error_generic">No se ha podido completar con éxito la petición.</string>
 </resources>

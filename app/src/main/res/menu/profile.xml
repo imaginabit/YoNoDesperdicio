@@ -1,72 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/edit_name"
-          android:title="@string/edic_name"
-          android:orderInCategory="1"
-          android:icon="@drawable/ic_mode_edit_white"
-          app:showAsAction="never|withText"
-        />
-    <item android:id="@+id/edit_avatarpic"
-          android:title="@string/edic_avatarpic"
-          android:orderInCategory="2"
-          android:icon="@drawable/ic_face_white"
-          app:showAsAction="never"/>
+    <item
+        android:id="@+id/edit_name"
+        android:title="@string/edic_name"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_mode_edit_white"
+        app:showAsAction="ifRoom|withText"
+    />
 
-    <item android:id="@+id/edit_wallpic"
-          android:title="@string/edit_wallpic"
-          android:orderInCategory="3"
-          android:icon="@drawable/ic_image_black"
-          app:showAsAction="never"/>
-    <item android:id="@+id/edit_location"
-          android:title="@string/edit_location"
-          android:orderInCategory="100"
-          android:icon="@drawable/ic_pin_drop_black"
-          app:showAsAction="never"/>
-</menu>
+    <item
+        android:id="@+id/edit_avatarpic"
+        android:title="@string/edic_avatarpic"
+        android:orderInCategory="2"
+        android:icon="@drawable/ic_face_black"
+        app:showAsAction="ifRoom|withText"
+    />
 
--->
+    <item
+        android:id="@+id/edit_wallpic"
+        android:title="@string/edit_wallpic"
+        android:orderInCategory="3"
+        android:icon="@drawable/ic_image_black"
+        app:showAsAction="ifRoom|withText"
+    />
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-
-<item
-    android:id="@+id/empty"
-    android:title="Edit"
-    android:orderInCategory="101"
-    app:showAsAction="always"
-    android:icon="@drawable/ic_mode_edit_white">
-
-    <menu>
-
-        <item android:id="@+id/edit_name"
-              android:title="@string/edic_name"
-              android:orderInCategory="1"
-              android:icon="@drawable/ic_mode_edit_black"
-              app:showAsAction="never|withText"
-            />
-        <item android:id="@+id/edit_avatarpic"
-              android:title="@string/edic_avatarpic"
-              android:orderInCategory="2"
-              android:icon="@drawable/ic_face_black"
-              app:showAsAction="never"/>
-
-        <item android:id="@+id/edit_wallpic"
-              android:title="@string/edit_wallpic"
-              android:orderInCategory="3"
-              android:icon="@drawable/ic_image_black"
-              app:showAsAction="never"/>
-        <item android:id="@+id/edit_location"
-              android:title="@string/edit_location"
-              android:orderInCategory="100"
-              android:icon="@drawable/ic_pin_drop_black"
-              app:showAsAction="never"/>
-
-    </menu>
-
-</item>
+    <item
+        android:id="@+id/edit_location"
+        android:title="@string/edit_location"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_pin_drop_black"
+        app:showAsAction="ifRoom|withText"
+    />
 
 </menu>
