@@ -3,7 +3,7 @@ package com.imaginabit.yonodesperdicion.util;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.imaginabit.yonodesperdicion.model.User;
+import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.utils.TasksUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;

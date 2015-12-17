@@ -126,8 +126,13 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             startActivity(itntMain);
         }
         else if (id == R.id.nav_perfil) {
-            Intent itntPerfil = new Intent(context, ProfileActivity.class);
-            startActivity(itntPerfil);
+            if (AppSession.getCurrentUser()==null){
+                Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+                startActivity(loginPanelIntent);
+            } else {
+                Intent itntPerfil = new Intent(context, ProfileActivity.class);
+                startActivity(itntPerfil);
+            }
 
         }
         else if (id == R.id.nav_favoritos) {
