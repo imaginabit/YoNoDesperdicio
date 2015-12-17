@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,11 @@ public class LoginPanelActivity extends AppCompatActivity implements View.OnClic
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("");
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        AppCompatButton loginPanelGoogleLoginButton = (AppCompatButton) findViewById(R.id.login_panel_google_login_button);
+        loginPanelGoogleLoginButton.setVisibility(View.GONE);
+
+
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.data.UserData;
@@ -62,6 +64,7 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
 
     private AppCompatButton nextButton;
     private AppCompatButton confirmButton;
+    private TextView legalInfo;
 
     // Current form index
     private int currentFormIndex = 0;
@@ -106,6 +109,8 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
         nextButton = (AppCompatButton) findViewById(R.id.create_user_next_button);
         confirmButton = (AppCompatButton) findViewById(R.id.create_user_confirm_button);
 
+        legalInfo = (TextView) findViewById(R.id.link_informacion_legal);
+
         // Layout toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,6 +118,17 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
         // Back icon
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        legalInfo.isClickable();
+        legalInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("http://yonodesperdicio.org/page/legal?locale=es"); // missing 'http://' will cause crashed
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+
+            }
+        });
 
         // TEST
 /*

@@ -8,7 +8,12 @@
     android:layout_marginTop="?attr/actionBarSize"
     tools:context=".activities.CreateUserActivity">
 
+
+
     <!-- First Page -->
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/create_user_page_1"
         android:orientation="vertical"
@@ -16,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
+        android:layout_marginRight="15dp"
+        >
 
         <!-- Fullname -->
         <android.support.design.widget.TextInputLayout
@@ -77,13 +83,18 @@
                 android:inputType="textEmailAddress"
                 android:textAllCaps="false"
                 android:hint="Email"
+                android:layout_marginBottom="@dimen/botton_button_space"
             />
 
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
+    </ScrollView>
 
     <!-- Second Page -->
+    <ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/create_user_page_2"
         android:orientation="vertical"
@@ -120,7 +131,9 @@
             app:hintTextAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="@dimen/botton_button_space"
+            >
 
             <EditText
                 android:id="@+id/create_user_user_repeat_password"
@@ -136,8 +149,12 @@
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
+    </ScrollView>
 
     <!-- Third Page -->
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/create_user_page_3"
         android:orientation="vertical"
@@ -213,11 +230,21 @@
             android:layout_marginTop="15dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:text="Al hacer clic en CONFIRMAR acepto las condiciones de uso y política de protección de datos que figuran en la Información Legal."
+            android:text="Al hacer clic en CONFIRMAR acepto las condiciones de uso y política de protección de datos que figuran en la"
             android:textColor="#90000000"
         />
+        <TextView
+            android:id="@+id/link_informacion_legal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:text="Información Legal."
+            android:layout_marginBottom="@dimen/botton_button_space"
+            />
 
     </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:orientation="horizontal"
