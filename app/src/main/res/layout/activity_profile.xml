@@ -21,8 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/detail_backdrop_height"
             android:fitsSystemWindows="true"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            >
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -32,8 +31,7 @@
                 app:contentScrim="?attr/colorPrimary"
                 app:expandedTitleMarginEnd="64dp"
                 app:expandedTitleMarginStart="48dp"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                >
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <ImageView
                     android:id="@+id/backdrop"
@@ -51,7 +49,7 @@
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                    app:theme="@style/AppTheme.AppBarOverlay"/>
+                    />
 
             </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -60,8 +58,8 @@
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:background="@color/activity_background"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 
             <LinearLayout
@@ -70,17 +68,19 @@
                 android:orientation="vertical"
 
                 >
+
                 <LinearLayout
                     style="@style/Widget.CardContent"
-                    android:paddingTop="56dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/cardview_light_background"
+                    android:gravity="center"
                     android:orientation="vertical"
                     android:paddingEnd="20dp"
                     android:paddingStart="20dp"
-                    android:gravity="center"
-                    android:background="@color/cardview_light_background"
+                    android:paddingTop="56dp"
                     >
+
                     <TextView
                         android:id="@+id/user_name"
                         android:layout_width="wrap_content"
@@ -89,6 +89,7 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
                         android:textSize="25dp"
                         />
+
                     <TextView
                         android:id="@+id/location"
                         android:layout_width="wrap_content"
@@ -103,45 +104,49 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         >
+
                         <TextView
                             android:id="@+id/kilos"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.45"
+                            android:gravity="end"
                             android:text="Entregados 25 Kg"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                            android:textSize="16dp"
                             android:textColor="@color/primary"
-                            android:gravity="end"
+                            android:textSize="16dp"
                             />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/articulo_card_margin"
+                            android:layout_marginStart="@dimen/articulo_card_margin"
                             android:layout_weight=".01"
                             android:text="|"
                             android:textColor="@color/grey_500"
-                            android:layout_marginStart="@dimen/articulo_card_margin"
-                            android:layout_marginEnd="@dimen/articulo_card_margin"
                             android:textSize="18dp"
                             />
+
                         <FrameLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight=".45"
                             android:layout_gravity="left"
+                            android:layout_weight=".45"
                             >
+
                             <RatingBar
                                 android:id="@+id/ad_reputacion"
                                 style="@style/blueStartsRatingBar"
                                 android:layout_width="wrap_content"
                                 android:layout_height="16dp"
-                                android:numStars="5"
-                                android:stepSize="1.0"
-                                android:rating="2.0"
-                                android:isIndicator="true"
                                 android:layout_marginBottom="0dp"
-                                android:padding="0dp"
                                 android:layout_marginTop="5dp"
+                                android:isIndicator="true"
+                                android:numStars="5"
+                                android:padding="0dp"
+                                android:rating="2.0"
+                                android:stepSize="1.0"
                                 />
                         </FrameLayout>
                     </LinearLayout>
@@ -154,40 +159,40 @@
                     android:orientation="vertical"
                     android:paddingTop="@dimen/activity_vertical_margin"
                     >
+
                     <TextView
+                        style="@style/Base.TextAppearance.AppCompat.Headline"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/Base.TextAppearance.AppCompat.Headline"
-                        android:text="ALIMENTOS COMPARTIDOS"
                         android:gravity="center"
+                        android:text="ALIMENTOS COMPARTIDOS"
                         />
 
                     <!-- Include lista de anuncios del usuario -->
-                    <LinearLayout
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
+                        android:layout_height="wrap_content">
+
                         <include layout="@layout/ad_mini"/>
-                    </LinearLayout>
+
+                    </FrameLayout>
 
                 </LinearLayout>
+
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
-        <com.imaginabit.yonodesperdicion.views.RoundedImageView
-            android:elevation="16dp"
+        <com.imaginabit.yonodesperdicion.util.RoundedImageView
             android:id="@+id/avatarpic"
             style="@style/Widget.Design.FloatingActionButton"
-            android:src="@drawable/brick_avatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_margin="@dimen/fab_margin"
             android:clickable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/brick_avatar"
             app:layout_anchor="@id/appbar"
             app:layout_anchorGravity="bottom|center|center_horizontal"
-            android:scaleType="center"
-            android:adjustViewBounds="true"
-
             />
 
     </android.support.design.widget.CoordinatorLayout>

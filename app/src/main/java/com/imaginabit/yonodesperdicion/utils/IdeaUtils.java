@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.models.Idea;
 
 import org.json.JSONArray;
@@ -72,8 +73,9 @@ public class IdeaUtils {
                         JSONArray jsonItems = null;
                         try {
                             jsonItems = jObj.getJSONArray("ideas");
-                        } catch (JSONException e) {
-                            this.e = e;
+                        } catch (JSONException e2) {
+                            e = e2;
+                            //e2.printStackTrace();
                         }
 //                        Log.d(TAG, jObj.toString() );
                         Log.d(TAG,"has Ideas " + jsonItems.length());
@@ -84,8 +86,9 @@ public class IdeaUtils {
                                 JSONObject jsonItem = null;
                                 try {
                                     jsonItem = jsonItems.getJSONObject(i);
-                                } catch (JSONException e) {
-                                    this.e = e;
+                                } catch (JSONException e3) {
+                                    e = e3;
+                                    //e.printStackTrace();
                                 }
 
                                 // Extract properties
@@ -154,7 +157,7 @@ public class IdeaUtils {
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
             try {
-                return Utils.downloadJsonUrl(urls[0]);
+                return AppUtils.downloadJsonUrl(urls[0]);
             } catch (IOException e) {
                 return "Unable to retrieve web page. URL may be invalid.";
             }

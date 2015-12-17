@@ -1,9 +1,12 @@
-package com.imaginabit.yonodesperdicion.utils;
+package com.imaginabit.yonodesperdicion.util;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.model.User;
+import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.utils.TasksUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +33,7 @@ public class UserUtils {
             protected Void doInBackground(Void... params) {
                 String json = null;
                 try {
-                    json = Utils.downloadJsonUrl( Constants.USERS_API_URL + Integer.toString(userId) );
+                    json = Utils.downloadJsonUrl(Constants.USERS_API_URL + Integer.toString(userId));
                 } catch (IOException e) {
                     this.e = e;
                 }

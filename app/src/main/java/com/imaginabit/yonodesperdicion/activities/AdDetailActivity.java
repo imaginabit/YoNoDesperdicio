@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Ad;
-import com.imaginabit.yonodesperdicion.utils.Constants;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -25,7 +25,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ad_content);
 
-
+        // Retrieve args
         Bundle data = getIntent().getExtras();
         Ad ad = (Ad) data.getParcelable("ad");
         if (ad == null) {
@@ -34,6 +34,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
         } else {
             // Fix action bar and drawer
             Toolbar toolbar = setSupportedActionBar();
+            //toolbar.setTitle(ad.getTitle());
             setDrawerLayout(toolbar);
             getSupportActionBar().setTitle(ad.getTitle());
 

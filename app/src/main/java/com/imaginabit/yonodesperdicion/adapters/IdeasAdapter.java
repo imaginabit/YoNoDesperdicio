@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Idea;
-import com.imaginabit.yonodesperdicion.utils.Constants;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -50,24 +50,17 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
         }
     }
 
-
     // Provide a suitable constructor (depends on the kind of dataset)
-    public IdeasAdapter(List<Idea> ideasList){
+    public IdeasAdapter(List<Idea> ideasList) {
         this.ideasList = ideasList;
+
+        // Create global configuration and initialize ImageLoader with this config
+
     }
 
     public IdeasAdapter(List<Idea> ideasList,Double weight){
         this.ideasList = ideasList;
         this.weightTotal = weight;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (position == 1) {
-            return 0;
-        } else {
-            return 1;
-        }
     }
 
 
@@ -77,16 +70,15 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
         // Create a new view
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.more_info_ideas, parent, false);
 
-
         // Set the view's size, margins, paddings and layout parameters
 
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
+    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-
         Idea idea = ideasList.get(position);
         if( weightTotal != null && position!=0)
             idea = ideasList.get(position-1);
@@ -119,10 +111,9 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, holder.image);
         }
-
-
     }
 
+    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         if (ideasList != null) {
@@ -135,6 +126,4 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
-
-
 }

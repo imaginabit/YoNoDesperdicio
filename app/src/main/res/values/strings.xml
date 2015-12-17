@@ -53,6 +53,7 @@
 
     <!-- User -->
     <string name="user_auth_message">Validando credenciales, espere...</string>
+    <string name="user_create_message">Creando cuenta, espere...</string>
 
     <!-- Content Description for images -->
     <string name="desc_google_icon">Logo de Google</string>
@@ -76,4 +77,9 @@
 
     <!-- Google Play Services error for Toast -->
     <string name="play_services_error_fmt">Google Play Services Error: %i</string>
+
+    <!-- Volley Error -->
+    <string name="volley_error_timeout">Agotado el tiempo de conexión con el backend.</string>
+    <string name="volley_error_no_internet">No hay conexión a Internet.</string>
+    <string name="volley_error_generic">No se ha podido completar con éxito la petición.</string>
 </resources>

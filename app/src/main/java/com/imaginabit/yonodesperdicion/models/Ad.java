@@ -23,7 +23,6 @@ public class Ad implements Parcelable {
     private static final String TAG = "Ad Model";
 
     // Statuses
-    //disponible, reservado, entregado
     public static enum Status {
                                 AVAILABLE,
                                 BOOKED,
@@ -129,6 +128,7 @@ public class Ad implements Parcelable {
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             this.expiration = format.parse(expiration);
         } else {
+            // if there is no date (this must not happends! but...) set date to now
             this.expiration = null;
         }
 
@@ -260,8 +260,10 @@ public class Ad implements Parcelable {
         switch (status){
             case AVAILABLE:
                 return 0;
+
             case BOOKED:
                 return 1;
+
             case DELIVERED:
                 return 2;
         }
@@ -289,9 +291,8 @@ public class Ad implements Parcelable {
 
             case BOOKED:
                 return R.color.ad_reservado;
-
         }
-//        Log.d(TAG, "getStatusColor: "+ r );
+
         return R.color.white;
     }
 

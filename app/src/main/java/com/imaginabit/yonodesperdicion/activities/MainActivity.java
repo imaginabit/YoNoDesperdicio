@@ -34,11 +34,8 @@ public class MainActivity extends NavigationBaseActivity {
     private final String TAG = getClass().getSimpleName();
 
     private RecyclerView recyclerView;
-    //private RecyclerView mRecyclerViewIdeas;
     private RecyclerView.Adapter adapter;
-    //private RecyclerView.Adapter mAdapterIdeas;
     private RecyclerView.LayoutManager layoutManager;
-    //private RecyclerView.LayoutManager mLayoutManagerIdeas;
 
     private List<Ad> mAds;
 

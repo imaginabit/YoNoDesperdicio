@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.imaginabit.yonodesperdicion">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.imaginabit.yonodesperdicion" >
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -9,11 +8,14 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Include following permission if you load images from Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Include following permission if you want to cache images on SD card -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -43,10 +45,28 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+        <activity
+            android:name=".activities.CreateUserActivity"
+            android:label="Crea tu cuenta"
+            android:theme="@style/AppTheme.CreateUser"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+        />
+
+        <activity
+            android:name=".activities.LoginUserActivity"
+            android:label="Inicia sesión"
+            android:theme="@style/AppTheme.CreateUser"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+        />
+
+        <activity
+            android:name=".activities.LoginPanelActivity"
+            android:theme="@style/AppTheme.CreateUser"
+        />
 
         <activity
             android:name=".activities.SettingsActivity"
@@ -58,7 +78,6 @@
                 android:value=".activities.MainActivity"
             />
         </activity>
-
         <activity
             android:name=".activities.AdDetailActivity"
             android:label="Anuncio Titulo"
