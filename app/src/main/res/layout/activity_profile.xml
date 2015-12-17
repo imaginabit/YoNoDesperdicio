@@ -182,7 +182,7 @@
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
-        <com.imaginabit.yonodesperdicion.util.RoundedImageView
+        <com.imaginabit.yonodesperdicion.views.RoundedImageView
             android:id="@+id/avatarpic"
             style="@style/Widget.Design.FloatingActionButton"
             android:layout_width="100dp"

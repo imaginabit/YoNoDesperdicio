@@ -2,8 +2,6 @@ package com.imaginabit.yonodesperdicion.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Location;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -15,11 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.AdDetailActivity;
 import com.imaginabit.yonodesperdicion.models.Ad;
-import com.imaginabit.yonodesperdicion.Constants;
-import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -97,17 +94,19 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         // get user location , get ad location in base of zipcode, calculate distance
         double distance = 0; //distance in meters
         try {
-            Address adAddress = Utils.getGPSfromZip(context, ad.getPostalCode());
+            //Parece que sobrecarga mucho estar calculando esto todo el rato
+            //Address adAddress = Utils.getGPSfromZip(context, ad.getPostalCode());
             //TODO get user location
-            Address userAddress = Utils.getGPSfromZip( context, ad.getPostalCode() );
-            Location adLocation = new Location("Articulo Anuncio");
-            adLocation.setLatitude(adAddress.getLatitude());
-            adLocation.setLongitude(adAddress.getLongitude() );
-            Location userLocation = new Location("User");
-            userLocation.setLatitude( userAddress.getLatitude() );
-            userLocation.setLongitude( userAddress.getLongitude() );
-
-            distance = adLocation.distanceTo(userLocation);
+            //Address userAddress = Utils.getGPSfromZip( context, ad.getPostalCode() );
+//            Location adLocation = new Location("Articulo Anuncio");
+//            adLocation.setLatitude(adAddress.getLatitude());
+//            adLocation.setLongitude(adAddress.getLongitude() );
+//            Location userLocation = new Location("User");
+//            userLocation.setLatitude( userAddress.getLatitude() );
+//            userLocation.setLongitude( userAddress.getLongitude() );
+//
+            //distance = adLocation.distanceTo(userLocation);
+            distance = 0.1;
         } catch (Exception e){
             e.printStackTrace();
         }
