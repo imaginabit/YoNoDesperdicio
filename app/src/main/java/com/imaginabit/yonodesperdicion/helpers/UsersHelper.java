@@ -28,51 +28,50 @@ public class UsersHelper {
      * Authenticate the user with passed credentials.
      */
     public static void authenticate(
-                                     final Context context,
-                                     final String userName,
-                                     final String userPassword,
-                                     final UserAccountCallback callback
-                                   ) {
+            final Context context,
+            final String userName,
+            final String userPassword,
+            final UserAccountCallback callback
+    ) {
         // Show message
         final ProgressDialog pd = ProgressDialog.show(context, "", context.getString(R.string.user_auth_message));
 
         try {
             // Json request
             JSONObject jsonRequest = new JSONObject().put("username", userName)
-                                                     .put("password", userPassword);
+                    .put("password", userPassword);
 
             // Request queue
             RequestQueue requestQueue = Volley.newRequestQueue(context);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                                                                            Request.Method.POST,
-                                                                            Constants.USERS_SESSIONS_API_URL,
-                                                                            jsonRequest,
-                                                                            new Response.Listener<JSONObject>() {
-                                                                                @Override
-                                                                                public void onResponse(JSONObject jsonResponse) {
-                                                                                    Utils.dismissProgressDialog(pd);
-Log.i("--->", "authenticate:" + jsonResponse.toString());
-                                                                                    // Authenticated user
-                                                                                    UserData user =  extractUserData(jsonResponse);
-                                                                                    user.username = userName;
-                                                                                    user.password = userPassword;
+                    Request.Method.POST,
+                    Constants.USERS_SESSIONS_API_URL,
+                    jsonRequest,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonResponse) {
+                            Utils.dismissProgressDialog(pd);
+                            Log.i("--->", "authenticate:" + jsonResponse.toString());
+                            // Authenticated user
+                            UserData user = extractUserData(jsonResponse);
+                            user.username = userName;
+                            user.password = userPassword;
 
-                                                                                    callback.onFinished(user);
-                                                                                }
-                                                                            },
-                                                                            new Response.ErrorListener() {
-                                                                                @Override
-                                                                                public void onErrorResponse(VolleyError error) {
-                                                                                    Utils.dismissProgressDialog(pd);
-                                                                                    callback.onError(extractErrorMessage(context, error));
-                                                                                }
-                                                                            }
-                                                                      );
+                            callback.onFinished(user);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Utils.dismissProgressDialog(pd);
+                            callback.onError(extractErrorMessage(context, error));
+                        }
+                    }
+            );
             // Add the queue
             requestQueue.add(jsonObjectRequest);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Utils.dismissProgressDialog(pd);
             callback.onError(e.getMessage());
         }
@@ -82,28 +81,28 @@ Log.i("--->", "authenticate:" + jsonResponse.toString());
      * Create an user with the passed data
      */
     public static void create(
-                                final Context context,
-                                final String name,
-                                final String username,
-                                final String password,
-                                final String email,
-                                final String city,
-                                final String province,
-                                final String zipCode,
-                                final UserAccountCallback callback
-                             ) {
+            final Context context,
+            final String name,
+            final String username,
+            final String password,
+            final String email,
+            final String city,
+            final String province,
+            final String zipCode,
+            final UserAccountCallback callback
+    ) {
         // Show message
         final ProgressDialog pd = ProgressDialog.show(context, "", context.getString(R.string.user_create_message));
 
         try {
             // Json request
             JSONObject jsonUser = new JSONObject().put("name", name)
-                                                  .put("username", username)
-                                                  .put("password", password)
-                                                  .put("email", email)
-                                                  .put("city", city)
-                                                  .put("province", province)
-                                                  .put("zipcode", zipCode);
+                    .put("username", username)
+                    .put("password", password)
+                    .put("email", email)
+                    .put("city", city)
+                    .put("province", province)
+                    .put("zipcode", zipCode);
 
             JSONObject jsonRequest = new JSONObject().put("user", jsonUser);
 
@@ -111,41 +110,40 @@ Log.i("--->", "authenticate:" + jsonResponse.toString());
             RequestQueue requestQueue = Volley.newRequestQueue(context);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                                                                            Request.Method.POST,
-                                                                            Constants.USERS_API_URL,
-                                                                            jsonRequest,
-                                                                            new Response.Listener<JSONObject>() {
-                                                                                @Override
-                                                                                public void onResponse(JSONObject jsonResponse) {
-                                                                                    Utils.dismissProgressDialog(pd);
-Log.i("--->", "create:" + jsonResponse.toString());
-                                                                                    // Created user
-                                                                                    UserData user = extractUserData(jsonResponse);
-                                                                                    user.fullname = name;
-                                                                                    user.username = username;
-                                                                                    user.password = password;
-                                                                                    user.email = email;
-                                                                                    user.city = city;
-                                                                                    user.province = province;
-                                                                                    user.zipCode = zipCode;
+                    Request.Method.POST,
+                    Constants.USERS_API_URL,
+                    jsonRequest,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonResponse) {
+                            Utils.dismissProgressDialog(pd);
+                            Log.i("--->", "create:" + jsonResponse.toString());
+                            // Created user
+                            UserData user = extractUserData(jsonResponse);
+                            user.fullname = name;
+                            user.username = username;
+                            user.password = password;
+                            user.email = email;
+                            user.city = city;
+                            user.province = province;
+                            user.zipCode = zipCode;
 
-                                                                                    callback.onFinished(user);
-                                                                                }
-                                                                            },
-                                                                            new Response.ErrorListener() {
-                                                                                @Override
-                                                                                public void onErrorResponse(VolleyError error) {
-                                                                                    Utils.dismissProgressDialog(pd);
-                                                                                    callback.onError(extractErrorMessage(context, error));
-                                                                                }
-                                                                            }
-                                                                       );
-Log.i("--->", jsonRequest.toString());
+                            callback.onFinished(user);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Utils.dismissProgressDialog(pd);
+                            callback.onError(extractErrorMessage(context, error));
+                        }
+                    }
+            );
+            Log.i("--->", jsonRequest.toString());
 
             // Add the queue
             requestQueue.add(jsonObjectRequest);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Utils.dismissProgressDialog(pd);
             callback.onError(e.getMessage());
         }
@@ -183,8 +181,7 @@ Log.i("--->", jsonRequest.toString());
                     return message;
                 }
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             // Ignored
         }
@@ -204,7 +201,8 @@ Log.i("--->", jsonRequest.toString());
             // User account creation
             if (jsonResponse.has("user")) {
                 // {"user":{"id":37,"created_at":"2015-12-15","username":"adesousab","rating":null,"total_quantity":0,"zipcode":"35001"}}
-                jsonUserData = jsonResponse.getJSONObject("user");;
+                jsonUserData = jsonResponse.getJSONObject("user");
+                ;
             }
             // Authenticated user (Session)
             else if (jsonResponse.has("session_user")) {
@@ -233,8 +231,7 @@ Log.i("--->", jsonRequest.toString());
                 user.rating = rating;
                 user.totalQuantity = totalQuantity;
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -245,6 +242,7 @@ Log.i("--->", jsonRequest.toString());
 
     public interface UserAccountCallback {
         public void onFinished(UserData user);
+
         public void onError(String errorMessage);
     }
 }

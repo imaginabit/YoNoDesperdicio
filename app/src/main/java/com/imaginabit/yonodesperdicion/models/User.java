@@ -1,4 +1,4 @@
-package com.imaginabit.yonodesperdicion.model;
+package com.imaginabit.yonodesperdicion.models;
 
 /**
  * Created by Fernando on 29/11/15.
