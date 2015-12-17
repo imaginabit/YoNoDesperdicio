@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     android:layout_marginTop="?attr/actionBarSize"
     tools:context=".activities.LoginPanelActivity"
-    android:background="@color/create_user_color">
-
+    android:background="@color/create_user_color"
+    >
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -16,7 +16,9 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="25dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
+        android:layout_marginRight="15dp"
+        >
+
 
         <ImageView
             android:layout_width="250dp"
@@ -51,6 +53,7 @@
             android:onClick="onClick"
             android:textStyle="bold"
         />
+
 
     </LinearLayout>
 
