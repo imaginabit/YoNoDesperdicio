@@ -20,6 +20,7 @@ import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
@@ -74,11 +75,16 @@ public class MainActivity extends NavigationBaseActivity {
         }
 
         // Initialize Universal Image Loader
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                                                                      .threadPoolSize(4)
-                                                                      .memoryCache(new WeakMemoryCache())
-                                                                      .imageDownloader(new BaseImageDownloader(context, 10 * 1000, 30 * 1000))
-                                                                      .build();
+                .defaultDisplayImageOptions(defaultOptions)
+                .threadPoolSize(4)
+                .memoryCache(new WeakMemoryCache())
+                .imageDownloader(new BaseImageDownloader(context, 10 * 1000, 30 * 1000))
+                .build();
         ImageLoader.getInstance().init(config);
 
 
@@ -146,16 +152,16 @@ public class MainActivity extends NavigationBaseActivity {
                               .withColorResource(R.color.green_500).withImage(R.drawable.zanahoria));
 
         slides.add(new Slide().withTitle("Busca")
-                              .withDescription("Localiza los alimentos que necesitas y recógelos")
-                              .withColorResource(R.color.cyan_500).withImage(R.drawable.bottle));
+                .withDescription("Localiza los alimentos que necesitas y recógelos")
+                .withColorResource(R.color.cyan_500).withImage(R.drawable.bottle));
 
         slides.add(new Slide().withTitle("Conoce")
                               .withDescription("Con Yonodesperdicio conocerás a personas como tú")
                               .withColorResource(R.color.indigo_500).withImage(R.drawable.apple));
 
         slides.add(new Slide().withTitle("Comienza ahora")
-                              .withDescription("Forma parte de la red y colabora en la reducción del desperdicio de alimentos")
-                              .withColorResource(R.color.light_blue_500).withImage(R.drawable.brick));
+                .withDescription("Forma parte de la red y colabora en la reducción del desperdicio de alimentos")
+                .withColorResource(R.color.light_blue_500).withImage(R.drawable.brick));
 
         // First time set to false
         PrefsUtils.commit(this, PrefsUtils.KEY_FIRST_TIME, false);
