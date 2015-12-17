@@ -26,6 +26,8 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
 
+import com.imaginabit.yonodesperdicion.Constants;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +58,6 @@ public class Utils {
 			pd.dismiss();
 		}
 	}
-
 
 	public static final String extractKeyHash(final Context context, final String packageName) {
 		try {

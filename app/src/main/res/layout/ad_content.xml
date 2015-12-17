@@ -49,8 +49,7 @@
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                    app:theme="@style/AppTheme.AppBarOverlay"
-                    />
+                />
 
             </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -148,7 +147,8 @@
                 </TableLayout>
                 </android.support.v7.widget.CardView>
 
-                <!--<android.support.v7.widget.CardView
+                <!--
+		<android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="1dp"
@@ -298,7 +298,8 @@
             android:clickable="true"
             android:src="@drawable/ic_comment"
             app:layout_anchor="@id/appbar"
-            app:layout_anchorGravity="bottom|right|end"/>
+            app:layout_anchorGravity="bottom|right|end"
+        />
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -310,7 +311,6 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer"
-        />
-
+    />
 
 </android.support.v4.widget.DrawerLayout>

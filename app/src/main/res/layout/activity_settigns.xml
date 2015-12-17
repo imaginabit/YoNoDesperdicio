@@ -17,7 +17,7 @@
 
         <include layout="@layout/appbar" />
 
-        <include layout="@layout/content_settigns"/>
+        <include layout="@layout/content_settings"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

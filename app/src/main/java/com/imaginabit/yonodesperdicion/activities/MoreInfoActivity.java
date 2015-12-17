@@ -11,9 +11,9 @@ import android.widget.Toast;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.IdeasAdapter;
 import com.imaginabit.yonodesperdicion.models.Idea;
-import com.imaginabit.yonodesperdicion.utils.Constants;
-import com.imaginabit.yonodesperdicion.utils.IdeaUtils;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.imaginabit.yonodesperdicion.utils.IdeaUtils;
 
 import java.util.List;
 
@@ -57,6 +57,7 @@ public class MoreInfoActivity extends NavigationBaseActivity {
         Log.d(TAG, "get Ideas From Web");
         // Check if network link is available
         if (Utils.isActiveNetworkConnection(this)) {
+
             IdeaUtils.fetchIdeas(this, new IdeaUtils.FetchIdeasCallback() {
                 @Override
                 public void done(List<Idea> ideas, Exception e) {
@@ -64,11 +65,11 @@ public class MoreInfoActivity extends NavigationBaseActivity {
                         Log.e(TAG, "obtenidas las Ideas!");
                         if (ideas != null) {
                             ideasList = ideas;
-                            if (Constants.weightTotal == null){
+                            if (Constants.weightTotal == null) {
                                 adapter = new IdeasAdapter(ideasList);
                             } else {
-                                adapter = new IdeasAdapter(ideasList,Constants.weightTotal);
-                                Log.d(TAG, "done: peso :::: " + Constants.weightTotal );
+                                adapter = new IdeasAdapter(ideasList, Constants.weightTotal);
+                                Log.d(TAG, "done: peso :::: " + Constants.weightTotal);
                             }
 
                             recyclerView.setAdapter(adapter);

@@ -11,8 +11,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 
 
 public abstract class NavigationBaseActivity extends AppCompatActivity
@@ -55,6 +62,32 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Current user data
+        View headerNavView = navigationView.getHeaderView(0);
+        RoundedImageView navUserImage = (RoundedImageView) headerNavView.findViewById(R.id.nav_header_user_image);
+        TextView navUserFullname = (TextView) headerNavView.findViewById(R.id.nav_header_user_fullname);
+
+        // User login panel
+        LinearLayout navHeaderLayout = (LinearLayout) headerNavView.findViewById(R.id.nav_header_layout);
+        UserData user = AppSession.getCurrentUser();
+        if (user == null) {
+            navUserFullname.setText("Inicia sesión");
+        } else {
+            navUserFullname.setText(Utils.isEmptyOrNull(user.fullname) ? user.username : user.fullname);
+        }
+
+        // Access to login panel
+        navHeaderLayout.setClickable(true);
+        navHeaderLayout.setBackgroundResource(R.drawable.selectable_item_background);
+        navHeaderLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+                startActivity(loginPanelIntent);
+            }
+        });
+
         return drawer;
     }
 

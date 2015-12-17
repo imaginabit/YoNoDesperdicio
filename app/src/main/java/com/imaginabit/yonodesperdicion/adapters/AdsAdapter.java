@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.AdDetailActivity;
 import com.imaginabit.yonodesperdicion.models.Ad;
-import com.imaginabit.yonodesperdicion.utils.Constants;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
