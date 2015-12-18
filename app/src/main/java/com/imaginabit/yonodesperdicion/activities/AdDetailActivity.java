@@ -8,12 +8,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.models.User;
+import com.imaginabit.yonodesperdicion.utils.AdUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -79,6 +83,27 @@ public class AdDetailActivity extends NavigationBaseActivity {
                     }
                 }
             });
+
+            if ( ad!= null ) {
+                //actualy geting user info in ads api
+                Log.d(TAG, "onCreate: Ad id :" + ad.getId());
+
+                AdUtils.fetchAd(ad.getId(), new AdUtils.FetchAdCallback() {
+                    @Override
+                    public void done(Ad ad, User user, Exception e) {
+                        TextView userName = (TextView) findViewById(R.id.user_name);
+                        userName.setText(user.getUserName());
+                        TextView userLocation = (TextView) findViewById(R.id.user_location);
+                        userLocation.setText(user.getZipCode());
+
+                        RatingBar userRatting = (RatingBar) findViewById(R.id.user_ratting);
+                        userRatting.setRating(user.getRatting());
+
+                        TextView userWeight = (TextView) findViewById(R.id.user_weight);
+                        userWeight.setText(Utils.gramsToKgStr( user.getGrams()) );
+                    }
+                });
+            }
 
 
 
