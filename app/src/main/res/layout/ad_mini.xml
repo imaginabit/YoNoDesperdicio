@@ -113,7 +113,7 @@ style="@style/AdCard"
         android:layout_marginLeft="10dp"
         android:layout_weight="0.35"
         android:scaleType="centerCrop"
-        android:src="@drawable/food"
+        android:src="@drawable/brick_avatar"
         />
 
 
