@@ -190,6 +190,7 @@ public class Ad implements Parcelable {
     public int getWeightGrams() {
         return weightGrams;
     }
+
     public String getWeightKgStr(){
         float kilos = (float) (weightGrams / 1000.0);
 

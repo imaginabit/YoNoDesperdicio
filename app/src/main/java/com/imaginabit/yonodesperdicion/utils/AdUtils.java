@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.models.Ad;
+import com.imaginabit.yonodesperdicion.models.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,7 +70,6 @@ public class AdUtils {
                                     jsonItem = jsonItems.getJSONObject(i);
                                 } catch (JSONException e) {
                                     this.e = e;
-                                    //e.printStackTrace();
                                 }
 
                                 // Extract properties
@@ -109,7 +109,8 @@ public class AdUtils {
                                 try {
                                     if ( Utils.isNotEmptyOrNull(title) ) {
                                         //public Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName) {
-                                        Ad item = new Ad(title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
+                                        Ad item = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
+
                                         ads.add(item);
                                     }
                                 } catch ( Exception e ){
@@ -152,5 +153,95 @@ public class AdUtils {
     public interface FetchAdsCallback {
         public void done(List<Ad> ads, Exception e);
     }
+
+    public interface FetchAdCallback {
+        public void done(Ad ad,User user, Exception e);
+    }
+
+
+    public static void fetchAd(final int adId, final FetchAdCallback callback ){
+        final String TAG= AdUtils.TAG + " fetchAds";
+        AsyncTask<Void, Void, Void> fetchAdTask = new AsyncTask<Void, Void, Void>() {
+            JSONObject jObj = null;
+            private Ad ad = null;
+            private User user = null;
+            private Exception e = null;
+
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                String json = null;
+                try {
+                    json = Utils.downloadJsonUrl(Constants.ADS_API_URL+  "/" + adId);
+                } catch (IOException e) {
+                    Log.e( TAG , "------ ERROR ----- IOExeption " + e.toString());
+                    this.e = e;
+                }
+
+                // try parse the string to a JSON object
+                try {
+                    jObj = new JSONObject(json);
+                } catch (JSONException e) {
+                    Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+                    this.e = e;
+                } catch (Throwable t) {
+                    Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
+                }
+
+                if (jObj.has("ad")){
+                    //
+                }
+                if (jObj.has("users")){
+                    JSONArray users = null;
+                    JSONObject userJson = null;
+                    try {
+                        users = jObj.getJSONArray("users");
+                    } catch (JSONException e1) {
+                        this.e = e1;
+                        //e1.printStackTrace();
+                    }
+                    try {
+                        userJson = users.getJSONObject(0);
+                    } catch (JSONException e1) {
+                        this.e = e1;
+                        //e1.printStackTrace();
+                    }
+//                    "id": 5,
+//                    "username": "anita2",
+//                    "zipcode": "28903",
+//                    "total_quantity": 500,
+//                    "rating": 3,
+                    int userId = userJson.optInt("id") ;
+                    String userName = userJson.optString("username","");
+                    String zip = userJson.optString("zipcode", "");
+                    int total_quantity = userJson.optInt("total_quantity", 0);
+                    float rating = (float) userJson.optDouble("rating",0.0);
+
+                    user = new User(userId,userName,userName ,"",zip,total_quantity, rating );
+
+                }
+                if (jObj.has("comments")){
+                    //implementar cargar comentarios
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (e == null) {
+                    callback.done(ad, user, null);
+                } else {
+                    callback.done(null, null, e);
+                }
+                super.onPostExecute(aVoid);
+            }
+        };
+        TasksUtils.execute(fetchAdTask);
+    }
+
+
+
+
 
 }

@@ -31,7 +31,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginRight="16dp"
-            android:src="@drawable/food"
+            android:src="@drawable/brick_avatar"
             />
 
         <LinearLayout
@@ -43,7 +43,7 @@
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre Usuario"
+                android:text=""
                 style="@style/Base.TextAppearance.AppCompat.Headline"
             />
 
@@ -51,7 +51,7 @@
                 android:id="@+id/user_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Localidad"
+                android:text=""
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 />
             <LinearLayout
@@ -67,7 +67,7 @@
                     android:textSize="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="13 Kg"
+                    android:text=""
                     android:textColor="@color/primary"
                     android:gravity="bottom"
                     android:layout_gravity="bottom"
@@ -80,7 +80,7 @@
                     android:layout_marginLeft="16dp"
                     android:numStars="5"
                     android:stepSize="1.0"
-                    android:rating="2.0"
+                    android:rating="0.0"
                     android:isIndicator="true"
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="0dp"
