@@ -170,14 +170,16 @@
                         android:text="ALIMENTOS COMPARTIDOS"
                         />
 
-                    <!-- Include lista de anuncios del usuario -->
+                    <!-- Include lista de anuncios del usuario
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <include layout="@layout/ad_mini"/>
 
+
                     </FrameLayout>
+                    -->
 
                 </LinearLayout>
 

@@ -80,6 +80,8 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 }
             });
 
+
+
             //load user data form api with ad.getUserId()
 
             //        TextView userName = (TextView) findViewById(R.id.user_name);
