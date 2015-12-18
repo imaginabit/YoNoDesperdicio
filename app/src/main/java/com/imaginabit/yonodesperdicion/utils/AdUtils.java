@@ -107,7 +107,8 @@ public class AdUtils {
                                 Log.v(TAG, "add Ad id:" + ad_id + " intro: " + zipcode.toString());
 
                                 try {
-                                    if ( Utils.isNotEmptyOrNull(title) ) {
+                                    //status 2 => producto entregado
+                                    if ( Utils.isNotEmptyOrNull(title) && status != 3 ) {
                                         //public Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName) {
                                         Ad item = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
 
