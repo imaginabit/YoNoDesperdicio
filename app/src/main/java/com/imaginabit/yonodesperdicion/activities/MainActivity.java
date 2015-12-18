@@ -14,8 +14,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.imaginabit.yonodesperdicion.App;
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
+import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
@@ -44,6 +47,13 @@ public class MainActivity extends NavigationBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Put on session
+        UserData user = UserData.prefsFetch(this);
+        if (user != null) {
+            AppSession.setCurrentUser(user);
+        }
+
 
         // Fix action bar and drawer
         Toolbar toolbar = setSupportedActionBar();
@@ -104,16 +114,8 @@ public class MainActivity extends NavigationBaseActivity {
         //Get Ads
         getAdsFromWeb();
 
-//        mRecyclerViewIdeas = (RecyclerView) findViewById(R.id.recycler_ideas);
-//        mRecyclerViewIdeas.setHasFixedSize(true);
-//        mLayoutManagerIdeas = new LinearLayoutManager(this);
-//        mRecyclerViewIdeas.setLayoutManager(mLayoutManagerIdeas);
-//        ArrayList<Idea> ideas = IdeaUtils.sampleData();
-//        mAdapterIdeas = new IdeasAdapter(ideas);
-//        mRecyclerViewIdeas.setAdapter(mAdapterIdeas);
-
-//        mAdapter.notifyDataSetChanged();
-//        mAdapterIdeas.notifyDataSetChanged();
+        //App is running
+        App.setIsAppRunning(true);
     }
 
     private void initializeData() {
@@ -207,10 +209,12 @@ public class MainActivity extends NavigationBaseActivity {
         }
     }
 
-
-
-
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Release session
+        AppSession.release();
+        // App is not running
+        App.setIsAppRunning(false);
+    }
 }
