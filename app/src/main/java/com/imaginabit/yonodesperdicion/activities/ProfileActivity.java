@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ public class ProfileActivity extends NavigationBaseActivity {
     TextView location;
     TextView weight;
     RatingBar rating;
+    LinearLayout userads;
 
 
     @Override
@@ -39,11 +42,20 @@ public class ProfileActivity extends NavigationBaseActivity {
             location = (TextView) findViewById(R.id.location);
             weight = (TextView) findViewById(R.id.kilos);
             rating = (RatingBar) findViewById(R.id.ad_reputacion);
+            userads = (LinearLayout) findViewById(R.id.user_ads);
 
             userName.setText(mUser.username);
             location.setText(mUser.city);
-            weight.setText(mUser.totalQuantity);
+
+            weight.setText("Entregados " + Integer.toString(mUser.totalQuantity) + " Kg");
+
             rating.setRating(mUser.rating);
+            /*
+            if (mUser.totalQuantity == 0 && mUser.rating == 0){
+
+            }*/
+
+            userads.setVisibility(View.GONE);
         }
 
     }
