@@ -3,6 +3,8 @@ package com.imaginabit.yonodesperdicion.activities;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +16,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
@@ -42,6 +47,11 @@ public class MainActivity extends NavigationBaseActivity {
     private RecyclerView.LayoutManager layoutManager;
 
     private List<Ad> mAds;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,21 +83,24 @@ public class MainActivity extends NavigationBaseActivity {
 
         // First time?
         if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME, true)) {
-            if (android.os.Build.VERSION.SDK_INT <= 12) {
-                Log.v(TAG,"--- SDK_INT <= 12 ---");
+            if (Build.VERSION.SDK_INT <= 12) {
+                Log.v(TAG, "--- SDK_INT <= 12 ---");
             } else {
                 Log.v(TAG, "--- SDK_INT > 12 ---");
             }
 
             // TODO: use better alternative for last android versions
             new IntroductionBuilder(this).withSlides(generateSlides())
-                                         .introduceMyself();
+                    .introduceMyself();
         }
 
         // Initialize Universal Image Loader
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .showImageForEmptyUri(R.drawable.zanahoria) // resource or drawable
+                .showImageOnFail(R.drawable.aubergine) // resource or drawable
                 .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
                 .defaultDisplayImageOptions(defaultOptions)
@@ -116,6 +129,9 @@ public class MainActivity extends NavigationBaseActivity {
 
         //App is running
         App.setIsAppRunning(true);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void initializeData() {
@@ -126,8 +142,8 @@ public class MainActivity extends NavigationBaseActivity {
         //Ad(String title, String body, String imageUrl, int weightGrams, String expiration, String postalCode, int status, int userId, String userName)
 
         try {
-            mAds.add( new Ad("title", "body", "String imageUrl", 100, "2010-10-23", "3241234", 1, 10, "uaoeu"));
-            mAds.add( new Ad("tomate", "asoneuhaoete", "/system/ideas/images/000/000/001/original/croquetas-pollo.jpg", 100, "2000-10-15", "28080", 2, 1, "pepito" ) );
+            mAds.add(new Ad("title", "body", "String imageUrl", 100, "2010-10-23", "3241234", 1, 10, "uaoeu"));
+            mAds.add(new Ad("tomate", "asoneuhaoete", "/system/ideas/images/000/000/001/original/croquetas-pollo.jpg", 100, "2000-10-15", "28080", 2, 1, "pepito"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -146,20 +162,20 @@ public class MainActivity extends NavigationBaseActivity {
         List<Slide> slides = new ArrayList<>();
 
         slides.add(new Slide().withTitle("¡Hola!")
-                              .withDescription("¿Tienes comida de sobra?\nNo la desperdicies")
-                              .withColorResource(R.color.primary).withImage(R.drawable.aubergine));
+                .withDescription("¿Tienes comida de sobra?\nNo la desperdicies")
+                .withColorResource(R.color.primary).withImage(R.drawable.aubergine));
 
         slides.add(new Slide().withTitle("Comparte")
-                              .withDescription("Ofrece tu comida extra de forma rápida y sencilla")
-                              .withColorResource(R.color.green_500).withImage(R.drawable.zanahoria));
+                .withDescription("Ofrece tu comida extra de forma rápida y sencilla")
+                .withColorResource(R.color.green_500).withImage(R.drawable.zanahoria));
 
         slides.add(new Slide().withTitle("Busca")
                 .withDescription("Localiza los alimentos que necesitas y recógelos")
                 .withColorResource(R.color.cyan_500).withImage(R.drawable.bottle));
 
         slides.add(new Slide().withTitle("Conoce")
-                              .withDescription("Con Yonodesperdicio conocerás a personas como tú")
-                              .withColorResource(R.color.indigo_500).withImage(R.drawable.apple));
+                .withDescription("Con Yonodesperdicio conocerás a personas como tú")
+                .withColorResource(R.color.indigo_500).withImage(R.drawable.apple));
 
         slides.add(new Slide().withTitle("Comienza ahora")
                 .withDescription("Forma parte de la red y colabora en la reducción del desperdicio de alimentos")
@@ -217,4 +233,6 @@ public class MainActivity extends NavigationBaseActivity {
         // App is not running
         App.setIsAppRunning(false);
     }
+
+
 }

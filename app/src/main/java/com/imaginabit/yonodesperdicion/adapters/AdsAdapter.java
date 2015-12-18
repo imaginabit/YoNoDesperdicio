@@ -20,6 +20,7 @@ import com.imaginabit.yonodesperdicion.models.Ad;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,13 +116,19 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
 
 
         //get image from website
-        ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
+        ImageLoader imageLoader; // Get singleton instance
+        imageLoader = ImageLoader.getInstance();
+
         String imageUri = Constants.HOME_URL + ad.getImageUrl();
 
         Log.i(TAG, "onBindViewHolder:" + imageUri);
 
         ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
-        imageLoader.displayImage(imageUri, holder.image );
+        try {
+            imageLoader.displayImage(imageUri, holder.image );
+        } catch ( Exception e){
+            holder.image.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.brick));
+        }
 
         // CardView click listener
         holder.cardView.setOnClickListener(new View.OnClickListener() {
