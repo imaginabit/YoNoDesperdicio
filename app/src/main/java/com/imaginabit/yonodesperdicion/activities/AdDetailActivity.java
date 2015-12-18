@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +69,21 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, image);
+
+            Log.d(TAG, "onCreate: "+  ad.getStatusStr() + ad.getStatusColor()  );
+
+            if ( ad.getStatusStr()=="entregado" ) {
+                TableRow row = (TableRow) findViewById(R.id.row_status);
+                row.setVisibility(View.GONE);
+            }
+            if (Utils.isEmptyOrNull(ad.getExpirationDateLong()) ){
+                TableRow row = (TableRow) findViewById(R.id.row_expiration);
+                row.setVisibility(View.GONE);
+            }
+            if ( Utils.isEmptyOrNull(ad.getWeightKgStr()) ){
+                TableRow row = (TableRow) findViewById(R.id.row_weight);
+                row.setVisibility(View.GONE);
+            }
 
             image.setOnClickListener(new View.OnClickListener() {
                 @Override
