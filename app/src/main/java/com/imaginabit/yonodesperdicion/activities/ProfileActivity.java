@@ -55,7 +55,7 @@ public class ProfileActivity extends NavigationBaseActivity {
 
             }*/
 
-            userads.setVisibility(View.GONE);
+            //userads.setVisibility(View.GONE);
         }
 
     }

@@ -138,14 +138,14 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         else if (id == R.id.nav_favoritos) {
             // TODO: quitar pruebas para que haga lo que de verdad tiene que hacer
             // he puesto ver el detalle del anuncio aqui como prueba
-            Intent itntFav = new Intent(context, AdDetailActivity.class);
-            startActivity(itntFav);
+//            Intent itntFav = new Intent(context, AdDetailActivity.class);
+//            startActivity(itntFav);
         }
         else if (id == R.id.nav_mensajes) {
             // TODO: quitar pruebas
             // he puesto ver el formulaciro de crear el anuncio aqui como prueba
-            Intent itntMsgs = new Intent(context, AdCreateActivity.class);
-            startActivity(itntMsgs);
+//            Intent itntMsgs = new Intent(context, AdCreateActivity.class);
+//            startActivity(itntMsgs);
 
         }
         else if (id == R.id.nav_masinfo) {
@@ -156,8 +156,8 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_ajustes) {
             //cargar ajustes
-            Intent itntSettings = new Intent(context, SettingsActivity.class);
-            startActivity( itntSettings );
+//            Intent itntSettings = new Intent(context, SettingsActivity.class);
+//            startActivity( itntSettings );
 
         }
 
