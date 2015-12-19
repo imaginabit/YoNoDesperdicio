@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.imaginabit.yonodesperdicion.profile"
+    tools:context=".activities.ProfileActivity"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout
@@ -164,7 +164,7 @@
                     android:background="@color/activity_background"
                     android:orientation="vertical"
                     android:paddingTop="@dimen/activity_vertical_margin"
-                    >
+                    android:nestedScrollingEnabled="true">
 
                     <TextView
                         style="@style/Base.TextAppearance.AppCompat.Headline"
@@ -174,11 +174,19 @@
                         android:text="ALIMENTOS COMPARTIDOS"
                         />
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycler_ads"
+                    <LinearLayout
+                        android:paddingTop="?attr/actionBarSize"
                         android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        />
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:nestedScrollingEnabled="true">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recycler_userads"
+                            android:layout_width="match_parent"
+                            android:layout_height="fill_parent"
+                            />
+                    </LinearLayout>
 
                 </LinearLayout>
 

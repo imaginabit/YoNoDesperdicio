@@ -59,13 +59,12 @@ public class ProfileActivity extends NavigationBaseActivity {
         setDrawerLayout(toolbar);
 
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_ads);
-        recyclerView.setHasFixedSize(true);
-
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_userads);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        //recyclerView.setHasFixedSize(true);
         // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
+        //layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        //recyclerView.setLayoutManager(layoutManager);
         adapter = new AdsAdapter(context, mAds);
         recyclerView.setAdapter(adapter);
 
@@ -88,8 +87,7 @@ public class ProfileActivity extends NavigationBaseActivity {
 
             rating.setRating(mUser.rating);
 
-            //userads.setVisibility(View.GONE);
-            getAdsFromWeb( (int)mUser.id );
+            getAdsFromWeb((int) mUser.id);
 
         }
 
@@ -124,7 +122,7 @@ public class ProfileActivity extends NavigationBaseActivity {
         final Handler handler = new Handler();
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            AdUtils.fetchAds(u, new AdUtils.FetchAdsCallback() {
+            AdUtils.fetchAds(u, this, new AdUtils.FetchAdsCallback() {
                 @Override
                 public void done(List<Ad> ads, Exception e) {
                     if (e == null) {
@@ -132,9 +130,11 @@ public class ProfileActivity extends NavigationBaseActivity {
                         if (ads != null) {
                             mAds = ads;
                             adapter = new AdsAdapter(context, mAds);
+
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
-                            Log.e(TAG, "ideas : " + mAds.size());
+
+                            Log.d(TAG, "anuncios : " + mAds.size());
                         }
                     } else {
                         Log.e(TAG, "error al obtener los Anuncios");

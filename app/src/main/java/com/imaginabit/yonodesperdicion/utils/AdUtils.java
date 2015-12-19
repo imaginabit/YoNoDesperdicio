@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion.utils;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -22,12 +23,20 @@ import java.util.List;
 public class AdUtils {
     private static final String TAG = "AdUtils";
 
-    public static void fetchAds(final User u, final FetchAdsCallback callback ){
+    public static void fetchAds(final User u,final Activity activity, final FetchAdsCallback callback ){
         final String TAG= AdUtils.TAG + " fetchAds filter user";
         AsyncTask<Void, Void, Void> fetchAdsTask = new AsyncTask<Void, Void, Void>() {
             JSONObject jObj = null;
             public List<Ad> ads = null;
             private Exception e = null;
+            ProgressDialog pd = new ProgressDialog(activity);
+
+            @Override
+            protected void onPreExecute() {
+                pd.setTitle("Cargando");
+                pd.setMessage("Recibiendo datos...");
+                pd.show();
+            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -62,20 +71,31 @@ public class AdUtils {
 //                        Log.d(TAG, jObj.toString() );
                         Log.d(TAG,"User has Ads " + jsonItems.length());
                         if (jsonItems.length() > 0) {
-                            //ads = new ArrayList<>();
                             ResultAds resultAds;
                             resultAds = createAdList(jsonItems);
                             ads = resultAds.ads;
                             if (resultAds.e!=null) this.e = resultAds.e;
                         }
-
                     } else Log.d(TAG, "doInBackground: User without ads");
                 } catch (Exception e) {
                     //e.printStackTrace();
                     this.e = e;
                     Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
                 }
+                Log.d(TAG, "doInBackground: ads:" + ads.size());
                 return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                }
+                if (e == null) {
+                    callback.done(ads, null);
+                } else {
+                    callback.done(null, e);
+                }
             }
         };
         TasksUtils.execute(fetchAdsTask);
@@ -143,6 +163,14 @@ public class AdUtils {
             JSONObject jObj = null;
             public List<Ad> ads = null;
             private Exception e = null;
+            ProgressDialog pd = new ProgressDialog(activity);
+
+            @Override
+            protected void onPreExecute() {
+                pd.setTitle("Cargando");
+                pd.setMessage("Recibiendo datos...");
+                pd.show();
+            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -177,13 +205,11 @@ public class AdUtils {
 //                        Log.d(TAG, jObj.toString() );
                         Log.d(TAG,"has Ads " + jsonItems.length());
                         if (jsonItems.length() > 0) {
-                            //ads = new ArrayList<>();
                             ResultAds resultAds;
                             resultAds = createAdList(jsonItems);
                             ads = resultAds.ads;
                             if (resultAds.e!=null) this.e = resultAds.e;
                         }
-
                     }
                 } catch (Exception e) {
                     //e.printStackTrace();
@@ -195,9 +221,9 @@ public class AdUtils {
 
             @Override
             protected void onPostExecute(Void result) {
-//                if (pd != null && pd.isShowing()) {
-//                    pd.dismiss();
-//                }
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                }
 
                 if (e == null) {
                     callback.done(ads, null);
