@@ -47,11 +47,7 @@ public class MainActivity extends NavigationBaseActivity {
     private RecyclerView.LayoutManager layoutManager;
 
     private List<Ad> mAds;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,11 +123,7 @@ public class MainActivity extends NavigationBaseActivity {
         //Get Ads
         getAdsFromWeb();
 
-        //App is running
-        App.setIsAppRunning(true);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     private void initializeData() {

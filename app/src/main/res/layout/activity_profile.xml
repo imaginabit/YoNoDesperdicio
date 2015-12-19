@@ -78,6 +78,8 @@
                     android:orientation="vertical"
                     android:paddingEnd="20dp"
                     android:paddingStart="20dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
                     android:paddingTop="56dp"
                     >
 
@@ -122,6 +124,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/articulo_card_margin"
                             android:layout_marginStart="@dimen/articulo_card_margin"
+                            android:layout_marginLeft="@dimen/articulo_card_margin"
+                            android:layout_marginRight="@dimen/articulo_card_margin"
                             android:layout_weight=".01"
                             android:text="|"
                             android:textColor="@color/grey_500"
@@ -170,16 +174,11 @@
                         android:text="ALIMENTOS COMPARTIDOS"
                         />
 
-                    <!-- Include lista de anuncios del usuario
-                    <FrameLayout
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_ads"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <include layout="@layout/ad_mini"/>
-
-
-                    </FrameLayout>
-                    -->
+                        android:layout_height="fill_parent"
+                        />
 
                 </LinearLayout>
 

@@ -12,6 +12,7 @@ public class Constants {
 
 
     public static final String USER_ADS_API_URS = ADS_API_URL + "?user_id="; // pe: + "10"
+    //http://beta.yonodesperdicio.org/api/ads?user_id=5
 
     // Create users accounts endpoint
     public static final String USERS_API_URL = HOME_URL + "api/users";
