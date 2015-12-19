@@ -197,7 +197,7 @@ public class MainActivity extends NavigationBaseActivity {
                             adapter = new AdsAdapter(context, mAds);
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
-                            Log.e(TAG, "ideas : " + mAds.size());
+                            Log.d(TAG, "Anuncios general : " + mAds.size());
                         }
                     } else {
                         Log.e(TAG, "error al obtener los Anuncios");
