@@ -28,6 +28,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
@@ -174,8 +175,12 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map headers = new HashMap();
                     String token = AppSession.getCurrentUser().authToken;
-                    headers.put("Authorization", token );
+                    headers.put("Authorization", token);
                     Log.d(TAG, "getHeaders: authToken " + token);
+
+                    headers.put("Content-Type", "application/json; charset=utf-8");
+
+
                     return headers;
                 }
 //
@@ -216,6 +221,8 @@ public class AdCreateActivity extends NavigationBaseActivity {
             public void onResponse(JSONObject response) {
                 try {
                     //parse response
+                    VolleyLog.v("Response:%n %s", response.toString());
+
                     response.getString("title");
                     //response.getJSONObject("");
                     Log.d(TAG, "onResponse: ");
@@ -232,7 +239,11 @@ public class AdCreateActivity extends NavigationBaseActivity {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                //VolleyLog.v("Response:%n %s", error.toString());
+
                 //Utils.dismissProgressDialog(pd);
+                //error.printStackTrace();
+                Log.d(TAG, "onErrorResponse: " + error.getMessage());
                 Log.d(TAG, "onErrorResponse: " + error.toString());
                 //mCallback.onError(VolleySingleton.extractErrorMessage(context, error));
             }
