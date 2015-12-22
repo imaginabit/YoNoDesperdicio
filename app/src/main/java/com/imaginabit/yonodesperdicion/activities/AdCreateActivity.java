@@ -7,9 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.media.Image;
 import android.net.Uri;
-
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -22,6 +20,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.imaginabit.yonodesperdicion.R;
 
 import java.io.File;
@@ -35,7 +34,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_PICTURE = 1;
-    ImageView img_logo;
     Bitmap bitmap;
     String selectedImagePath;
     private Intent pictureActionIntent = null;
@@ -90,6 +88,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
         int id = item.getItemId();
         if (id == R.id.action_done) {
             Toast.makeText(AdCreateActivity.this, "guardar", Toast.LENGTH_SHORT).show();
+            sendAdData();
             return true;
         }
         if (id == android.R.id.home ) {
@@ -99,12 +98,25 @@ public class AdCreateActivity extends NavigationBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void startDialog() {
-        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(context);
-        myAlertDialog.setTitle("Upload Pictures Option");
-        myAlertDialog.setMessage("How do you want to set your picture?");
+    private void sendAdData() {
+//        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+//        final Handler handler = new Handler();
+//
+//        if (networkInfo != null && networkInfo.isConnected()) {
+//
+//        } else {
+//            Toast.makeText(this, "No hay conexion a internet.", Toast.LENGTH_SHORT).show();
+//        }
+    }
 
-        myAlertDialog.setPositiveButton("Gallery",
+    private void startDialog() {
+        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
+
+        myAlertDialog.setTitle("Foto");
+        myAlertDialog.setMessage("¿Desde donde quieres obtener la foto?");
+
+        myAlertDialog.setPositiveButton("Fotos",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent pictureActionIntent = null;
@@ -119,7 +131,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
                     }
                 });
 
-        myAlertDialog.setNegativeButton("Camera",
+        myAlertDialog.setNegativeButton("Camara",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
 
@@ -158,19 +170,13 @@ public class AdCreateActivity extends NavigationBaseActivity {
             }
 
             if (!f.exists()) {
-
                 Toast.makeText(getBaseContext(),
-
                         "Error while capturing image", Toast.LENGTH_LONG)
-
                         .show();
-
                 return;
-
             }
 
             try {
-
                 bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 
                 bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
@@ -201,8 +207,8 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                         bitmap.getHeight(), matrix, true);
 
-
-                img_logo.setImageBitmap(bitmap);
+                image.setImageBitmap(bitmap);
+                image.setVisibility(View.VISIBLE);
                 //storeImageTosdCard(bitmap);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -229,11 +235,11 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 // preview image
                 bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, false);
 
-
-                img_logo.setImageBitmap(bitmap);
+                image.setImageBitmap(bitmap);
+                image.setVisibility(View.VISIBLE);
 
             } else {
-                Toast.makeText(getApplicationContext(), "Cancelled",
+                Toast.makeText(getApplicationContext(), "Cancelado",
                         Toast.LENGTH_SHORT).show();
             }
         }
