@@ -1,5 +1,6 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,22 +23,50 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
+import com.imaginabit.yonodesperdicion.utils.Utils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class AdCreateActivity extends NavigationBaseActivity {
+
+    private static final String TAG = "AdCreateActivity";
     ImageView image;
     EditText title;
     EditText weight;
     EditText expiration_date;
+    EditText adDescription;
+    EditText adZipCode;
 
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_PICTURE = 1;
     Bitmap bitmap;
     String selectedImagePath;
     private Intent pictureActionIntent = null;
+    private AdCreateCallback mCallback;
+    ProgressDialog pd;
+
+
+
+    public interface AdCreateCallback {
+        public void onFinished();
+        public void onError(String errorMessage);
+    }
 
 
     @Override
@@ -61,6 +91,10 @@ public class AdCreateActivity extends NavigationBaseActivity {
         title = (EditText) findViewById( R.id.title);
         weight = (EditText) findViewById( R.id.weight);
         expiration_date = (EditText) findViewById( R.id.expiration_date);
+        adDescription = (EditText) findViewById(R.id.ad_description);
+        adZipCode = (EditText) findViewById(R.id.postal_code);
+
+
         Button button = (Button) findViewById(R.id.delete_ad);
         button.setVisibility(View.GONE);
         FrameLayout frameImage = (FrameLayout) findViewById(R.id.frame_image);
@@ -71,6 +105,8 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 startDialog();
             }
         });
+
+        VolleySingleton.init(this);
 
     }
 
@@ -87,7 +123,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_done) {
-            Toast.makeText(AdCreateActivity.this, "guardar", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(AdCreateActivity.this, "guardar", Toast.LENGTH_SHORT).show();
             sendAdData();
             return true;
         }
@@ -99,16 +135,92 @@ public class AdCreateActivity extends NavigationBaseActivity {
     }
 
     private void sendAdData() {
-//        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-//        final Handler handler = new Handler();
-//
-//        if (networkInfo != null && networkInfo.isConnected()) {
-//
-//        } else {
-//            Toast.makeText(this, "No hay conexion a internet.", Toast.LENGTH_SHORT).show();
-//        }
+
+//        new Handler().postDelayed(new Runnable() {
+//            public void run() {
+//                pd = ProgressDialog.show(context, "", context.getString(R.string.ad_create_message));
+//            }
+//        }, 1000);
+
+
+
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+
+        JSONObject jsonAd = null
+                   ;
+        try {
+            int grams = 0;
+            if (Utils.isNotEmptyOrNull( String.valueOf(weight.getText()) )){
+                grams = (int) (Float.parseFloat(String.valueOf(weight.getText())) * 1000);
+            }
+
+            jsonAd = new JSONObject().put("title", title.getText() )
+                       .put("body", adDescription.getText())
+                       .put("grams", grams )
+                       .put("status", 1)
+                       .put("food_category", "bebidas")
+                       //.put("province", province) //TODO calcular provincia por cp
+                       .put("zipcode", adZipCode.getText() );
+
+
+            JSONObject jsonRequest = new JSONObject().put("ad", jsonAd);
+
+            Log.d(TAG, " ---- sendAdData: jsonRequest :"+ jsonRequest.toString());
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.ADS_API_URL,
+                    jsonRequest,
+                    createResponseSuccessListener(), createReqErrorListener() ){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map headers = new HashMap();
+                    headers.put("Authorization", AppSession.getCurrentUser().authToken );
+                    return headers;
+                }
+
+                @Override
+                public String getBodyContentType() {
+                    //return super.getBodyContentType();
+                    return "application/json; charset=utf-8";
+                }
+            };
+            queue.add(request);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
+
+    private Response.Listener<JSONObject> createResponseSuccessListener(){
+        return new Response.Listener<JSONObject>(){
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    //parse response
+                    response.getString("title");
+                    //response.getJSONObject("");
+                    Log.d(TAG, "onResponse: ");
+                } catch (JSONException e){
+                    e.printStackTrace();
+                    //Utils.dismissProgressDialog(pd);
+                    //mCallback.onError(VolleySingleton.extractErrorMessage(context, error));
+                }
+            }
+        };
+    }
+
+    private Response.ErrorListener createReqErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Utils.dismissProgressDialog(pd);
+                Log.d(TAG, "onErrorResponse: " + error.toString());
+                //mCallback.onError(VolleySingleton.extractErrorMessage(context, error));
+            }
+        };
+    }
+
 
     private void startDialog() {
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
