@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -74,6 +75,8 @@ public class MainActivity extends NavigationBaseActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Nuevo Anuncio", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                Intent intent = new Intent(context, AdCreateActivity.class);
+                startActivity( intent );
             }
         });
 
