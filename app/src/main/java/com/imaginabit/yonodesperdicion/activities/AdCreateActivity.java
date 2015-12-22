@@ -173,15 +173,33 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map headers = new HashMap();
-                    headers.put("Authorization", AppSession.getCurrentUser().authToken );
+                    String token = AppSession.getCurrentUser().authToken;
+                    headers.put("Authorization", token );
+                    Log.d(TAG, "getHeaders: authToken " + token);
                     return headers;
                 }
+//
+//                @Override
+//                public String getBodyContentType() {
+//                    //return super.getBodyContentType();
+//                    return "application/json; charset=utf-8";
+//                }
+//
+//                @Override
+//                public byte[] getBody()
+//                {
+//                    String body = "some text";
+//                    try
+//                    {
+//                        return body.getBytes(getParamsEncoding());
+//                    }
+//                    catch (UnsupportedEncodingException uee)
+//                    {
+//                        throw new RuntimeException("Encoding not supported: "
+//                                + getParamsEncoding(), uee);
+//                    }
+//                }
 
-                @Override
-                public String getBodyContentType() {
-                    //return super.getBodyContentType();
-                    return "application/json; charset=utf-8";
-                }
             };
             queue.add(request);
 
