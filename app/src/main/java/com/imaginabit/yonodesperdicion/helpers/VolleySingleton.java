@@ -20,11 +20,7 @@ public class VolleySingleton {
     //Este objeto es la cola que usará la aplicación
     private static RequestQueue mRequestQueue;
 
-
-
-    private VolleySingleton(Context context) {
-
-    }
+    private VolleySingleton(Context context) { }
 
     public static void init(Context context){
         mRequestQueue = Volley.newRequestQueue(context);

@@ -1,5 +1,6 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
@@ -42,6 +44,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class AdCreateActivity extends NavigationBaseActivity {
@@ -61,6 +64,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
     private Intent pictureActionIntent = null;
     private AdCreateCallback mCallback;
     ProgressDialog pd;
+    Activity thisAdCreateActivity;
 
 
 
@@ -73,6 +77,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.ad_edit);
         setSupportedActionBar(R.drawable.ic_arrow_back_black);
 
@@ -108,6 +113,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
         });
 
         VolleySingleton.init(this);
+        thisAdCreateActivity = this;
 
     }
 
@@ -220,12 +226,22 @@ public class AdCreateActivity extends NavigationBaseActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    //parse response
+
                     VolleyLog.v("Response:%n %s", response.toString());
 
-                    response.getString("title");
-                    //response.getJSONObject("");
-                    Log.d(TAG, "onResponse: ");
+                    //response.getString("title");
+                    Log.d(TAG, "onResponse: " + response.toString());
+
+                    JSONObject ad = response.getJSONObject("ad");
+                    String title = ad.getString("title");
+                    String id = ad.getString("id");
+
+                    Toast.makeText(AdCreateActivity.this, "Anuncio creado", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onResponse: title " + title + " " + id);
+                    thisAdCreateActivity.finish();
+
+
+
                 } catch (JSONException e){
                     e.printStackTrace();
                     //Utils.dismissProgressDialog(pd);
@@ -243,8 +259,28 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
                 //Utils.dismissProgressDialog(pd);
                 //error.printStackTrace();
-                Log.d(TAG, "onErrorResponse: " + error.getMessage());
-                Log.d(TAG, "onErrorResponse: " + error.toString());
+                //Log.d(TAG, "onErrorResponse message: " + error.networkResponse.toString() + " " + error.getMessage());
+                //Log.d(TAG, "onErrorResponse: tostring" + error.toString());
+                String errorMessage = VolleyErrorHelper.getMessage(context, error);
+                Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+
+                //TODO: show dialog with error
+                try {
+                    JSONObject errorJSON = new JSONObject(errorMessage);
+                    if (errorJSON.has("errors")){
+                        JSONObject err = errorJSON.getJSONObject("errors");
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+//                if (error.networkResponse.has("errors")){
+//                    JSONObject errors = response.getJSONObject("errors");
+//                    Log.d(TAG, "onResponse: errors : " + errors.toString());
+//                }
                 //mCallback.onError(VolleySingleton.extractErrorMessage(context, error));
             }
         };
