@@ -1,5 +1,6 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -28,6 +29,7 @@ import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -70,13 +72,19 @@ public class MainActivity extends NavigationBaseActivity {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //fab.setImageDrawable(add_pic);
 
+        final Activity mainActivity = this;
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Nuevo Anuncio", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                Intent intent = new Intent(context, AdCreateActivity.class);
-                startActivity( intent );
+//                Snackbar.make(view, "Nuevo Anuncio", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+
+                boolean b = Utils.checkLoginAndRedirect(mainActivity);
+                if (b) {
+                    Intent intent = new Intent(context, AdCreateActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
