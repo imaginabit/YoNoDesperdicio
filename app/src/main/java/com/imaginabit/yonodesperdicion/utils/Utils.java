@@ -26,7 +26,9 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
 
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.activities.LoginPanelActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,6 +45,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.List;
+
+
 
 /**
  * General Util Funtions for the app
@@ -453,6 +457,20 @@ public class Utils {
 
 		return txt;
 	}
+
+	public static boolean checkLoginAndRedirect(Activity activity){
+        Context context = activity.getApplicationContext();
+
+        if ( AppSession.getCurrentUser() == null ) {
+            Log.d(TAG, "checkLoginAndRedirect: go to login activity");
+            Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+
+            activity.startActivity(loginPanelIntent);
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 
 }
