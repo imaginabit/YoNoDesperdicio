@@ -45,7 +45,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 /**
- * @author Antonio de Sousa Barroso
+ * General Util Funtions for the app
  */
 public class Utils {
 	private static final String TAG = "Utils";

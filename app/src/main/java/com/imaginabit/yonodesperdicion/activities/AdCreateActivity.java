@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +40,10 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -147,8 +151,8 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
         RequestQueue queue = VolleySingleton.getRequestQueue();
 
-        JSONObject jsonAd = null
-                   ;
+        JSONObject jsonAd = null;
+        JSONObject jsonImage= null;
         try {
             int grams = 0;
             if (Utils.isNotEmptyOrNull( String.valueOf(weight.getText()) )){
@@ -156,13 +160,43 @@ public class AdCreateActivity extends NavigationBaseActivity {
             }
 
             jsonAd = new JSONObject().put("title", title.getText() )
-                       .put("body", adDescription.getText())
-                       .put("grams", grams )
-                       .put("status", 1)
-                       .put("food_category", "bebidas")
-                       //.put("province", province) //TODO calcular provincia por cp
-                       .put("zipcode", adZipCode.getText() );
+                    .put("body", adDescription.getText())
+                    .put("grams", grams )
+                    .put("status", 1)
+                    .put("food_category", "bebidas")
+                            //.put("province", province) //TODO calcular provincia por cp
+                    .put("zipcode", adZipCode.getText() );
 
+
+            if (bitmap != null) {
+
+                //scale image max 400px width
+                float aspectRatio = bitmap.getWidth() /
+                        (float) bitmap.getHeight();
+                int width = 400;
+                int height = Math.round(width / aspectRatio);
+                bitmap = Bitmap.createScaledBitmap(
+                        bitmap, width, height, false);
+
+                //Convent Bitmap in jpeg base64
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+                byte[] b = baos.toByteArray();
+                String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+
+//                "image":
+//                {
+//                    "filename": "original_filename.jpeg",
+//                        "content_type": "image/jpeg",
+//                        "content": "<base64string>"
+//                }
+                jsonImage = new JSONObject()
+                        .put("filename", "image"+ DateFormat.getDateTimeInstance().format(new Date()) )
+                        .put("content_type", "image/jpeg")
+                        .put("content", "<base64string>");
+
+                jsonAd.put("image",jsonImage);
+            }
 
             JSONObject jsonRequest = new JSONObject().put("ad", jsonAd);
 
