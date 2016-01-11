@@ -44,11 +44,10 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class AdCreateActivity extends NavigationBaseActivity {
@@ -190,16 +189,15 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 byte[] b = baos.toByteArray();
                 String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
 
-//                "image":
-//                {
-//                    "filename": "original_filename.jpeg",
-//                        "content_type": "image/jpeg",
-//                        "content": "<base64string>"
-//                }
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                //json image format
+                // "image":{"filename": "original_filename.jpeg","content_type": "image/jpeg","content": "<base64string>"}
+
                 jsonImage = new JSONObject()
-                        .put("filename", "image"+ DateFormat.getDateTimeInstance().format(new Date()) )
+                        .put("filename", "image"+ sdf.format(new Date()) )
                         .put("content_type", "image/jpeg")
-                        .put("content", "<base64string>");
+                        .put("content", encodedImage);
 
                 jsonAd.put("image",jsonImage);
             }
