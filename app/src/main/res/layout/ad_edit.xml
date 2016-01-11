@@ -99,6 +99,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/label_weight"
+                        android:inputType="numberDecimal"
                         android:singleLine="true"
                     />
 
@@ -122,7 +123,6 @@
                             android:hint="@string/label_expiration_date"
                             android:inputType="date"
                             android:singleLine="true"
-
                         />
                     </android.support.design.widget.TextInputLayout>
 

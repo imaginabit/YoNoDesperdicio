@@ -37,8 +37,10 @@ import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
+import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,6 +49,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -68,8 +71,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
     private AdCreateCallback mCallback;
     ProgressDialog pd;
     Activity thisAdCreateActivity;
-
-
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     public interface AdCreateCallback {
         public void onFinished();
@@ -94,6 +96,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
         //          pick_up_date
         // }}'
         // -X POST http://localhost:3000/api/ads
+        context = getApplicationContext();
 
         image =  (ImageView) findViewById(R.id.ad_image);
         image.setVisibility(View.INVISIBLE);
@@ -122,7 +125,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.ad_edit , menu);
+        getMenuInflater().inflate(R.menu.ad_edit, menu);
         return true;
     }
 
@@ -158,19 +161,37 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
         JSONObject jsonAd = null;
         JSONObject jsonImage= null;
+        ProvinciasCP.init();
+
         try {
             int grams = 0;
             if (Utils.isNotEmptyOrNull( String.valueOf(weight.getText()) )){
                 grams = (int) (Float.parseFloat(String.valueOf(weight.getText())) * 1000);
             }
 
+            String provincia = "";
+            String zipCode = adZipCode.getText().toString();
+            if(Utils.isNotEmptyOrNull( zipCode ) ){
+                int codigoProvincia = Integer.parseInt(zipCode.substring(0, 2));
+                try {
+                    provincia = ProvinciasCP.mProvincias.get(codigoProvincia-1).mProvincia;
+                    Log.d(TAG, "sendAdData: c provincia"+ provincia);
+                }catch (Exception e){
+                    Log.d(TAG, "sendAdData: Error al sacar la provincia del codigo postal: " + codigoProvincia);
+                }
+            }
+
+            //String pickUpDate= sdf.format(expiration_date.getText());
+
+
             jsonAd = new JSONObject().put("title", title.getText() )
                     .put("body", adDescription.getText())
                     .put("grams", grams )
                     .put("status", 1)
                     .put("food_category", "bebidas")
-                            //.put("province", province) //TODO calcular provincia por cp
-                    .put("zipcode", adZipCode.getText() );
+                    .put("province", provincia)
+                    .put("zipcode", adZipCode.getText() )
+                    .put("pick_up_date", expiration_date.getText());
 
 
             if (bitmap != null) {
@@ -189,13 +210,11 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 byte[] b = baos.toByteArray();
                 String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
                 //json image format
                 // "image":{"filename": "original_filename.jpeg","content_type": "image/jpeg","content": "<base64string>"}
 
                 jsonImage = new JSONObject()
-                        .put("filename", "image"+ sdf.format(new Date()) )
+                        .put("filename", "u"+ AppSession.getCurrentUser().id + "image"+ sdf.format(new Date()) )
                         .put("content_type", "image/jpeg")
                         .put("content", encodedImage);
 
@@ -277,7 +296,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 } catch (JSONException e){
                     e.printStackTrace();
                     //Utils.dismissProgressDialog(pd);
-                    //mCallback.onError(VolleySingleton.extractErrorMessage(context, error));
                 }
             }
         };
@@ -295,25 +313,58 @@ public class AdCreateActivity extends NavigationBaseActivity {
                 //Log.d(TAG, "onErrorResponse: tostring" + error.toString());
                 String errorMessage = VolleyErrorHelper.getMessage(context, error);
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                String errorDialogMsg="";
 
-                //TODO: show dialog with error
                 try {
+
                     JSONObject errorJSON = new JSONObject(errorMessage);
                     if (errorJSON.has("errors")){
                         JSONObject err = errorJSON.getJSONObject("errors");
+
+                        Iterator<?> errores = err.keys();
+                        while(errores.hasNext() ){
+                            String key = (String)errores.next();
+                            switch (key){
+                                case "title":
+                                    errorDialogMsg += "Título, ";
+                                    break;
+                                case "body":
+                                    errorDialogMsg += "Descripción, ";
+                                    break;
+                            }
+
+                            if( err.get(key) instanceof String ) {
+                                String value = (String) err.get(key);
+                                errorDialogMsg += value.toString();
+                                errorDialogMsg += "\n";
+                            } else if(err.get(key) instanceof JSONArray){
+                                errorDialogMsg += ((JSONArray) err.get(key)).join(",").replace('"',' ').trim();
+                                errorDialogMsg += "\n";
+                                //Iterator<?> tipo = err.getJSONObject(key).keys();
+//                            while(tipo.hasNext()){
+//                                String key2 = (String)tipo.next();
+//                                json.getJSONObject(key).getJSONArray(key2).toString();
+//                            }
+                            }
+                        }
+
 
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+                //show dialog with error
+                AlertDialog.Builder builder = new AlertDialog.Builder( AdCreateActivity.this, R.style.yndDialog);
+                builder.setTitle("Errores")
+                        .setMessage(errorDialogMsg)
+                        .setCancelable(false)
+                        .setPositiveButton("OK", null);
+                AlertDialog alert = builder.create();
+                alert.show();
 
+                
 
-//                if (error.networkResponse.has("errors")){
-//                    JSONObject errors = response.getJSONObject("errors");
-//                    Log.d(TAG, "onResponse: errors : " + errors.toString());
-//                }
-                //mCallback.onError(VolleySingleton.extractErrorMessage(context, error));
             }
         };
     }
