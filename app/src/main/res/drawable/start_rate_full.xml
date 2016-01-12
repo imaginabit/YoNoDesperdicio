@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+android:id/secondaryProgress"
-        android:gravity="center"
-        android:width="35dp"
+        android:gravity="left"
+        android:width="90dp"
         android:height="35dp"
         >
         <bitmap
@@ -11,9 +11,9 @@
             />
         </item>
     <item android:id="@+android:id/background"
-        android:width="40dp"
-        android:height="40dp"
-        android:gravity="center"
+        android:width="90dp"
+        android:height="16dp"
+        android:gravity="left"
         >
         <bitmap
             android:src="@drawable/ic_star_border_black"
@@ -21,9 +21,9 @@
             />
     </item>
     <item android:id="@+android:id/progress"
-        android:width="48dp"
+        android:width="90dp"
         android:height="48dp"
-        android:gravity="center"
+        android:gravity="left"
         >
         <bitmap
             android:src="@drawable/ic_star_rate_black"

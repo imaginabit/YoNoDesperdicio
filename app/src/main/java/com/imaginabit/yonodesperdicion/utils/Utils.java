@@ -36,10 +36,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -437,6 +439,20 @@ public class Utils {
     public interface FetchWeightTotalCallback {
         public void done(Double weight_total, Exception e);
     }
+
+
+	public static String gramsToKgStr(float grams){
+		float kilos = (float) (grams / 1000.0);
+
+		DecimalFormat df = new DecimalFormat("0.0#");
+		df.setRoundingMode(RoundingMode.HALF_DOWN);
+
+		String txt =  " Kg";
+		String strKilos = df.format(kilos);
+		txt = strKilos + txt;
+
+		return txt;
+	}
 
 
 }

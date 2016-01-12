@@ -25,8 +25,11 @@
 
     <style name="blueStartsRatingBar" parent="@android:style/Widget.RatingBar">
         <item name="android:progressDrawable">@drawable/start_rate_full</item>
+        <item name="android:padding">0dip</item>
         <item name="android:minHeight">22dip</item>
         <item name="android:maxHeight">22dip</item>
+        <item name="android:minWidth">100dip</item>
+
     </style>
 
     <style name="yndSwitch" parent="Widget.Design.TextInputLayout">

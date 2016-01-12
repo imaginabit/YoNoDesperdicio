@@ -3,6 +3,8 @@ package com.imaginabit.yonodesperdicion.activities;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -14,8 +16,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.imaginabit.yonodesperdicion.App;
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
+import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
@@ -40,10 +48,18 @@ public class MainActivity extends NavigationBaseActivity {
 
     private List<Ad> mAds;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Put on session
+        UserData user = UserData.prefsFetch(this);
+        if (user != null) {
+            AppSession.setCurrentUser(user);
+        }
+
 
         // Fix action bar and drawer
         Toolbar toolbar = setSupportedActionBar();
@@ -63,21 +79,24 @@ public class MainActivity extends NavigationBaseActivity {
 
         // First time?
         if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME, true)) {
-            if (android.os.Build.VERSION.SDK_INT <= 12) {
-                Log.v(TAG,"--- SDK_INT <= 12 ---");
+            if (Build.VERSION.SDK_INT <= 12) {
+                Log.v(TAG, "--- SDK_INT <= 12 ---");
             } else {
                 Log.v(TAG, "--- SDK_INT > 12 ---");
             }
 
             // TODO: use better alternative for last android versions
             new IntroductionBuilder(this).withSlides(generateSlides())
-                                         .introduceMyself();
+                    .introduceMyself();
         }
 
         // Initialize Universal Image Loader
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .showImageForEmptyUri(R.drawable.zanahoria) // resource or drawable
+                .showImageOnFail(R.drawable.aubergine) // resource or drawable
                 .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
                 .defaultDisplayImageOptions(defaultOptions)
@@ -104,16 +123,7 @@ public class MainActivity extends NavigationBaseActivity {
         //Get Ads
         getAdsFromWeb();
 
-//        mRecyclerViewIdeas = (RecyclerView) findViewById(R.id.recycler_ideas);
-//        mRecyclerViewIdeas.setHasFixedSize(true);
-//        mLayoutManagerIdeas = new LinearLayoutManager(this);
-//        mRecyclerViewIdeas.setLayoutManager(mLayoutManagerIdeas);
-//        ArrayList<Idea> ideas = IdeaUtils.sampleData();
-//        mAdapterIdeas = new IdeasAdapter(ideas);
-//        mRecyclerViewIdeas.setAdapter(mAdapterIdeas);
 
-//        mAdapter.notifyDataSetChanged();
-//        mAdapterIdeas.notifyDataSetChanged();
     }
 
     private void initializeData() {
@@ -124,8 +134,8 @@ public class MainActivity extends NavigationBaseActivity {
         //Ad(String title, String body, String imageUrl, int weightGrams, String expiration, String postalCode, int status, int userId, String userName)
 
         try {
-            mAds.add( new Ad("title", "body", "String imageUrl", 100, "2010-10-23", "3241234", 1, 10, "uaoeu"));
-            mAds.add( new Ad("tomate", "asoneuhaoete", "/system/ideas/images/000/000/001/original/croquetas-pollo.jpg", 100, "2000-10-15", "28080", 2, 1, "pepito" ) );
+            mAds.add(new Ad("title", "body", "String imageUrl", 100, "2010-10-23", "3241234", 1, 10, "uaoeu"));
+            mAds.add(new Ad("tomate", "asoneuhaoete", "/system/ideas/images/000/000/001/original/croquetas-pollo.jpg", 100, "2000-10-15", "28080", 2, 1, "pepito"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -144,20 +154,20 @@ public class MainActivity extends NavigationBaseActivity {
         List<Slide> slides = new ArrayList<>();
 
         slides.add(new Slide().withTitle("¡Hola!")
-                              .withDescription("¿Tienes comida de sobra?\nNo la desperdicies")
-                              .withColorResource(R.color.primary).withImage(R.drawable.aubergine));
+                .withDescription("¿Tienes comida de sobra?\nNo la desperdicies")
+                .withColorResource(R.color.primary).withImage(R.drawable.aubergine));
 
         slides.add(new Slide().withTitle("Comparte")
-                              .withDescription("Ofrece tu comida extra de forma rápida y sencilla")
-                              .withColorResource(R.color.green_500).withImage(R.drawable.zanahoria));
+                .withDescription("Ofrece tu comida extra de forma rápida y sencilla")
+                .withColorResource(R.color.green_500).withImage(R.drawable.zanahoria));
 
         slides.add(new Slide().withTitle("Busca")
                 .withDescription("Localiza los alimentos que necesitas y recógelos")
                 .withColorResource(R.color.cyan_500).withImage(R.drawable.bottle));
 
         slides.add(new Slide().withTitle("Conoce")
-                              .withDescription("Con Yonodesperdicio conocerás a personas como tú")
-                              .withColorResource(R.color.indigo_500).withImage(R.drawable.apple));
+                .withDescription("Con Yonodesperdicio conocerás a personas como tú")
+                .withColorResource(R.color.indigo_500).withImage(R.drawable.apple));
 
         slides.add(new Slide().withTitle("Comienza ahora")
                 .withDescription("Forma parte de la red y colabora en la reducción del desperdicio de alimentos")
@@ -187,7 +197,7 @@ public class MainActivity extends NavigationBaseActivity {
                             adapter = new AdsAdapter(context, mAds);
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
-                            Log.e(TAG, "ideas : " + mAds.size());
+                            Log.d(TAG, "Anuncios general : " + mAds.size());
                         }
                     } else {
                         Log.e(TAG, "error al obtener los Anuncios");
@@ -207,10 +217,14 @@ public class MainActivity extends NavigationBaseActivity {
         }
     }
 
-
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Release session
+        AppSession.release();
+        // App is not running
+        App.setIsAppRunning(false);
+    }
 
 
 }
