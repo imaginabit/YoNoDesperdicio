@@ -1,9 +1,11 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +15,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
@@ -65,6 +69,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_PICTURE = 1;
+    protected static final int STORAGE_PERMISSION_RC = 3;
     Bitmap bitmap;
     String selectedImagePath;
     private Intent pictureActionIntent = null;
@@ -72,6 +77,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
     ProgressDialog pd;
     Activity thisAdCreateActivity;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    File capturedPhoto;
 
     public interface AdCreateCallback {
         public void onFinished();
@@ -402,12 +408,84 @@ public class AdCreateActivity extends NavigationBaseActivity {
                         intent.putExtra(MediaStore.EXTRA_OUTPUT,
                                 Uri.fromFile(f));
 
-                        startActivityForResult(intent,
-                                CAMERA_REQUEST);
+                        int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
+                                Manifest.permission.CAMERA);
+
+                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                            startActivityForResult(intent, CAMERA_REQUEST);
+                        } else {
+                            ActivityCompat.requestPermissions(AdCreateActivity.this, new String[]{Manifest.permission.CAMERA},
+                                    CAMERA_REQUEST);
+                            //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
+
+                        }
+
+
+                        // Here, thisActivity is the current activity
+//                        if (ContextCompat.checkSelfPermission(AdCreateActivity.this,
+//                                Manifest.permission.CAMERA)
+//                                != PackageManager.PERMISSION_GRANTED) {
+//
+//                            // Should we show an explanation?
+//                            if (ActivityCompat.shouldShowRequestPermissionRationale(AdCreateActivity.this,
+//                                    Manifest.permission.CAMERA)) {
+//
+//                                // Show an expanation to the user *asynchronously* -- don't block
+//                                // this thread waiting for the user's response! After the user
+//                                // sees the explanation, try again to request the permission.
+//
+//                            } else {
+//
+//                                // No explanation needed, we can request the permission.
+//
+//                                ActivityCompat.requestPermissions(AdCreateActivity.this,
+//                                        new String[]{Manifest.permission.CAMERA},
+//                                        CAMERA_REQUEST);
+//
+//                                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+//                                // app-defined int constant. The callback method gets the
+//                                // result of the request.
+//                            }
+//                        }
 
                     }
                 });
         myAlertDialog.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(
+                            MediaStore.ACTION_IMAGE_CAPTURE);
+                    File f = new File(android.os.Environment
+                            .getExternalStorageDirectory(), "temp.jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                            Uri.fromFile(f));
+                    startActivityForResult(intent, CAMERA_REQUEST);
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case STORAGE_PERMISSION_RC:{
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    File f = new File(Environment.getExternalStorageDirectory()
+                            .toString());
+                    setPhoto(f);
+                } else {
+                    Toast.makeText(this, "No permission to read external storage.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+
+        }
     }
 
     @Override
@@ -419,61 +497,47 @@ public class AdCreateActivity extends NavigationBaseActivity {
         selectedImagePath = null;
 
         if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+//            Toast.makeText(this, "Image saved to:\n" +
+//                    data.getExtras().get("data"), Toast.LENGTH_LONG).show();
+
 
             File f = new File(Environment.getExternalStorageDirectory()
                     .toString());
-            for (File temp : f.listFiles()) {
-                if (temp.getName().equals("temp.jpg")) {
-                    f = temp;
-                    break;
-                }
-            }
 
-            if (!f.exists()) {
-                Toast.makeText(getBaseContext(),
-                        "Error while capturing image", Toast.LENGTH_LONG)
-                        .show();
-                return;
-            }
+            Log.d(TAG, "onActivityResult: file: " + f.toString());
+            if(f.exists()) {
+                Log.d(TAG, "onActivityResult: Existe!");
+                if (f.canRead() ){
+                    Log.d(TAG, "onActivityResult: file: can read" );
+                }else{
+                    int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE);
 
-            try {
-                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-
-                bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
-
-                int rotate = 0;
-                try {
-                    ExifInterface exif = new ExifInterface(f.getAbsolutePath());
-                    int orientation = exif.getAttributeInt(
-                            ExifInterface.TAG_ORIENTATION,
-                            ExifInterface.ORIENTATION_NORMAL);
-
-                    switch (orientation) {
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            rotate = 270;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            rotate = 180;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            rotate = 90;
-                            break;
+                    if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+//                        Toast.makeText(AdCreateActivity.this, "Puedo leer ", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onActivityResult: tengo permisos para leer external storage");
+                        //startActivityForResult(intent, CAMERA_REQUEST);
+                    } else {
+                        ActivityCompat.requestPermissions(AdCreateActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_RC);
+                        //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onActivityResult: no tengo permisos para leer external storage");
+                        return;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-                Matrix matrix = new Matrix();
-                matrix.postRotate(rotate);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                        bitmap.getHeight(), matrix, true);
 
-                image.setImageBitmap(bitmap);
-                image.setVisibility(View.VISIBLE);
-                //storeImageTosdCard(bitmap);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                if (f.isFile()) {
+                    Log.d(TAG, "onActivityResult: is file: " + f.getName());
+
+                }
+                if (f.isDirectory()){
+                    Log.d(TAG, "onActivityResult: file: " + f.listFiles().toString());
+                }
+                
+            }else {
+                Log.d(TAG, "onActivityResult: file f no existe");
             }
+
+            setPhoto(f);
 
         } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
             if (data != null) {
@@ -504,5 +568,59 @@ public class AdCreateActivity extends NavigationBaseActivity {
             }
         }
 
+    }
+
+    private void setPhoto(File f){
+        for (File temp : f.listFiles()) {
+            if (temp.getName().equals("temp.jpg")) {
+                f = temp;
+                break;
+            }
+        }
+        if (!f.exists()) {
+            Toast.makeText(getBaseContext(),
+                    "Error while capturing image", Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        try {
+            bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+
+            bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
+
+            int rotate = 0;
+            try {
+                ExifInterface exif = new ExifInterface(f.getAbsolutePath());
+                int orientation = exif.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL);
+
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        rotate = 270;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        rotate = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        rotate = 90;
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotate);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                    bitmap.getHeight(), matrix, true);
+
+            image.setImageBitmap(bitmap);
+            image.setVisibility(View.VISIBLE);
+            //storeImageTosdCard(bitmap);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
