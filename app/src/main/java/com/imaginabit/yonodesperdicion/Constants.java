@@ -6,7 +6,7 @@ package com.imaginabit.yonodesperdicion;
 public class Constants {
 
     // URLs
-    public static final String HOME_URL = "http://yonodesperdicio.org/";
+    public static final String HOME_URL = "http://beta.yonodesperdicio.org/";
     public static final String IDEAS_API_URL = HOME_URL + "api/ideas";
     public static final String ADS_API_URL = HOME_URL + "api/ads";
 
