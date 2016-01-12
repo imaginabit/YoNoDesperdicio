@@ -55,6 +55,9 @@
     <string name="user_auth_message">Validando credenciales, espere...</string>
     <string name="user_create_message">Creando cuenta, espere...</string>
 
+    <!-- Ad -->
+    <string name="ad_create_message">Creando anuncio, espere...</string>
+
     <!-- Content Description for images -->
     <string name="desc_google_icon">Logo de Google</string>
 
