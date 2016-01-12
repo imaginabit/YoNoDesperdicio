@@ -20,6 +20,7 @@ import com.imaginabit.yonodesperdicion.models.Ad;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,9 @@ import java.util.List;
  * Created by fer2015julio on 19/11/15.
  */
 public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
-    private static final String TAG = AdsAdapter.class.getSimpleName();
+
+    private static final String TAG = "ViewHolder";
+    //private static final String TAG = AdsAdapter.class.getSimpleName();
 
     private List<Ad> adsList = new ArrayList<Ad>();
     private Context context;
@@ -53,7 +56,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
             distance = (TextView) view.findViewById(R.id.ad_distance);
             weight = (TextView) view.findViewById(R.id.ad_weight);
             image = (ImageView) view.findViewById(R.id.ad_image);
+
+            Log.d(TAG, "ViewHolder: ");
         }
+
+        
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
@@ -67,10 +74,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
     // Create new views (invoked by the layout manager)
     @Override
     public AdsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder: hi , parent"+ parent.toString());
+        Log.d(TAG, "onCreateViewHolder: hi , parent "+ parent.toString());
 
         // Create a new view
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.ad_mini, parent, false);
+        Log.d(TAG, "onCreateViewHolder: inflater");
 
         // set the view's size, margins, paddings and layout parameters
 
@@ -81,6 +89,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        Log.d(TAG, "onBindViewHolder: start");
         Ad ad = adsList.get(position);
 
         holder.title.setText(ad.getTitle());
@@ -115,13 +124,19 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
 
 
         //get image from website
-        ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
+        ImageLoader imageLoader; // Get singleton instance
+        imageLoader = ImageLoader.getInstance();
+
         String imageUri = Constants.HOME_URL + ad.getImageUrl();
 
         Log.i(TAG, "onBindViewHolder:" + imageUri);
 
         ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
-        imageLoader.displayImage(imageUri, holder.image );
+        try {
+            imageLoader.displayImage(imageUri, holder.image );
+        } catch ( Exception e){
+            holder.image.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.brick));
+        }
 
         // CardView click listener
         holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -144,8 +159,5 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         return 0;
     }
 
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
+
 }

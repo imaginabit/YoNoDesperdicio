@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.imaginabit.yonodesperdicion.profile"
+    tools:context=".activities.ProfileActivity"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout
@@ -78,6 +78,8 @@
                     android:orientation="vertical"
                     android:paddingEnd="20dp"
                     android:paddingStart="20dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
                     android:paddingTop="56dp"
                     >
 
@@ -122,6 +124,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/articulo_card_margin"
                             android:layout_marginStart="@dimen/articulo_card_margin"
+                            android:layout_marginLeft="@dimen/articulo_card_margin"
+                            android:layout_marginRight="@dimen/articulo_card_margin"
                             android:layout_weight=".01"
                             android:text="|"
                             android:textColor="@color/grey_500"
@@ -140,6 +144,7 @@
                                 style="@style/blueStartsRatingBar"
                                 android:layout_width="wrap_content"
                                 android:layout_height="16dp"
+                                android:layout_gravity="left"
                                 android:layout_marginBottom="0dp"
                                 android:layout_marginTop="5dp"
                                 android:isIndicator="true"
@@ -153,12 +158,13 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/user_ads"
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:background="@color/activity_background"
                     android:orientation="vertical"
                     android:paddingTop="@dimen/activity_vertical_margin"
-                    >
+                    android:nestedScrollingEnabled="true">
 
                     <TextView
                         style="@style/Base.TextAppearance.AppCompat.Headline"
@@ -168,14 +174,19 @@
                         android:text="ALIMENTOS COMPARTIDOS"
                         />
 
-                    <!-- Include lista de anuncios del usuario -->
-                    <FrameLayout
+                    <LinearLayout
+                        android:paddingTop="?attr/actionBarSize"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:nestedScrollingEnabled="true">
 
-                        <include layout="@layout/ad_mini"/>
-
-                    </FrameLayout>
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recycler_userads"
+                            android:layout_width="match_parent"
+                            android:layout_height="fill_parent"
+                            />
+                    </LinearLayout>
 
                 </LinearLayout>
 
