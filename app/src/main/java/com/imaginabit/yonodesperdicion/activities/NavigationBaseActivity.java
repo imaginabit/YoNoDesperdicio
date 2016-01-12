@@ -126,10 +126,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             startActivity(itntMain);
         }
         else if (id == R.id.nav_perfil) {
-            if (AppSession.getCurrentUser()==null){
-                Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
-                startActivity(loginPanelIntent);
-            } else {
+            if (Utils.checkLoginAndRedirect(this)){
                 Intent itntPerfil = new Intent(context, ProfileActivity.class);
                 startActivity(itntPerfil);
             }
@@ -169,10 +166,14 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById( R.id.drawer_layout );
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        try {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

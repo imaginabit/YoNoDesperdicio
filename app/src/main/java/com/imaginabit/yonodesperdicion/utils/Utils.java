@@ -26,7 +26,9 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
 
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.activities.LoginPanelActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,8 +46,10 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.List;
 
+
+
 /**
- * @author Antonio de Sousa Barroso
+ * General Util Funtions for the app
  */
 public class Utils {
 	private static final String TAG = "Utils";
@@ -452,6 +456,49 @@ public class Utils {
 		txt = strKilos + txt;
 
 		return txt;
+	}
+
+	public static boolean checkLoginAndRedirect(Activity activity){
+        Context context = activity.getApplicationContext();
+
+        if ( AppSession.getCurrentUser() == null ) {
+            Log.d(TAG, "checkLoginAndRedirect: go to login activity");
+            Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+
+            activity.startActivity(loginPanelIntent);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+	/*
+	Android > 6.0
+	"Note: if you app targets M and above and declares as using the CAMERA permission which is not granted,
+	 then atempting to use this action will result in a SecurityException."
+	 The workaround would be check is the app has camera permission included in the manifest,
+	 if it's , request camera permission before launching intent.
+	http://stackoverflow.com/a/32856112/385437
+	 */
+	public static boolean hasPermissionInManifest(Context context, String permissionName) {
+		final String packageName = context.getPackageName();
+		try {
+			final PackageInfo packageInfo = context.getPackageManager()
+					.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
+			Log.d(TAG, "hasPermissionInManifest: permisions "+ packageInfo);
+			Log.d(TAG, "hasPermissionInManifest: permisions "+ PackageManager.GET_PERMISSIONS );
+			final String[] declaredPermisisons = packageInfo.requestedPermissions;
+			if (declaredPermisisons != null && declaredPermisisons.length > 0) {
+				for (String p : declaredPermisisons) {
+					if (p.equals(permissionName)) {
+						return true;
+					}
+				}
+			}
+		} catch (PackageManager.NameNotFoundException e) {
+
+		}
+		return false;
 	}
 
 
