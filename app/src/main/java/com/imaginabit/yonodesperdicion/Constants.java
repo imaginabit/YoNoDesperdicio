@@ -20,6 +20,8 @@ public class Constants {
     // Authenticate users endpoint
     public static final String USERS_SESSIONS_API_URL = HOME_URL + "api/sessions";
 
+    public static final String MESSAGES_API_URL = HOME_URL + "api/mailboxes/inbox/conversations";
+
     public static final String longline = "--------------------------------------------------------";
 
     public static final String WEIGHT_TOTAL_KG_URL = HOME_URL + "api/total_kg";

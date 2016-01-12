@@ -141,8 +141,8 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         else if (id == R.id.nav_mensajes) {
             // TODO: quitar pruebas
             // he puesto ver el formulaciro de crear el anuncio aqui como prueba
-//            Intent itntMsgs = new Intent(context, AdCreateActivity.class);
-//            startActivity(itntMsgs);
+            Intent itntMsgs = new Intent(context, MessagesActivity.class);
+            startActivity(itntMsgs);
 
         }
         else if (id == R.id.nav_masinfo) {

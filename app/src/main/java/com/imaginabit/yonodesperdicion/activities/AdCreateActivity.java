@@ -154,15 +154,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
     }
 
     private void sendAdData() {
-
-//        new Handler().postDelayed(new Runnable() {
-//            public void run() {
-//                pd = ProgressDialog.show(context, "", context.getString(R.string.ad_create_message));
-//            }
-//        }, 1000);
-
-
-
         RequestQueue queue = VolleySingleton.getRequestQueue();
 
         JSONObject jsonAd = null;

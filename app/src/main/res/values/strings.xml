@@ -85,4 +85,5 @@
     <string name="volley_error_timeout">Agotado el tiempo de conexión con el backend.</string>
     <string name="volley_error_no_internet">No hay conexión a Internet.</string>
     <string name="volley_error_generic">No se ha podido completar con éxito la petición.</string>
+    <string name="title_activity_messages">Mensajes</string>
 </resources>
