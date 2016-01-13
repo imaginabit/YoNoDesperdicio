@@ -1,9 +1,9 @@
 package com.imaginabit.yonodesperdicion.utils;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -43,7 +43,7 @@ public class MessagesUtils {
     //Users Credentials needed
     //
 
-    public static void getMessages(final Context context,final MessagesCallback callback){
+    public static void getMessages(final Context context,final MessagesCallback callback,Activity activity){
         MessagesUtils.context = context;
         // Show message
         MessagesUtils.pd = ProgressDialog.show(context, "", context.getString(R.string.loading));
@@ -89,7 +89,7 @@ public class MessagesUtils {
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                     Constants.MESSAGES_API_URL,
                     jsonRequest,
-                    MessagesUtils.createResponseSuccessListener(callback), MessagesUtils .createReqErrorListener(callback) ){
+                    MessagesUtils.createResponseSuccessListener(callback), MessagesUtils .createReqErrorListener(callback,activity) ){
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map headers = new HashMap();
@@ -171,15 +171,17 @@ public class MessagesUtils {
             }
         };
     }
-    private static Response.ErrorListener createReqErrorListener(MessagesCallback callback){
+    private static Response.ErrorListener createReqErrorListener(MessagesCallback callback, final Activity activity){
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
                 Utils.dismissProgressDialog(MessagesUtils.pd);
                 String errorMessage = VolleyErrorHelper.getMessage(context, error);
+
+                String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
+
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
-                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
             }
         };
     }

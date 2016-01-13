@@ -20,7 +20,6 @@ import com.imaginabit.yonodesperdicion.models.Ad;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,7 @@ import java.util.List;
  */
 public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
 
-    private static final String TAG = "ViewHolder";
+    private static final String TAG = "AdsAdapter";
     //private static final String TAG = AdsAdapter.class.getSimpleName();
 
     private List<Ad> adsList = new ArrayList<Ad>();

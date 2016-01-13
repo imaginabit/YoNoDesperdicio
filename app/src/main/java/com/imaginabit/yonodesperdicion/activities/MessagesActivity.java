@@ -1,13 +1,14 @@
 package com.imaginabit.yonodesperdicion.activities;
 
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.adapters.ConversationsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
@@ -21,6 +22,7 @@ public class MessagesActivity extends NavigationBaseActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private List<Conversation> mConversationList;
 
     //private List<Ad> mAds;
     @Override
@@ -39,22 +41,26 @@ public class MessagesActivity extends NavigationBaseActivity {
         Toolbar toolbar = setSupportedActionBar();
         setDrawerLayout(toolbar);
 
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_conversations);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new ConversationsAdapter(context, mConversationList);
+        recyclerView.setAdapter(adapter);
+
         VolleySingleton.init(this);
-
-
         MessagesUtils.getMessages(MessagesActivity.this, new MessagesUtils.MessagesCallback() {
             @Override
             public void onFinished(List<Conversation> conversations, Exception e) {
                 Log.d(TAG, "onFinished: finishesd");
                 if(conversations!=null){
-                    //mConversations = conversations
-                    //adapter = new
-                    //recyclerView.setAdapter(adapter);
-                    //adapter.notifyDataSetChanged();
+//                    mConversations = conversations
+                    adapter = new ConversationsAdapter(context,conversations);
+                    recyclerView.setAdapter(adapter);
+//                    adapter.notifyDataSetChanged();
                     Log.d(TAG, "Conversacionesl : " + conversations.size());
-                    Toast.makeText(MessagesActivity.this, conversations.get(0).getSubject(), Toast.LENGTH_SHORT).show();
-
-
+                    Log.d(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
+                    //Toast.makeText(MessagesActivity.this, conversations.get(0).getSubject(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -62,7 +68,7 @@ public class MessagesActivity extends NavigationBaseActivity {
             public void onError(String errorMessage) {
                 Log.d(TAG, "onError: error");
             }
-        });
+        },MessagesActivity.this);
 
     }
 
