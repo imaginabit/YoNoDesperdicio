@@ -64,6 +64,7 @@ public class Utils {
 	 * Dismiss the progress dialog passed
 	 */
 	public static void dismissProgressDialog(ProgressDialog pd) {
+		Log.v(TAG, "dismissProgressDialog() called with: " + "pd = [" + pd + "]");
 		if (pd != null && pd.isShowing()) {
 			pd.dismiss();
 		}

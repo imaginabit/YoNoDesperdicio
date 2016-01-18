@@ -51,6 +51,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -79,11 +80,17 @@
         <activity
             android:name=".activities.AdDetailActivity"
             android:label="Anuncio Titulo"
-            android:parentActivityName=".activities.MainActivity"/>
+            android:parentActivityName=".activities.MainActivity" />
+
         <activity
             android:name=".activities.ProfileActivity"
             android:label=""
-            android:parentActivityName=".activities.MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity"/>
+        </activity>
         <activity
             android:name=".activities.AdCreateActivity"
             android:label="Nuevo Anuncio"
@@ -112,6 +119,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".activities.MessagesChatActivity"
+            android:label="@string/title_activity_messages_chat"
+            android:parentActivityName=".activities.MessagesActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imaginabit.yonodesperdicion.activities.MessagesActivity"/>
         </activity>
     </application>
 

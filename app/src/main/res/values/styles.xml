@@ -7,11 +7,14 @@
         <item name="colorAccent">@color/accent</item>
 
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
     <!-- TODO: Revisar colores y tamanos  -->
@@ -42,7 +45,7 @@
     </style>
 
     <!-- Google -->
-    
+
     <style name="ThemeOverlay.NoTitleActivity" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -74,6 +77,7 @@
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:textSize">30dp</item>
     </style>
+
     <style name="TextAppearance.Collapsed"
            parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">#FFF</item>
@@ -93,6 +97,7 @@
         <!--<item name="android:layout_alignParentBottom">@dimen/articulo_card_margin</item>-->
 
     </style>
+
     <style name="IdeaCard" parent="CardView">
         <item name="android:layout_marginLeft">@dimen/articulo_card_margin</item>
         <item name="android:layout_marginRight">@dimen/articulo_card_margin</item>
@@ -118,6 +123,10 @@
         <item name="android:windowTitleStyle">@style/yndTitleTextStyle</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.AppBarOverlay"
+           parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 
 </resources>
