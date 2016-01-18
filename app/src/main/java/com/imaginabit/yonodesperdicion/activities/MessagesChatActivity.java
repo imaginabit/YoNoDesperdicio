@@ -6,12 +6,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.MessagesAdapter;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
+import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
 import java.util.List;
 
@@ -22,6 +27,8 @@ public class MessagesChatActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private EditText chatInput;
+    private List<Message> mMessages;
 
 
     @Override
@@ -50,18 +57,63 @@ public class MessagesChatActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
 
-        List<Message> messages = mConversation.getMessages();
-        if( messages != null ) {
-            Log.d(TAG, "onCreate: Conversation messages " + messages.size());
-            Log.d(TAG, "onCreate: Conversation messages " + messages.get(0).toString());
+        mMessages = mConversation.getMessages();
+        if( mMessages != null ) {
+            Log.d(TAG, "onCreate: Conversation messages " + mMessages.size());
+            Log.d(TAG, "onCreate: Conversation messages " + mMessages.get(0).toString());
         }else{
             Log.d(TAG, "onCreate: Conversation messages null" );
         }
 
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new MessagesAdapter(messages);
+        adapter = new MessagesAdapter(mMessages);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(mMessages.size() - 1);
+
+        chatInput = (EditText) findViewById(R.id.chat_input_text);
+
+
+        chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    String msg = v.getText().toString();
+                    MessagesUtils.reply(mConversation.getId(), msg, new MessagesUtils.MessagesCallback() {
+                        @Override
+                        public void onFinished(List<Message> messages, Exception e) {
+                            Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+
+                            //refresh adapter content
+                            MessagesAdapter ma = (MessagesAdapter) adapter;
+                            Message oMsg = messages.get(messages.size()-1);
+                            if (oMsg !=null){
+                                ma.add(oMsg);
+                                Log.d(TAG, "onFinished: message size" + mMessages.size());
+                                recyclerView.scrollToPosition(mMessages.size() - 1);
+                                chatInput.setText("");
+                                chatInput.clearFocus();
+                                //recyclerView.smoothScrollToPosition(0);
+                                recyclerView.smoothScrollToPosition(mMessages.size()-1);
+                            } else {
+                                Log.d(TAG, "onFinished: message null?");
+                                Log.d(TAG, "onFinished: messages: "+ messages.toString());
+                            }
+                            
+                            
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            Log.d(TAG, "onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                        }
+                    });
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
 
     }
 

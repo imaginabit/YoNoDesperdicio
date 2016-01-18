@@ -85,6 +85,9 @@ public class MessagesActivity extends NavigationBaseActivity {
                             adapter = new ConversationsAdapter(context, conversations);
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
+                            recyclerView.scrollToPosition(adapter.getItemCount()-1);
+                            //recyclerView.scrollToPosition(messages.size()-1);
+
 
 
                             Date d = new Date();

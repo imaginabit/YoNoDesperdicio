@@ -417,5 +417,59 @@ public class MessagesUtils {
 
     }
 
+    public static void reply(int conversationId, final String msg, final MessagesCallback callback){
+        Log.d(TAG, "reply() called with: " + "conversationId = [" + conversationId + "], msg = [" + msg + "], callback = [" + callback + "]");
+
+        JSONObject jsonRequest = new JSONObject();
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+        try {
+            jsonRequest.put("body",msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
+                Constants.CONVERSATIONS_API_URL + "/" + conversationId + "/messages",
+                jsonRequest,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i("--->", "authenticate:" + response.toString());
+                        //Utils.dismissProgressDialog(MessagesUtils.pd);
+                        Exception error = null;
+
+                        //Log.d(TAG, "onResponse: response" + response.toString());
+                        List<Message> messages = new ArrayList<>();
+                        boolean Mok = messages.add(new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date()));
+                        Log.d(TAG, "onResponse: mok "+ Mok);
+
+                        callback.onFinished(messages,error);
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "getConversationMessages onErrorResponse: ");
+
+                    }
+                }
+                //MessagesUtils.createReqErrorListener((ConversationsCallback) callback, activity)
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return MessagesUtils.authHeaders();
+            }
+        };
+        queue.add(request);
+
+
+//        POST a /api/mailboxes/invox/conversations/CONVERSATION_ID/messages
+//        con json {"message": {"body": "cuerpo del mensaje 3"}}
+//        curl -H "Content-Type: application/json"  -H "Authorization: 8qqRb_KFdp9W2-CNVFKU" -X POST -d '{"message": {"body": "cuerpo del mensaje 3"}}' http://localhost:3000/api/mailboxes/inbox/conversations/1/messages
+
+
+    }
+
 
 }

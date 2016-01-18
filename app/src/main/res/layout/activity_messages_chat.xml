@@ -26,7 +26,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:nestedScrollingEnabled="true">
+                android:nestedScrollingEnabled="true"
+                >
 
                 <!--<include layout="@layout/chat_line_me"/>-->
                 <!--<include layout="@layout/chat_line_other"/>-->
@@ -35,6 +36,7 @@
                     android:id="@+id/list_chat_messages"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:paddingBottom="50dp"
                     />
 
             </LinearLayout>
@@ -54,6 +56,7 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/chat_input_hint"
                         android:singleLine="true"
+                        android:imeOptions="actionSend"
                         />
 
                 </android.support.design.widget.TextInputLayout>

@@ -81,6 +81,25 @@ public class Message {
         mGlobal = false;
         mExpires = null;
     }
+    public Message(int id, String body, int sender_id, Date created_at) {
+        mId = id;
+        mBody = body;
+        mSubject = "";
+        mSender_id = sender_id;
+        mSender_type = 0;
+        mConversation_id = 0;
+        mDraft = Boolean.FALSE;
+        mUpdated_at = created_at;
+        mCreated_at = created_at;
+
+        mNotified_object_id = -1;
+        mNotified_object_type = -1;
+        mNotification_code = -1;
+
+        mAttachment = null;
+        mGlobal = false;
+        mExpires = null;
+    }
 
     public int getId() {
         return mId;

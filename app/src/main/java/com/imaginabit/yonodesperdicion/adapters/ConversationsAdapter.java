@@ -76,7 +76,11 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         holder.subject.setText(conversation.getSubject());
         if (conversation.getMessages() != null) {
             Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
-            holder.lastMessage.setText(lastMessage.getSubject());
+            String lmBody = lastMessage.getBody();
+            if(lmBody.length()>22) {
+                lmBody = lmBody.substring(0, 22) + "...";
+            }
+            holder.lastMessage.setText(lmBody);
         }else {
             holder.lastMessage.setText("");
         }
