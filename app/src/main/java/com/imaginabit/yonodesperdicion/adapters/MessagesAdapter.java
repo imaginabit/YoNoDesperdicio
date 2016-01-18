@@ -15,6 +15,7 @@ import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,7 +47,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public void onBindViewHolder(final MessagesAdapter.ViewHolder holder, int position) {
         Log.v(TAG, "onBindViewHolder() called with: " + "holder = [" + holder + "], position = [" + position + "]");
 
-
         holder.userName.setText("");
 
         int UserID = mMessages.get(position).getSender_id();
@@ -60,11 +60,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                 UserUtils.getUser(UserID, mContext, new UserUtils.FetchUserCallback() {
                     @Override
                     public void done(User user, Exception e) {
-                        if (user!=null) {
+                        if (user!=null){
                             Log.d(TAG, "done: user "+ user.toString());
                             holder.userName.setText(user.getUserName());
                             mOtherUser = user;
-                        }else {
+                        } else {
                             if(e!= null) e.printStackTrace();
                         }
                     }
@@ -76,9 +76,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 //                });
             }
         }
-
         holder.chatMessage.setText(mMessages.get(position).getBody().toString());
-
     }
 
     @Override
@@ -103,4 +101,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             userName = (TextView) itemView.findViewById(R.id.chat_user_name);
         }
     }
+
+   public void add(Message msg){
+       mMessages.add(msg);
+       notifyDataSetChanged();
+   }
+
+   public void add(String msg){
+       Message oMsg = new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date());
+       mMessages.add(oMsg);
+       notifyDataSetChanged();
+   }
 }
