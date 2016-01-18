@@ -86,4 +86,8 @@
     <string name="volley_error_no_internet">No hay conexión a Internet.</string>
     <string name="volley_error_generic">No se ha podido completar con éxito la petición.</string>
     <string name="title_activity_messages">Mensajes</string>
+    <string name="title_activity_messages_chat">Chat</string>
+
+
+    <string name="chat_input_hint">Escribe aqui tu mensaje</string>
 </resources>

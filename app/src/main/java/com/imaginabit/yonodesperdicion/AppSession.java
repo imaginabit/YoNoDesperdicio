@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion;
 
 import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.models.Conversation;
 
 /**
  * @author Antonio de Sousa Barroso
@@ -22,4 +23,8 @@ public class AppSession {
     public static synchronized void release() {
         AppSession.user = null;
     }
+
+    public static Conversation currentConversation;
+
+
 }

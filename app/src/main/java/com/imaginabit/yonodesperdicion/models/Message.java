@@ -201,4 +201,25 @@ public class Message {
     public void setExpires(String expires) {
         mExpires = expires;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "mId=" + mId +
+                ", mBody='" + mBody + '\'' +
+                ", mSubject='" + mSubject + '\'' +
+                ", mSender_id=" + mSender_id +
+                ", mSender_type=" + mSender_type +
+                ", mConversation_id=" + mConversation_id +
+                ", mDraft=" + mDraft +
+                ", mUpdated_at=" + mUpdated_at +
+                ", mCreated_at=" + mCreated_at +
+                ", mNotified_object_id=" + mNotified_object_id +
+                ", mNotified_object_type=" + mNotified_object_type +
+                ", mNotification_code=" + mNotification_code +
+                ", mAttachment='" + mAttachment + '\'' +
+                ", mGlobal=" + mGlobal +
+                ", mExpires='" + mExpires + '\'' +
+                '}';
+    }
 }

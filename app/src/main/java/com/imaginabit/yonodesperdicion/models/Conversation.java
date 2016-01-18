@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion.models;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Fernando Ramírez on 13/01/16.
@@ -14,6 +15,9 @@ public class Conversation {
     private Date mCreatedAt;
     private Date mUpdatedAt;
     private int mThreadId;
+    public boolean loaded= false;
+
+    private List<Message> mMessages;
 
     public Conversation(int id, String subject, Date createdAt, Date updatedAt, int threadId) {
         mId = id;
@@ -21,6 +25,21 @@ public class Conversation {
         mCreatedAt = createdAt;
         mUpdatedAt = updatedAt;
         mThreadId = threadId;
+
+
+//        MessagesUtils.getConversationMessages(id, new MessagesUtils.MessagesCallback() {
+//            @Override
+//            public void onFinished(List<Message> messages, Exception e) {
+//                Log.d(TAG, "onFinished: getConversation messages");
+//                mMessages = messages;
+//                loaded= true;
+//            }
+//
+//            @Override
+//            public void onError(String errorMessage) {
+//
+//            }
+//        });
     }
 
     public static String getTAG() {
@@ -65,5 +84,26 @@ public class Conversation {
 
     public void setThreadId(int threadId) {
         mThreadId = threadId;
+    }
+
+    public List<Message> getMessages() {
+        return mMessages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        mMessages = messages;
+    }
+
+    @Override
+    public String toString() {
+        return "Conversation{" +
+                "mId=" + mId +
+                ", mSubject='" + mSubject + '\'' +
+                ", mCreatedAt=" + mCreatedAt +
+                ", mUpdatedAt=" + mUpdatedAt +
+                ", mThreadId=" + mThreadId +
+                ", loaded=" + loaded +
+                ", mMessages=" + mMessages +
+                '}';
     }
 }
