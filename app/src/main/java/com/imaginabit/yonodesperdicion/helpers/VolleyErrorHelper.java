@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion.helpers;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -15,6 +16,7 @@ import com.imaginabit.yonodesperdicion.R;
  * Helper for VolleyException encapsulation
  */
 public class VolleyErrorHelper {
+    private static final String TAG = "VolleyErrorHelper";
     /**
      * Returns appropriate message which is to be displayed to the user
      * against the specified error object.
@@ -38,7 +40,9 @@ public class VolleyErrorHelper {
      * Handle the Server Error
      */
     private static String handleServerError(Context context, VolleyError error) {
+        Log.d(TAG, "handleServerError() called with: " + "context = [" + context + "], error = [" + error + "]");
         NetworkResponse response = error.networkResponse;
+        Log.d(TAG, "handleServerError: response.networkResponse: "+ Integer.toString(response.statusCode) );
 
         if (response != null) {
             switch (response.statusCode){
@@ -53,6 +57,8 @@ public class VolleyErrorHelper {
                     }
                     // invalid request
                     return error.getMessage();
+                case 500:
+                    return "error 500: algo ha ido mal";
 
                 default:
                     return context.getResources().getString(R.string.volley_error_timeout);

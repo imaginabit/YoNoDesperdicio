@@ -1,6 +1,8 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -13,14 +15,22 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.imaginabit.yonodesperdicion.R;
-import com.imaginabit.yonodesperdicion.models.Ad;
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
+import com.imaginabit.yonodesperdicion.models.Ad;
+import com.imaginabit.yonodesperdicion.models.Conversation;
+import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
+import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdDetailActivity extends NavigationBaseActivity {
     String TAG = "AdDetailActivity";
@@ -32,7 +42,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
         // Retrieve args
         Bundle data = getIntent().getExtras();
-        Ad ad = (Ad) data.getParcelable("ad");
+        final Ad ad = (Ad) data.getParcelable("ad");
         if (ad == null) {
             // @TODO find another way
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
@@ -42,6 +52,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             //toolbar.setTitle(ad.getTitle());
             setDrawerLayout(toolbar);
             getSupportActionBar().setTitle(ad.getTitle());
+            VolleySingleton.init(this);
 
             // Content
 
@@ -135,6 +146,48 @@ public class AdDetailActivity extends NavigationBaseActivity {
             //
             //        RatingBar userWeight = (RatingBar) findViewById(R.id.user_weight);
             //        userWeight.setRating();
+
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean b = Utils.checkLoginAndRedirect(AdDetailActivity.this);
+                    if (b) {
+                        Log.d(TAG, "onClick: is logged!");
+                        //create a new conversation, new message for this ad and go to it
+                        MessagesUtils.createConversation(ad.getUserName() + " " + ad.getTitle(), ad.getUserId(), new MessagesUtils.MessagesCallback() {
+                            @Override
+                            public void onFinished(List<Message> messages, Exception e) {
+                                //do nothing
+                            }
+
+                            @Override
+                            public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                                Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+                                if (data!=null && data.size()>0) {
+                                    Conversation conversation = ((Conversation) data.get(0));
+                                    Toast.makeText(AdDetailActivity.this, "" + conversation.getId(), Toast.LENGTH_SHORT).show();
+
+                                    Intent intent = new Intent(context, MessagesChatActivity.class);
+                                    intent.putExtra("conversationId", conversation.getId());
+                                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                                    AppSession.currentConversation = conversation;
+                                    context.startActivity(intent);
+                                }
+                            }
+
+                            @Override
+                            public void onError(String errorMessage) {
+
+                            }
+                        });
+
+
+
+                    }
+                }
+            });
         }
     }
 

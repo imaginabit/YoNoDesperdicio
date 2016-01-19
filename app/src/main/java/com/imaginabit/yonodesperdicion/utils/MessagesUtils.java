@@ -28,7 +28,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,7 +69,7 @@ public class MessagesUtils {
                     MessagesUtils.createReqErrorListener(callback, activity)
             ){
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {return authHeaders();}
+                public Map<String, String> getHeaders() throws AuthFailureError {return AppSession.authHeaders();}
             };
             queue.add(request);
 
@@ -82,24 +81,13 @@ public class MessagesUtils {
     }
 
 
-
-    /*
-    get last message from conversation
-     returm message
-     */
-//    public static Message getLastMessage(Conversation c){
-//        Message m;
-//        return m;
-//    }
-
-
     /* get messages */
     public static List<Message> getMessages(int conversationId){
         List<Message> messages = null;
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest request = new JsonObjectRequest(Constants.CONVERSATIONS_API_URL + "/" + conversationId + "/messages", null, future, future){
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {  return MessagesUtils.authHeaders(); }
+                public Map<String, String> getHeaders() throws AuthFailureError {  return AppSession.authHeaders(); }
         };
         RequestQueue queue = VolleySingleton.getRequestQueue();
         queue.add(request);
@@ -144,7 +132,11 @@ public class MessagesUtils {
                             @Override
                             public void onResponse(JSONObject response) {
                                 Log.i("--->", "authenticate:" + response.toString());
-                                Utils.dismissProgressDialog(MessagesUtils.pd);
+                                try {
+                                    Utils.dismissProgressDialog(MessagesUtils.pd);
+                                }catch (Exception e ){
+                                    e.printStackTrace();
+                                }
                                 List<Message> messages = null;
                                 Exception error = null;
 
@@ -180,7 +172,7 @@ public class MessagesUtils {
                 ) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
-                        return MessagesUtils.authHeaders();
+                        return AppSession.authHeaders();
                     }
                 };
                 queue.add(request);
@@ -191,22 +183,15 @@ public class MessagesUtils {
         }
     }
 
-    public static Map authHeaders(){
-        Map headers = new HashMap();
-        String token = AppSession.getCurrentUser().authToken;
-        headers.put("Authorization", token);
-        Log.d(TAG, "getHeaders: authToken " + token);
-        headers.put("Content-Type", "application/json; charset=utf-8");
-        return headers;
-    }
-
 
     public interface ConversationsCallback {
         public void onFinished(List<Conversation> conversation, Exception e);
+        public void onFinished(List<Conversation> conversation, Exception e,ProgressDialog pd);
         public void onError(String errorMessage);
     }
     public interface MessagesCallback {
         public void onFinished(List<Message> messages, Exception e);
+        public void onFinished(List<Message> messages, Exception e, ArrayList data);
         public void onError(String errorMessage);
     }
 
@@ -215,7 +200,14 @@ public class MessagesUtils {
             @Override
             public void onResponse(JSONObject response) {
                 Log.i("--->", "authenticate:" + response.toString());
-                Utils.dismissProgressDialog(MessagesUtils.pd);
+                Log.d(TAG, "onResponse: current activity:");
+
+
+                try {
+                    Utils.dismissProgressDialog(MessagesUtils.pd);
+                }catch (Exception e ){
+                    e.printStackTrace();
+                }
                 List<Conversation> conversations = null;
                 Exception error = null;
 
@@ -225,41 +217,17 @@ public class MessagesUtils {
                         jsonItems = response.getJSONArray("conversations");
                     } catch (JSONException e) {
                         error = e;
-                        //e.printStackTrace();
                     }
+
                     if (jsonItems.length() > 0) {
                         ResultConversations resultConversations;
                         resultConversations = createConversationList(jsonItems);
-
-                        String lastMessage;
-
-                        //para cada conversacion obtener el ultimo mensaje y modificarlo en resultConversation
-
-                        //lastmessage title
-//                        getConversationMessages(id, new MessagesCallback() {
-//                            @Override
-//                            public void onFinished(List<Message> messages, Exception e) {
-//                                int last =  messages.size()-1;
-//                                Message m = messages.get(last);
-//                                lastMessage = m.getSubject().toString();
-//                            }
-//
-//                            @Override
-//                            public void onError(String errorMessage) {
-//
-//                            }
-//                        });
 
                         conversations = resultConversations.getConversations();
                         if (resultConversations.e!=null) error = resultConversations.e;
                         Log.d(TAG, "onResponse: conversations size" + conversations.size());
 
-                        //lastconversations.get(conversations.size()-1);
-
-                        //get last message
-
-
-                        callback.onFinished(conversations, error);
+                        callback.onFinished(conversations, error, pd);
                     }
                 }
             }
@@ -270,12 +238,20 @@ public class MessagesUtils {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
-                Utils.dismissProgressDialog(MessagesUtils.pd);
+                //NavigationBaseActivity a = (NavigationBaseActivity)activity;
+                //if( a.isActive() ) {
+                try {
+                    if(MessagesUtils.pd!=null) {
+                        Utils.dismissProgressDialog(MessagesUtils.pd);
+                    }
+                }catch (Exception e ){
+                    e.printStackTrace();
+                }
+
                 String errorMessage = VolleyErrorHelper.getMessage(context, error);
-
                 String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
-
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                //}
             }
         };
     }
@@ -435,6 +411,11 @@ public class MessagesUtils {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.i("--->", "authenticate:" + response.toString());
+                        try {
+                                Utils.dismissProgressDialog(MessagesUtils.pd);
+                        }catch (Exception e ){
+                            e.printStackTrace();
+                        }
                         //Utils.dismissProgressDialog(MessagesUtils.pd);
                         Exception error = null;
 
@@ -458,7 +439,7 @@ public class MessagesUtils {
         ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                return MessagesUtils.authHeaders();
+                return AppSession.authHeaders();
             }
         };
         queue.add(request);
@@ -467,6 +448,105 @@ public class MessagesUtils {
 //        POST a /api/mailboxes/invox/conversations/CONVERSATION_ID/messages
 //        con json {"message": {"body": "cuerpo del mensaje 3"}}
 //        curl -H "Content-Type: application/json"  -H "Authorization: 8qqRb_KFdp9W2-CNVFKU" -X POST -d '{"message": {"body": "cuerpo del mensaje 3"}}' http://localhost:3000/api/mailboxes/inbox/conversations/1/messages
+
+    }
+
+    /**
+     * Create a new conversation
+     *
+     * Nuevo mensaje:
+        POST a /api/new_message/RECIPIENT_ID
+            con json {"message": {"subject": "test2", "body": "cuerpo del mensaje 3"}}
+            curl -H "Content-Type: application/json"  -H "Authorization: 8qqRb_KFdp9W2-CNVFKU" -X POST -d '{"message": {"subject": "test2", "body": "cuerpo del mensaje 3"}}' http://localhost:3000/api/new_message/2
+     *
+     *  @param title Conversation title or subject
+     * @param sendTo user
+     * @param callback callback with message created response
+     */
+    public static void createConversation(final String title, int sendTo, final MessagesCallback callback){
+        Log.d(TAG, "createConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
+
+        final String msg = "";
+
+        JSONObject jsonRequest = new JSONObject();
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+        try {
+            jsonRequest.put("subject",title);
+            jsonRequest.put("body",msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
+                Constants.NEW_CONVERSATION_API_URL + sendTo ,
+                jsonRequest,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i("--->", "authenticate:" + response.toString());
+                        try {
+                            Utils.dismissProgressDialog(MessagesUtils.pd);
+                        }catch (Exception e ){
+                            e.printStackTrace();
+                        }
+                        Exception error = null;
+                        ArrayList data = new ArrayList();
+                        List<Message> messages = new ArrayList<>();
+
+                        /*
+                        response like this:
+                        mailbox_type : sendbox!
+                        {
+                            "id": 86,
+                                "receiver_id": 43,
+                                "receiver_type": "User",
+                                "notification_id": 43,
+                                "is_read": true,
+                                "trashed": false,
+                                "deleted": false,
+                                "mailbox_type": "sentbox",
+                                "created_at": "2016-01-19T19:58:41.359Z",
+                                "updated_at": "2016-01-19T19:58:41.359Z"
+                        }*/
+
+                        //get conversation id
+                        try {
+                            int conversationId;
+                            String strConversationId = response.getString("id");
+                            if (Utils.isNotEmptyOrNull(strConversationId) && "null" != strConversationId) {
+                                Log.d(TAG, "onResponse: conversation id " + strConversationId);
+                                conversationId = Integer.parseInt(strConversationId);
+                            } else {
+                                conversationId = 0;
+                            }
+                            Conversation c = new Conversation(conversationId,title);
+                            data.add(c);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        boolean Mok = messages.add(new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date()));
+                        Log.d(TAG, "onResponse: mok "+ Mok);
+
+                        callback.onFinished(messages,error, data);
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "getConversationMessages onErrorResponse: ");
+
+                    }
+                }
+                //MessagesUtils.createReqErrorListener((ConversationsCallback) callback, activity)
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return AppSession.authHeaders();
+            }
+        };
+        queue.add(request);
 
 
     }

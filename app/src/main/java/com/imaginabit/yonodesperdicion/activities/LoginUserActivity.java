@@ -10,6 +10,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -26,6 +27,7 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
  * Authenticate user
  */
 public class LoginUserActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "LoginUserActivity";
 
     private TextInputLayout userNameWrapper;
     private EditText userNameEdit;
@@ -136,6 +138,7 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
                                         @Override
                                         public void onFinished(UserData user) {
                                             if (user == null || user.id == 0L) {
+                                                Log.d(TAG, "onFinished: User null!");
                                                 // @TODO error
                                             } else {
                                                 user.prefsRemove(getActivity());

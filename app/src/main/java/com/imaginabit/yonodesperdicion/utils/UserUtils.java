@@ -12,6 +12,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.User;
@@ -146,7 +147,7 @@ public class UserUtils {
                     }
             ){
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {return MessagesUtils.authHeaders();}
+                public Map<String, String> getHeaders() throws AuthFailureError {return AppSession.authHeaders();}
             };
             queue.add(request);
 

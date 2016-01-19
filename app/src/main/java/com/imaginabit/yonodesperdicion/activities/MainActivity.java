@@ -5,12 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,9 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
@@ -68,18 +63,14 @@ public class MainActivity extends NavigationBaseActivity {
         Toolbar toolbar = setSupportedActionBar();
         setDrawerLayout(toolbar);
 
-        //Drawable add_pic = ContextCompat.getDrawable(mContext, R.drawable.ic_add_black);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        //fab.setImageDrawable(add_pic);
-
         final Activity mainActivity = this;
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Nuevo Anuncio", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
                 boolean b = Utils.checkLoginAndRedirect(mainActivity);
                 if (b) {
                     Intent intent = new Intent(context, AdCreateActivity.class);
