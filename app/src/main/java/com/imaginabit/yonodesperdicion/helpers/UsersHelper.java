@@ -23,6 +23,7 @@ import org.json.JSONObject;
  *
  */
 public class UsersHelper {
+    private static final String TAG = "UsersHelper";
 
     /**
      * Authenticate the user with passed credentials.
@@ -38,19 +39,22 @@ public class UsersHelper {
 
         try {
             // Json request
-            JSONObject jsonRequest = new JSONObject().put("username", userName)
+            final JSONObject jsonRequest = new JSONObject()
+                    .put("username", userName)
                     .put("password", userPassword);
 
             // Request queue
             RequestQueue requestQueue = Volley.newRequestQueue(context);
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                    
                     Request.Method.POST,
                     Constants.USERS_SESSIONS_API_URL,
                     jsonRequest,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject jsonResponse) {
+                            Log.d(TAG, "onResponse() called with: " + "jsonResponse = [" + jsonResponse + "]");
                             Utils.dismissProgressDialog(pd);
                             Log.i("--->", "authenticate:" + jsonResponse.toString());
                             // Authenticated user
@@ -64,6 +68,7 @@ public class UsersHelper {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "] jsonRequest" + jsonRequest.toString() );
                             Utils.dismissProgressDialog(pd);
                             callback.onError(extractErrorMessage(context, error));
                         }
@@ -155,30 +160,43 @@ public class UsersHelper {
     private static String extractErrorMessage(Context context, VolleyError error) {
         // Default error message
         String errorMessage = VolleyErrorHelper.getMessage(context, error);
+        String message = null;
+        Log.d(TAG, "extractErrorMessage: errorMessage" + errorMessage );
         try {
             JSONObject jsonErrorMessage = new JSONObject(errorMessage);
-            // Multiple errors
-            if (jsonErrorMessage.has("errors")) {
-                String message = "";
-                JSONObject jsonErrors = jsonErrorMessage.getJSONObject("errors");
-                JSONArray jsonErrorsList = jsonErrors.names();
-                for (int i = 0; i < jsonErrorsList.length(); i++) {
-                    String propertyName = jsonErrorsList.getString(i);
-                    JSONArray propertyValues = jsonErrors.getJSONArray(propertyName);
-                    if (propertyValues != null && propertyValues.length() > 0) {
-                        message = ((i > 0) ? "\n" : "") + propertyName + ": ";
-                        for (int j = 0; j < propertyValues.length(); j++) {
-                            message += ((j > 0) ? "\n" : "") + propertyValues.getString(j);
-                        }
-                    }
-                }
-                return message;
-            }
-            // Single error
-            else if (jsonErrorMessage.has("error")) {
-                String message = jsonErrorMessage.optString("error", "");
+            // {"errors":"Not authenticated"}
+            try{
+                message = jsonErrorMessage.getString("errors");
                 if (Utils.isNotEmptyOrNull(message)) {
                     return message;
+                }
+                Log.d(TAG, "showErrorsJson: errorStr : "+ message);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            if(message!= null) {
+                // Multiple errors
+                if (jsonErrorMessage.has("errors")) {
+                    JSONObject jsonErrors = jsonErrorMessage.getJSONObject("errors");
+                    JSONArray jsonErrorsList = jsonErrors.names();
+                    for (int i = 0; i < jsonErrorsList.length(); i++) {
+                        String propertyName = jsonErrorsList.getString(i);
+                        JSONArray propertyValues = jsonErrors.getJSONArray(propertyName);
+                        if (propertyValues != null && propertyValues.length() > 0) {
+                            message = ((i > 0) ? "\n" : "") + propertyName + ": ";
+                            for (int j = 0; j < propertyValues.length(); j++) {
+                                message += ((j > 0) ? "\n" : "") + propertyValues.getString(j);
+                            }
+                        }
+                    }
+                    return message;
+                }
+                // Single error
+                else if (jsonErrorMessage.has("error")) {
+                    message = jsonErrorMessage.optString("error", "");
+                    if (Utils.isNotEmptyOrNull(message)) {
+                        return message;
+                    }
                 }
             }
         } catch (JSONException e) {

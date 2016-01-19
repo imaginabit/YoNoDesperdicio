@@ -41,7 +41,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         public ViewHolder(View view) {
             super(view);
 
-            Log.d(TAG, "ViewHolder: view" + view.toString());
+            Log.v(TAG, "ViewHolder: view" + view.toString());
 
 //            cardView = (CardView) view.findViewById(R.id.ad_item);
 

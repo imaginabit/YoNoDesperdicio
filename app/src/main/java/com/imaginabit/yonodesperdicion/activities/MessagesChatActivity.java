@@ -1,7 +1,7 @@
 package com.imaginabit.yonodesperdicion.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,9 +18,11 @@ import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MessagesChatActivity extends AppCompatActivity {
+
+public class MessagesChatActivity extends NavigationBaseActivity {
     private static final String TAG = "MessagesChatActivity";
 
     Conversation mConversation;
@@ -57,23 +59,10 @@ public class MessagesChatActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
 
-        mMessages = mConversation.getMessages();
-        if( mMessages != null ) {
-            Log.d(TAG, "onCreate: Conversation messages " + mMessages.size());
-            Log.d(TAG, "onCreate: Conversation messages " + mMessages.get(0).toString());
-        }else{
-            Log.d(TAG, "onCreate: Conversation messages null" );
-        }
-
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new MessagesAdapter(mMessages);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        recyclerView.scrollToPosition(mMessages.size() - 1);
+        getMessages();
+        checkMessages();
 
         chatInput = (EditText) findViewById(R.id.chat_input_text);
-
-
         chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
@@ -103,6 +92,11 @@ public class MessagesChatActivity extends AppCompatActivity {
                         }
 
                         @Override
+                        public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                            //do nothing
+                        }
+
+                        @Override
                         public void onError(String errorMessage) {
                             Log.d(TAG, "onError() called with: " + "errorMessage = [" + errorMessage + "]");
                         }
@@ -116,5 +110,42 @@ public class MessagesChatActivity extends AppCompatActivity {
 
 
     }
+
+    private void checkMessages(){
+        new Handler().postDelayed(new MessagesActivity.RunnableCheckActive(this) {
+            @Override
+            public void run() {
+                Log.v(TAG, "checkMessages run() called with: " + "");
+                NavigationBaseActivity a = (NavigationBaseActivity) mActivity;
+                if ( a.isActive() ){
+                    Log.d(TAG, "run: active!");
+                    getMessages();
+                }
+                checkMessages();
+            }
+        }, 60000);
+    }
+
+    private void getMessages(){
+        mMessages = mConversation.getMessages();
+        if( mMessages != null ) {
+            Log.d(TAG, "onCreate: Conversation messages " + mMessages.size());
+            Log.d(TAG, "onCreate: Conversation messages " + mMessages.get(0).toString());
+        }else{
+            mMessages = new ArrayList<Message>();
+            Log.d(TAG, "onCreate: Conversation messages null" );
+        }
+
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new MessagesAdapter(mMessages);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        Log.d(TAG, "getMessages: scrollstate" + recyclerView.getScrollState() );
+
+
+        recyclerView.scrollToPosition(mMessages.size() - 1);
+    }
+
+
 
 }

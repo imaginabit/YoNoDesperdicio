@@ -42,6 +42,14 @@ public class Conversation {
 //        });
     }
 
+    public Conversation(int id, String subject) {
+        mId = id;
+        mSubject = subject;
+        mCreatedAt = new Date();
+        mUpdatedAt = new Date();
+        mThreadId = 0;
+    }
+
     public static String getTAG() {
         return TAG;
     }

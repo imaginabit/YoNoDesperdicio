@@ -176,4 +176,28 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
+    public boolean active = false;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        active = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        active = true;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
 }
