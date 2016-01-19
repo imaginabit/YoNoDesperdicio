@@ -28,16 +28,29 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private User mOtherUser;
     private Context mContext;
 
+    private static final int MYSELF=0;
+    private static final int OTHER=1;
+
+
     public MessagesAdapter(List<Message> messages) {
         Log.v(TAG, "MessagesAdapter() called with: " + "messages = [" + messages + "]");
         Log.d(TAG, "MessagesAdapter: size " + messages.size());
         mMessages = messages;
     }
 
+
+
     @Override
     public MessagesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.v(TAG, "onCreateViewHolder() called with: " + "parent = [" + parent + "], viewType = [" + viewType + "]");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_line_me, parent, false);
+        View view;
+
+        if ( viewType == MYSELF ) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_line_me, parent, false);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_line_other, parent, false);
+        }
+
         ViewHolder viewHolder = new ViewHolder(view);
         mContext = parent.getContext();
         return viewHolder;
@@ -112,4 +125,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
        mMessages.add(oMsg);
        notifyDataSetChanged();
    }
+
+    @Override
+    public int getItemViewType(int position) {
+        int UserID = mMessages.get(position).getSender_id();
+
+        if (UserID == AppSession.getCurrentUser().id){
+            return MYSELF;
+        }
+        return OTHER;
+    }
+
+
 }
