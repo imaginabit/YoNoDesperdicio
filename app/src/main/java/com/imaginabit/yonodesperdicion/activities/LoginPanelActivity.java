@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -16,6 +17,7 @@ import com.imaginabit.yonodesperdicion.R;
  * User access panel
  */
 public class LoginPanelActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "LoginPanelActivity";
 
     private Activity getActivity() {
         return this;
@@ -88,6 +90,7 @@ public class LoginPanelActivity extends AppCompatActivity implements View.OnClic
                     break;
 
                 case 1:
+                    Log.d(TAG, "onActivityResult: login");
                     break;
 
                 case 2:

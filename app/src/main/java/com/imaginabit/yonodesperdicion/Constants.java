@@ -1,5 +1,8 @@
 package com.imaginabit.yonodesperdicion;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 /**
  * Created by fer2015julio on 20/11/15.
  */
@@ -20,10 +23,15 @@ public class Constants {
     // Authenticate users endpoint
     public static final String USERS_SESSIONS_API_URL = HOME_URL + "api/sessions";
 
+    public static final String CONVERSATIONS_API_URL = HOME_URL + "api/mailboxes/inbox/conversations";
+    public static final String NEW_CONVERSATION_API_URL = HOME_URL + "api/new_message/"; // + RECIPIENT_ID
+
     public static final String longline = "--------------------------------------------------------";
 
     public static final String WEIGHT_TOTAL_KG_URL = HOME_URL + "api/total_kg";
 
     public static Double weightTotal;
+
+    public static java.text.DateFormat DATE_JSON_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
 
 }
