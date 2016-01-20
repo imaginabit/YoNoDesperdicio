@@ -125,7 +125,6 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         //get image from website
         ImageLoader imageLoader; // Get singleton instance
         imageLoader = ImageLoader.getInstance();
-
         String imageUri = Constants.HOME_URL + ad.getImageUrl();
 
         Log.i(TAG, "onBindViewHolder:" + imageUri);

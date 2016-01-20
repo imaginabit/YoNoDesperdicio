@@ -41,8 +41,11 @@ import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
+import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +62,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
     private static final String TAG = "AdCreateActivity";
     ImageView image;
+    ImageView imageEditable;
     EditText title;
     EditText weight;
     EditText expiration_date;
@@ -77,6 +81,8 @@ public class AdCreateActivity extends NavigationBaseActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     File capturedPhoto;
 
+    private boolean isEditing= false;
+
     public interface AdCreateCallback {
         public void onFinished();
         public void onError(String errorMessage);
@@ -90,20 +96,14 @@ public class AdCreateActivity extends NavigationBaseActivity {
         setContentView(R.layout.ad_edit);
         setSupportedActionBar(R.drawable.ic_arrow_back_black);
 
-        //curl -H "Content-Type: application/json"  -H "Authorization: TB1T2pDQuGYExhJQ5vYB" -X POST -d
-        // '{"ad": {
-        //          "title":"probando desde api",
-        //          "body":"un alimento muy rico",
-        //          "grams":"120",
-        //          "status":"1",
-        //          "food_category":"bebidas",
-        //          pick_up_date
-        // }}'
-        // -X POST http://localhost:3000/api/ads
         context = getApplicationContext();
 
         image =  (ImageView) findViewById(R.id.ad_image);
         image.setVisibility(View.INVISIBLE);
+
+        imageEditable =  (ImageView) findViewById(R.id.ad_image_editable);
+        imageEditable.setVisibility(View.INVISIBLE);
+
         title = (EditText) findViewById( R.id.title);
         weight = (EditText) findViewById( R.id.weight);
         expiration_date = (EditText) findViewById( R.id.expiration_date);
@@ -111,10 +111,10 @@ public class AdCreateActivity extends NavigationBaseActivity {
         adZipCode = (EditText) findViewById(R.id.postal_code);
 
 
-        Button button = (Button) findViewById(R.id.delete_ad);
-        button.setVisibility(View.GONE);
-        FrameLayout frameImage = (FrameLayout) findViewById(R.id.frame_image);
+        Button btnDeleteAd = (Button) findViewById(R.id.delete_ad);
+        btnDeleteAd.setVisibility(View.GONE);
 
+        FrameLayout frameImage = (FrameLayout) findViewById(R.id.frame_image);
         frameImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +123,47 @@ public class AdCreateActivity extends NavigationBaseActivity {
         });
 
         VolleySingleton.init(this);
+
         thisAdCreateActivity = this;
+
+        // Retrieve args
+        Bundle data = getIntent().getExtras();
+        final Ad ad = (Ad) data.getParcelable("ad");
+        if (ad != null) {
+            isEditing= true;
+            getSupportActionBar().setTitle("Editar " + ad.getTitle());
+            btnDeleteAd.setVisibility(View.VISIBLE);
+
+            imageEditable.setImageDrawable(
+                    ContextCompat.getDrawable(this, R.drawable.brick));
+            imageEditable.setVisibility(View.VISIBLE);
+
+            //rellenar campos
+            title.setText(ad.getTitle());
+            weight.setText(ad.getWeightKgStr());
+            expiration_date.setText( ad.getExpirationDate() );
+            adZipCode.setText( Integer.toString(ad.getPostalCode()) );
+            adDescription.setText(ad.getBody());
+
+            Log.d(TAG, "onCreate: image:"+ ad.getImageUrl());
+
+            ImageLoader imageLoader; // Get singleton instance
+            imageLoader = ImageLoader.getInstance();
+            String imageUri = Constants.HOME_URL + ad.getImageUrl();
+
+            //me da a mi que ha esto no le esta haciendo ningun caso
+            ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
+            try {
+                imageLoader.displayImage(imageUri, imageEditable );
+                //imageEditable.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            } catch ( Exception e){
+                e.printStackTrace();
+                //imageEditable.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.brick));
+            }
+
+            //borrar anuncio
+
+        }
 
     }
 
@@ -178,7 +218,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
             //String pickUpDate= sdf.format(expiration_date.getText());
 
-
             jsonAd = new JSONObject().put("title", title.getText() )
                     .put("body", adDescription.getText())
                     .put("grams", grams )
@@ -187,6 +226,12 @@ public class AdCreateActivity extends NavigationBaseActivity {
                     .put("province", provincia)
                     .put("zipcode", adZipCode.getText() )
                     .put("pick_up_date", expiration_date.getText());
+
+            if (isEditing){
+                // no funciona por ahora
+                //jsonAd.put("id");
+
+            }
 
 
             if (bitmap != null) {
@@ -266,6 +311,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
 
     }
+
 
     private Response.Listener<JSONObject> createResponseSuccessListener(){
         return new Response.Listener<JSONObject>(){
