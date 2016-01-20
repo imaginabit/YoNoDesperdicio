@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -149,46 +150,70 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    boolean b = Utils.checkLoginAndRedirect(AdDetailActivity.this);
-                    if (b) {
-                        Log.d(TAG, "onClick: is logged!");
-                        //create a new conversation, new message for this ad and go to it
-                        MessagesUtils.createConversation(ad.getUserName() + " " + ad.getTitle(), ad.getUserId(), new MessagesUtils.MessagesCallback() {
-                            @Override
-                            public void onFinished(List<Message> messages, Exception e) {
-                                //do nothing
-                            }
-
-                            @Override
-                            public void onFinished(List<Message> messages, Exception e, ArrayList data) {
-                                Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
-                                if (data!=null && data.size()>0) {
-                                    Conversation conversation = ((Conversation) data.get(0));
-                                    Toast.makeText(AdDetailActivity.this, "" + conversation.getId(), Toast.LENGTH_SHORT).show();
-
-                                    Intent intent = new Intent(context, MessagesChatActivity.class);
-                                    intent.putExtra("conversationId", conversation.getId());
-                                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-                                    AppSession.currentConversation = conversation;
-                                    context.startActivity(intent);
-                                }
-                            }
-
-                            @Override
-                            public void onError(String errorMessage) {
-
-                            }
-                        });
-
-
-
+            if (AppSession.getCurrentUser()!=null && AppSession.getCurrentUser().id == ad.getUserId()){
+                fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickEdidAd(ad);
                     }
+                });
+
+            } else {
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickMessage(ad);
+                    }
+                });
+            }
+        }
+    }
+
+    private void clickMessage(Ad ad){
+        if (Utils.checkLoginAndRedirect(AdDetailActivity.this)) {
+            Log.d(TAG, "onClick: is logged!");
+            //create a new conversation, new message for this ad and go to it
+            MessagesUtils.createConversation(ad.getUserName() + " " + ad.getTitle(), ad.getUserId(), new MessagesUtils.MessagesCallback() {
+                @Override
+                public void onFinished(List<Message> messages, Exception e) {
+                    //do nothing
+                }
+
+                @Override
+                public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                    Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+                    if (data != null && data.size() > 0) {
+                        Conversation conversation = ((Conversation) data.get(0));
+                        //Toast.makeText(AdDetailActivity.this, "" + conversation.getId(), Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(context, MessagesChatActivity.class);
+                        intent.putExtra("conversationId", conversation.getId());
+                        //intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                        AppSession.currentConversation = conversation;
+                        context.startActivity(intent);
+                    }
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    //TODO: onError
                 }
             });
         }
+    }
+
+    /**
+     * When click on edit Ad, send all data to add edit on
+     * @param ad
+     */
+    private void clickEdidAd(Ad ad){
+        Log.d(TAG, "clickEdidAd() called with: " + "ad = [" + ad + "]");
+
+        Intent intent = new Intent(context, AdCreateActivity.class);
+        intent.putExtra("ad", (Parcelable) ad);
+        startActivity(intent);
+
     }
 
     @Override

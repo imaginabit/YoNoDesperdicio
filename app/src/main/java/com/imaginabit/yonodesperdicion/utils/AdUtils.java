@@ -331,11 +331,4 @@ public class AdUtils {
         TasksUtils.execute(fetchAdTask);
     }
 
-
-
-
-
-
-
-
 }

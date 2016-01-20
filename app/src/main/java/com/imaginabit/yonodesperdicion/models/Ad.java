@@ -220,6 +220,10 @@ public class Ad implements Parcelable {
         return getExpirationDate("hasta el ");
     }
 
+    public String getExpirationDate() {
+        return getExpirationDate("");
+    }
+
     public String getExpirationDate(String prefix) {
         if (expiration != null) {
             // Default prefix

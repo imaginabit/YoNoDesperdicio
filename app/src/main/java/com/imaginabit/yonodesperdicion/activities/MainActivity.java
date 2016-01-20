@@ -71,8 +71,7 @@ public class MainActivity extends NavigationBaseActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean b = Utils.checkLoginAndRedirect(mainActivity);
-                if (b) {
+                if (Utils.checkLoginAndRedirect(mainActivity)) {
                     Intent intent = new Intent(context, AdCreateActivity.class);
                     startActivity(intent);
                 }
