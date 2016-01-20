@@ -44,7 +44,6 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,7 +52,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 
@@ -154,15 +152,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
     }
 
     private void sendAdData() {
-
-//        new Handler().postDelayed(new Runnable() {
-//            public void run() {
-//                pd = ProgressDialog.show(context, "", context.getString(R.string.ad_create_message));
-//            }
-//        }, 1000);
-
-
-
         RequestQueue queue = VolleySingleton.getRequestQueue();
 
         JSONObject jsonAd = null;
@@ -311,65 +300,10 @@ public class AdCreateActivity extends NavigationBaseActivity {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //VolleyLog.v("Response:%n %s", error.toString());
-
-                //Utils.dismissProgressDialog(pd);
-                //error.printStackTrace();
-                //Log.d(TAG, "onErrorResponse message: " + error.networkResponse.toString() + " " + error.getMessage());
-                //Log.d(TAG, "onErrorResponse: tostring" + error.toString());
                 String errorMessage = VolleyErrorHelper.getMessage(context, error);
+                String errorDialogMsg = Utils.showErrorsJson(errorMessage, AdCreateActivity.this);
+
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
-                String errorDialogMsg="";
-
-                try {
-
-                    JSONObject errorJSON = new JSONObject(errorMessage);
-                    if (errorJSON.has("errors")){
-                        JSONObject err = errorJSON.getJSONObject("errors");
-
-                        Iterator<?> errores = err.keys();
-                        while(errores.hasNext() ){
-                            String key = (String)errores.next();
-                            switch (key){
-                                case "title":
-                                    errorDialogMsg += "Título, ";
-                                    break;
-                                case "body":
-                                    errorDialogMsg += "Descripción, ";
-                                    break;
-                            }
-
-                            if( err.get(key) instanceof String ) {
-                                String value = (String) err.get(key);
-                                errorDialogMsg += value.toString();
-                                errorDialogMsg += "\n";
-                            } else if(err.get(key) instanceof JSONArray){
-                                errorDialogMsg += ((JSONArray) err.get(key)).join(",").replace('"',' ').trim();
-                                errorDialogMsg += "\n";
-                                //Iterator<?> tipo = err.getJSONObject(key).keys();
-//                            while(tipo.hasNext()){
-//                                String key2 = (String)tipo.next();
-//                                json.getJSONObject(key).getJSONArray(key2).toString();
-//                            }
-                            }
-                        }
-
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                //show dialog with error
-                AlertDialog.Builder builder = new AlertDialog.Builder( AdCreateActivity.this, R.style.yndDialog);
-                builder.setTitle("Errores")
-                        .setMessage(errorDialogMsg)
-                        .setCancelable(false)
-                        .setPositiveButton("OK", null);
-                AlertDialog alert = builder.create();
-                alert.show();
-
-                
 
             }
         };

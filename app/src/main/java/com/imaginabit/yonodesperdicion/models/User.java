@@ -80,4 +80,17 @@ public class User {
     public void setRatting(float ratting) {
         mRatting = ratting;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "mUserId=" + mUserId +
+                ", mName='" + mName + '\'' +
+                ", mUserName='" + mUserName + '\'' +
+                ", mAddress='" + mAddress + '\'' +
+                ", mZipCode='" + mZipCode + '\'' +
+                ", mGrams=" + mGrams +
+                ", mRatting=" + mRatting +
+                '}';
+    }
 }
