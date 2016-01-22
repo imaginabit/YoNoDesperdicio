@@ -48,8 +48,73 @@ public class MessagesUtils {
     //Users Credentials needed
     /*
     Get list of user conversations and last message of this conversation
+    first get inbox conversation,
+    them sent conversations ,
+    them all conversation messages??
      */
-    public static void getConversations(final Context context, final ConversationsCallback callback, Activity activity){
+    public static void getConversations(final Context context, final ConversationsCallback callback, final Activity activity){
+
+        Log.d(TAG, "getConversations() called with: " + "context = [" + context.getPackageName() + "], activity = [" + activity.getLocalClassName() + "]");
+        final List<Conversation> conversationsFinal;
+        getConversationsInbox(context, new ConversationsCallback() {
+           @Override
+           public void onFinished(List<Conversation> conversation, Exception e) { }
+
+           @Override
+           public void onFinished(final List<Conversation> conversations, Exception e, ProgressDialog pd) {
+               if (conversations != null) {
+
+                   //we can use data or just conversations anyway this is just called after pass all the conversations
+                   getConversationsSent(context, new ConversationsCallback() {
+                       @Override
+                       public void onFinished(List<Conversation> conversationsSent, Exception e) {
+                           Log.d(TAG, "getConversationsSent conversationCallback onFinished() called with: " + "conversations = [" + conversations.size() + ", " + conversationsSent.size() + "], e = [" + e + "]");
+                           //add conversations from sent to conversations
+                           conversations.addAll(conversationsSent);
+
+                           //getConversationMessagesFull(conversations,callback);
+                           if (conversations.size() > 0) {
+                               callback.onFinished(conversations, null, MessagesUtils.pd);
+                           }
+                       }
+
+                       @Override
+                       public void onFinished(List<Conversation> conversations, Exception e, ProgressDialog pd) {}
+
+                       @Override
+                       public void onError(String errorMessage) {
+                           Log.d(TAG, "getConversationsSent conversationCallback.onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                           //ahora siempre devuelve error por que esta fallando la api
+                           // si fala al obtener conversaciones de sent tiene que obtener de inbox de todas formas
+                          if (conversations.size() > 0) {
+                           callback.onFinished(conversations, null, MessagesUtils.pd);
+                          }
+                       }
+                   }, activity);
+
+
+               }
+           }
+
+           @Override
+           public void onError(String errorMessage) {
+
+           }
+        }, activity);
+    }
+
+    public static void getConversationsSent(final Context c,final ConversationsCallback cb, Activity a){
+        Log.d(TAG, "--> getConversationsSent() called with: " + "c = [" + c.getPackageName() + "], cb = [" + cb.getClass().getSimpleName() + "], a = [" + a.getClass().getSimpleName() + "]");
+        getConversationsBase(Constants.CONVERSATIONS_SENT_API_URL, c, cb, a);
+    }
+
+    public static void getConversationsInbox(final Context c,final ConversationsCallback cb, Activity a){
+        Log.d(TAG, "<-- getConversationsInbox() called with: " + "c = [" + c.getPackageName() + "], cb = [" + cb.getClass().getSimpleName() + "], a = [" + a.getClass().getSimpleName() + "]");
+        getConversationsBase(Constants.CONVERSATIONS_API_URL, c, cb, a);
+    }
+
+    public static void getConversationsBase(String url, final Context context,final ConversationsCallback callback , Activity activity){
+        Log.d(TAG, "getConversationsBase() called with: " + "url = [" + url + "], context = [" + context.getPackageName() + "], callback = [" + callback.getClass().getSimpleName() + "], activity = [" + activity.getClass().getSimpleName() + "]");
         MessagesUtils.context = context;
         // Show Loading dialog
         MessagesUtils.pd = ProgressDialog.show(context, "", context.getString(R.string.loading));
@@ -57,13 +122,13 @@ public class MessagesUtils {
 
         try{
             JSONObject jsonRequest = new JSONObject();
-
 //           Mailbox_id puede ser: “inbox”, “sent” o “trash”
 
             RequestQueue queue = VolleySingleton.getRequestQueue();
 
+            //get Menssages in "inbox"
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
-                    Constants.CONVERSATIONS_API_URL,
+                    url,
                     jsonRequest,
                     MessagesUtils.createResponseSuccessListener(callback),
                     MessagesUtils.createReqErrorListener(callback, activity)
@@ -78,6 +143,7 @@ public class MessagesUtils {
             e.printStackTrace();
             //callback.onErrror(e.getMessage());
         }
+
     }
 
 
@@ -111,13 +177,19 @@ public class MessagesUtils {
     }
 
 
+    /** Get all the messages <<THIS MAKE A API CALL FOR EVERY CONVERSATION>>
+     * @param conversations
+     * @param callback
+     */
     /*
     get messages from coversation async
      */
-    public static void getConversationMessages( List<Conversation> conversations, final MessagesCallback callback ){
+    public static void getConversationMessages( final List<Conversation> conversations, final MessagesCallback callback ){
         Activity activity = mCurrentActivity;
         Conversation conversation;
+        final ArrayList<Conversation> allConversations = new ArrayList<>();
         for (int i = 0; i < conversations.size(); i++) {
+
             conversation = conversations.get(i);
 
             try {
@@ -125,6 +197,7 @@ public class MessagesUtils {
                 RequestQueue queue = VolleySingleton.getRequestQueue();
 
                 final Conversation finalConversation = conversation;
+                final int finalI = i;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                         Constants.CONVERSATIONS_API_URL + "/" + conversation.getId() + "/messages",
                         jsonRequest,
@@ -155,9 +228,18 @@ public class MessagesUtils {
                                         finalConversation.setMessages(messages);
                                         if (result.e != null) error = result.e;
                                         Log.d(TAG, "onResponse: ConversationsMessages size" + messages.size());
+                                        //add to all conversations
+                                        allConversations.add(finalConversation);
+                                        //can u call this for every for iteration?
                                         callback.onFinished(messages, error);
+                                        //
+                                        if (finalI == conversations.size()-1 ){
+                                            callback.onFinished(messages,error,allConversations);
+
+                                        }
                                     }
                                 }
+
                             }
 
                         },
@@ -185,15 +267,33 @@ public class MessagesUtils {
 
 
     public interface ConversationsCallback {
-        public void onFinished(List<Conversation> conversation, Exception e);
-        public void onFinished(List<Conversation> conversation, Exception e,ProgressDialog pd);
+        public void onFinished(List<Conversation> conversations, Exception e);
+        public void onFinished(List<Conversation> conversations, Exception e,ProgressDialog pd);
         public void onError(String errorMessage);
     }
-    public interface MessagesCallback {
+
+
+    /**
+     * Basic callback just onFinished
+     */
+    public interface MessagesCallBackBase{
         public void onFinished(List<Message> messages, Exception e);
-        public void onFinished(List<Message> messages, Exception e, ArrayList data);
         public void onError(String errorMessage);
     }
+
+    /**
+     * Basic callback plus onError
+     */
+    public interface MessagesCallback extends MessagesCallBackBase{
+        public void onFinished(List<Message> messages, Exception e, ArrayList data);
+    }
+
+    /**
+     *  Basic callback plus onError and onfinished with extra argument
+     */
+//    public interface MessagesCallbackData extends MessagesCallback{
+//        public void onFinished(List<Message> messages, Exception e, ArrayList data);
+//    }
 
     private static Response.Listener<JSONObject> createResponseSuccessListener(final ConversationsCallback callback){
         return new Response.Listener<JSONObject>(){
@@ -233,13 +333,13 @@ public class MessagesUtils {
             }
         };
     }
-    private static Response.ErrorListener createReqErrorListener(ConversationsCallback callback, final Activity activity){
+    private static Response.ErrorListener createReqErrorListener(final ConversationsCallback callback, final Activity activity){
+        Log.d(TAG, "createReqErrorListener() called with: " + "callback = [" + callback + "], activity = [" + activity + "]");
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "onErrorResponse: error");
-                //NavigationBaseActivity a = (NavigationBaseActivity)activity;
-                //if( a.isActive() ) {
+                Log.v(TAG, "createReqErrorListener onErrorResponse() called with: " + "error = [" + error + "]");
+
                 try {
                     if(MessagesUtils.pd!=null) {
                         Utils.dismissProgressDialog(MessagesUtils.pd);
@@ -249,11 +349,40 @@ public class MessagesUtils {
                 }
 
                 String errorMessage = VolleyErrorHelper.getMessage(context, error);
-                String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
+
+                //String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
-                //}
+                callback.onError(errorMessage);
+
             }
         };
+    }
+
+    /**
+     * Just for no duplicate this in error and finish in getConversations
+     * @param conversations
+     * @param callback
+     */
+    private static void getConversationMessagesFull(final List<Conversation> conversations, final ConversationsCallback callback){
+        Log.v(TAG, "getConversationMessagesFull() called with: " + "conversations = [" + conversations + "], callback = [" + callback + "]");
+        getConversationMessages(conversations, new MessagesCallback() {
+            @Override
+            public void onFinished(List<Message> messages, Exception e) {
+                //eeer this just change conversation inside because conversations is Final
+                Log.d(TAG, "getConversationsSent->getConversationMessages->onFinished()");
+                //Log.d(TAG, "onFinished:  called with: messages = [" + messages + "], e = [\" + e + \"]");
+                //after all the three petition we sent the final callback!
+                callback.onFinished(conversations, null, pd);
+            }
+
+            @Override
+            public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+            }
+        });
     }
 
     private static class ResultConversations {
@@ -329,68 +458,73 @@ public class MessagesUtils {
 
     private static ResultMessages createMessageList(JSONArray jsonItems){
         List<Message> messages = new ArrayList<>();
-        Exception e = null;
+        Exception error = null;
         for (int i = 0; i < jsonItems.length(); i++) {
+            //
             JSONObject jsonItem = null;
             try {
                 jsonItem = jsonItems.getJSONObject(i);
-            } catch (JSONException e1) {
-                e = e1;
+            } catch (JSONException e) {
+                error = e;
             }
-
-            int id = jsonItem.optInt("id", 0);
-
-            Date dateCreatedAt = null;
             try {
-                dateCreatedAt = Constants.DATE_JSON_FORMAT.parse(jsonItem.optString("created_at", "2000-01-01T00:00:00.000Z"));
-            } catch (ParseException e1) {
-                e = e1;
-            }
-            Date dateUpdateAt = null;
-            try {
-                dateUpdateAt = Constants.DATE_JSON_FORMAT.parse(jsonItem.optString("updated_at", "2000-01-01T00:00:00.000Z"));
-            } catch (ParseException e1) {
-                e = e1;
-            }
-            Log.d(TAG, "createMessageList: " + id + " "+ dateCreatedAt);
-            Log.d(TAG, "createMessageList: " + id + " "+ dateUpdateAt);
-
-            String body = jsonItem.optString("body", "");
-            String subject = jsonItem.optString("subject", "");
-            Date createdAt = dateCreatedAt;
-            Date updatedAt = dateUpdateAt;
-
-            int sender_id = jsonItem.optInt("sender_id", 0);
-            int sender_type = jsonItem.optInt("sender_type", 0);
-            int conversation_id = jsonItem.optInt("conversation_id", 0);
-            Boolean draft = jsonItem.optBoolean("draft", false);
-            int notified_object_id = jsonItem.optInt("notified_object_id", 0);
-            int notified_object_type = jsonItem.optInt("notified_object_type", 0);
-            int notification_code = jsonItem.optInt("notification_code", 0);
-            String attachment = jsonItem.optJSONObject("attachment").optString("url", "");
-            Log.d(TAG, "createMessageList: attachment "+ attachment );
-            Boolean global = jsonItem.optBoolean("global", false);
-
-            //expires no se muy bien que hace
-            String expires = jsonItem.optString("expires", "");
-
-            try {
-                if ( Utils.isNotEmptyOrNull(subject) ) {
-                    Message item = new Message(
-                            id,body,subject,
-                            sender_id,sender_type,conversation_id,
-                            draft,
-                            updatedAt,createdAt,
-                            notified_object_id,notified_object_type,notification_code,
-                            attachment,global,expires);
-                    messages.add(item);
-                }
-            } catch ( Exception e1 ){
-                e = e1;
+                Message msg = createMessage(jsonItem);
+                messages.add(msg);
+            } catch (Exception e) {
+                error = e;
+                //e1.printStackTrace();
             }
         }
-        return new ResultMessages(messages,e);
+        return new ResultMessages(messages,error);
+    }
 
+    /**
+     * Create a message object from JSOn returned by api call
+     * @param item JSONObject returned by api
+     * @return Message
+     * @throws Exception any exeption to capture it by callback
+     */
+    private static Message createMessage(JSONObject item) throws Exception{
+        int id = item.optInt("id", 0);
+
+        Date dateCreatedAt = null;
+        dateCreatedAt = Constants.DATE_JSON_FORMAT.parse(item.optString("created_at", "2000-01-01T00:00:00.000Z"));
+
+        Date dateUpdateAt = null;
+        dateUpdateAt = Constants.DATE_JSON_FORMAT.parse(item.optString("updated_at", "2000-01-01T00:00:00.000Z"));
+        Log.d(TAG, "createMessageList: " + id + " " + dateCreatedAt);
+        Log.d(TAG, "createMessageList: " + id + " " + dateUpdateAt);
+
+        String body = item.optString("body", "");
+        String subject = item.optString("subject", "");
+        Date createdAt = dateCreatedAt;
+        Date updatedAt = dateUpdateAt;
+
+        int sender_id = item.optInt("sender_id", 0);
+        int sender_type = item.optInt("sender_type", 0);
+        int conversation_id = item.optInt("conversation_id", 0);
+        Boolean draft = item.optBoolean("draft", false);
+        int notified_object_id = item.optInt("notified_object_id", 0);
+        int notified_object_type = item.optInt("notified_object_type", 0);
+        int notification_code = item.optInt("notification_code", 0);
+        String attachment = item.optJSONObject("attachment").optString("url", "");
+        Log.d(TAG, "createMessageList: attachment " + attachment);
+        Boolean global = item.optBoolean("global", false);
+
+        //expires no se muy bien que hace
+        String expires = item.optString("expires", "");
+
+        if (Utils.isNotEmptyOrNull(subject)) {
+            Message message = new Message(
+                    id, body, subject,
+                    sender_id, sender_type, conversation_id,
+                    draft,
+                    updatedAt, createdAt,
+                    notified_object_id, notified_object_type, notification_code,
+                    attachment, global, expires);
+            return message;
+        }
+        return null;
     }
 
     public static void reply(int conversationId, final String msg, final MessagesCallback callback){
@@ -466,7 +600,7 @@ public class MessagesUtils {
     public static void createConversation(final String title, int sendTo, final MessagesCallback callback){
         Log.d(TAG, "createConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
 
-        final String msg = "";
+        final String msg = "hola";
 
         JSONObject jsonRequest = new JSONObject();
         RequestQueue queue = VolleySingleton.getRequestQueue();
@@ -493,26 +627,10 @@ public class MessagesUtils {
                         ArrayList data = new ArrayList();
                         List<Message> messages = new ArrayList<>();
 
-                        /*
-                        response like this:
-                        mailbox_type : sendbox!
-                        {
-                            "id": 86,
-                                "receiver_id": 43,
-                                "receiver_type": "User",
-                                "notification_id": 43,
-                                "is_read": true,
-                                "trashed": false,
-                                "deleted": false,
-                                "mailbox_type": "sentbox",
-                                "created_at": "2016-01-19T19:58:41.359Z",
-                                "updated_at": "2016-01-19T19:58:41.359Z"
-                        }*/
-
                         //get conversation id
                         try {
                             int conversationId;
-                            String strConversationId = response.getString("id");
+                            String strConversationId = response.getString("conversation_id");
                             if (Utils.isNotEmptyOrNull(strConversationId) && "null" != strConversationId) {
                                 Log.d(TAG, "onResponse: conversation id " + strConversationId);
                                 conversationId = Integer.parseInt(strConversationId);
@@ -525,8 +643,15 @@ public class MessagesUtils {
                             e.printStackTrace();
                         }
 
-                        boolean Mok = messages.add(new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date()));
-                        Log.d(TAG, "onResponse: mok "+ Mok);
+                        try {
+                            Message message = createMessage(response);
+                            messages.add(message);
+                        } catch (Exception e) {
+                            error = e;
+                            //e.printStackTrace();
+                        }
+                        //boolean Mok = messages.add(new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date()));
+                        //Log.d(TAG, "onResponse: mok "+ Mok);
 
                         callback.onFinished(messages,error, data);
                     }
