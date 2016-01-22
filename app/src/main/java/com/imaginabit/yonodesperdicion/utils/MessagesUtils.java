@@ -600,7 +600,7 @@ public class MessagesUtils {
     public static void createConversation(final String title, int sendTo, final MessagesCallback callback){
         Log.d(TAG, "createConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
 
-        final String msg = "hola";
+        final String msg = "Nuevo mensaje";
 
         JSONObject jsonRequest = new JSONObject();
         RequestQueue queue = VolleySingleton.getRequestQueue();
