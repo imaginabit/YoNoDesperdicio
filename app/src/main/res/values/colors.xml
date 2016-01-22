@@ -290,6 +290,7 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+    <color name="background_material_light">@color/grey_50</color>
     
     <color name="ad_disponible">#3f6835</color>
     <color name="ad_reservado">#ff5617</color>

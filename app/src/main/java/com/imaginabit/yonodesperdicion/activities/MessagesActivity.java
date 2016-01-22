@@ -73,7 +73,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                 }
                 checkMessages();
             }
-        }, 60000);
+        }, 2 * 60 * 1000);
     }
 
     public static class RunnableCheckActive implements Runnable {
