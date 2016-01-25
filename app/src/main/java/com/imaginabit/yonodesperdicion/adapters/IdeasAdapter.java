@@ -1,5 +1,8 @@
 package com.imaginabit.yonodesperdicion.adapters;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Idea;
-import com.imaginabit.yonodesperdicion.Constants;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -26,6 +29,7 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
 
     private List<Idea> ideasList = new ArrayList<>();
     private Double weightTotal;
+    private Context context;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -51,15 +55,14 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public IdeasAdapter(List<Idea> ideasList) {
+    public IdeasAdapter(List<Idea> ideasList,Context c) {
         this.ideasList = ideasList;
-
-        // Create global configuration and initialize ImageLoader with this config
-
+        this.context = c;
     }
 
-    public IdeasAdapter(List<Idea> ideasList,Double weight){
+    public IdeasAdapter(List<Idea> ideasList,Context c, Double weight){
         this.ideasList = ideasList;
+        this.context = c;
         this.weightTotal = weight;
     }
 
@@ -110,7 +113,21 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
 
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, holder.image);
+
+            final Idea finalIdea = idea;
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = Constants.IDEA_URL + finalIdea.getId();
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(i);
+                }
+            });
         }
+
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

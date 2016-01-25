@@ -45,7 +45,7 @@ public class MoreInfoActivity extends NavigationBaseActivity {
 
         // This method creates an ArrayList that has three ideas objects saved in ideas
         //mIdeas = initializeData();
-        adapter = new IdeasAdapter(ideasList);
+        adapter = new IdeasAdapter(ideasList,context);
         recyclerView.setAdapter(adapter);
 
         getIdeasFromWeb();
@@ -66,9 +66,9 @@ public class MoreInfoActivity extends NavigationBaseActivity {
                         if (ideas != null) {
                             ideasList = ideas;
                             if (Constants.weightTotal == null) {
-                                adapter = new IdeasAdapter(ideasList);
+                                adapter = new IdeasAdapter(ideasList,context);
                             } else {
-                                adapter = new IdeasAdapter(ideasList, Constants.weightTotal);
+                                adapter = new IdeasAdapter(ideasList,context, Constants.weightTotal);
                                 Log.d(TAG, "done: peso :::: " + Constants.weightTotal);
                             }
 
@@ -111,7 +111,7 @@ public class MoreInfoActivity extends NavigationBaseActivity {
                     if (weight != null) {
                         Log.d(TAG, "done: obtenido peso");
                         Constants.weightTotal = weight;
-                        adapter = new IdeasAdapter(ideasList,weight);
+                        adapter = new IdeasAdapter(ideasList,context,weight);
                         recyclerView.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
 
