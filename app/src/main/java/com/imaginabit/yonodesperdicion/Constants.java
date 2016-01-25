@@ -24,6 +24,7 @@ public class Constants {
     public static final String USERS_SESSIONS_API_URL = HOME_URL + "api/sessions";
 
     public static final String CONVERSATIONS_API_URL = HOME_URL + "api/mailboxes/inbox/conversations";
+    public static final String CONVERSATIONS_SENT_API_URL = HOME_URL + "api/mailboxes/sent/conversations";
     public static final String NEW_CONVERSATION_API_URL = HOME_URL + "api/new_message/"; // + RECIPIENT_ID
 
     public static final String longline = "--------------------------------------------------------";

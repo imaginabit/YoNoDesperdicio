@@ -128,5 +128,9 @@
 
     <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="RecyclerView">
+        <item name="android:background">@color/activity_background</item>
+    </style>
+
 
 </resources>

@@ -18,7 +18,6 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
-import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,7 +73,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                 }
                 checkMessages();
             }
-        }, 60000);
+        }, 2 * 60 * 1000);
     }
 
     public static class RunnableCheckActive implements Runnable {
@@ -102,12 +101,14 @@ public class MessagesActivity extends NavigationBaseActivity {
             public void onFinished(final List<Conversation> conversations, Exception e,ProgressDialog pd) {
                 Log.v(TAG, "onFinished: finishesd");
                 if (conversations != null) {
+
+                    /*
+                     this is a nonsese.....
                     if(mConversationList!=null) {
                         Log.d(TAG, "onFinished: CONVERSATION NOT NULL");
                         Utils.dismissProgressDialog(pd);
                         //copy oy mConversations w/o messages
-                        List<Conversation> mconversationsLight = new ArrayList<Conversation>();;
-
+                        List<Conversation> mconversationsLight = new ArrayList<Conversation>();
                         for (int i=0;i<mConversationList.size();i++){
                             Conversation c = mConversationList.get(i);
                             if (c!=null) {
@@ -115,7 +116,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                                 mconversationsLight.add(i, c);
                             }
                         }
-
+                        //compare conversation form api with loaded in app
                         if (mconversationsLight == conversations) {
                             Log.d(TAG, "onFinished: no hay cambios");
                         } else {
@@ -131,34 +132,37 @@ public class MessagesActivity extends NavigationBaseActivity {
                             Log.d(TAG, "onFinished: compare "+ conversations.get(1).toString() );
                             Log.d(TAG, "onFinished: compare "+ mconversationsLight.get(1).toString() );
 
-                            if (
-                                    (mconversationsLight.containsAll(conversations)) &&
-                                            (mconversationsLight.size() == conversations.size())
-                                    ){
+                            if ((mconversationsLight.containsAll(conversations)) &&
+                                    (mconversationsLight.size() == conversations.size())){
+                                //TODO: si son iguales ??
+                                // no hace falta cargar los mensajes pero esto da igual no? ya los ha cargado
+                                //genial no recuerdo por que estaba prubando todo este rollo ya
                                 Log.d(TAG, "onFinished: TRUE");
                             }
 
                             Log.d(TAG, "onFinished: containsAll" + mconversationsLight.equals(conversations));
                             mconversationsLight.removeAll(conversations);
-                            Log.d(TAG, "onFinished: mConversationList size after:" + mconversationsLight.size());
-                            Log.d(TAG, "onFinished: mConversationList string:" + mconversationsLight.toString() );
+//                            Log.d(TAG, "onFinished: mConversationList size after:" + mconversationsLight.size());
+//                            Log.d(TAG, "onFinished: mConversationList string:" + mconversationsLight.toString() );
 
                             //Log.d(TAG, "onFinished: conversations:" + conversations.toString());
                         }
                     } else {
                         Log.d(TAG, "onFinished: CONVERSATION NULL --------------------");
                     }
+                    */
 
                     adapter = new ConversationsAdapter(context, conversations);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
-                    Log.d(TAG, "Conversacionesl : " + conversations.size());
-                    Log.d(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
+                    Log.v(TAG, "Conversacionesl : " + conversations.size());
+                    Log.v(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
                     mConversationList = conversations;
 
                     Date d = new Date();
                     Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
 
+                    //get messages from all conversations
                     MessagesUtils.getConversationMessages(conversations, new MessagesUtils.MessagesCallback() {
                         @Override
                         public void onFinished(List<Message> messages, Exception e) {
@@ -175,12 +179,9 @@ public class MessagesActivity extends NavigationBaseActivity {
                             adapter = new ConversationsAdapter(context, conversations);
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
-                            recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                            //recyclerView.scrollToPosition(messages.size()-1);
 
-
-                            Date d = new Date();
-                            Log.v(TAG, "getConversaitonMessages onFinished: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
+//                            Date d = new Date();
+//                            Log.v(TAG, "getConversaitonMessages onFinished: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
                         }
 
                         @Override
