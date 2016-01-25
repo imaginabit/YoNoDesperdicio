@@ -272,7 +272,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-
                     VolleyLog.v("Response:%n %s", response.toString());
 
                     //response.getString("title");
@@ -285,9 +284,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
                     Toast.makeText(AdCreateActivity.this, "Anuncio creado", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onResponse: title " + title + " " + id);
                     thisAdCreateActivity.finish();
-
-
-
                 } catch (JSONException e){
                     e.printStackTrace();
                     //Utils.dismissProgressDialog(pd);

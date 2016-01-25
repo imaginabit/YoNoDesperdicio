@@ -42,7 +42,7 @@
             <TextView
                 android:id="@+id/chat_title"
                 android:layout_width="0dp"
-                android:layout_weight="0.8"
+                android:layout_weight="0.75"
                 android:layout_height="wrap_content"
                 android:text="Nombre Usuario"
                 android:layout_gravity="top|left"
@@ -51,11 +51,11 @@
             <TextView
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 android:textSize="12dp"
-                android:textColor="@color/grey_400"
+                android:textColor="@color/grey_600"
                 android:id="@+id/time_last_message"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.2"
+                android:layout_weight="0.25"
                 android:layout_gravity="right"
                 android:gravity="right"
                 android:text="2h"
