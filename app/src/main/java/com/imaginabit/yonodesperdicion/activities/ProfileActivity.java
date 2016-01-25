@@ -3,32 +3,31 @@ package com.imaginabit.yonodesperdicion.activities;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileActivity extends NavigationBaseActivity {
@@ -58,21 +57,33 @@ public class ProfileActivity extends NavigationBaseActivity {
         Toolbar toolbar = setSupportedActionBar();
         setDrawerLayout(toolbar);
 
+        mAds = new ArrayList<>();
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_userads);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        recyclerView.setNestedScrollingEnabled(false);
+
+        userads = (LinearLayout) findViewById(R.id.user_ads);
+
+
         //recyclerView.setHasFixedSize(true);
         // use a linear layout manager
-        //layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        //recyclerView.setLayoutManager(layoutManager);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
         adapter = new AdsAdapter(context, mAds);
         recyclerView.setAdapter(adapter);
 
+
+
+
         // Back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if (AppSession.getCurrentUser() != null) {
-            mUser = AppSession.getCurrentUser();
 
+        if (AppSession.getCurrentUser() != null) {
+            VolleySingleton.init(context);
+
+            mUser = AppSession.getCurrentUser();
 
             userName = (TextView) findViewById(R.id.user_name);
             location = (TextView) findViewById(R.id.location);
@@ -88,8 +99,8 @@ public class ProfileActivity extends NavigationBaseActivity {
             rating.setRating(mUser.rating);
 
             getAdsFromWeb((int) mUser.id);
-
         }
+
 
     }
 
@@ -121,37 +132,67 @@ public class ProfileActivity extends NavigationBaseActivity {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         final Handler handler = new Handler();
 
-        if (networkInfo != null && networkInfo.isConnected()) {
-            AdUtils.fetchAds(u, this, new AdUtils.FetchAdsCallback() {
-                @Override
-                public void done(List<Ad> ads, Exception e) {
-                    if (e == null) {
-                        Log.v(TAG, "---Ads get!");
-                        if (ads != null) {
-                            mAds = ads;
-                            adapter = new AdsAdapter(context, mAds);
+        AdUtils.fetchAdsVolley(u, this, new AdUtils.FetchAdsCallback() {
+            @Override
+            public void done(List<Ad> ads, Exception e) {
+                if (ads != null) {
+                    mAds = ads;
+                    adapter = new AdsAdapter(context, mAds);
+                    recyclerView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    Log.d(TAG, "done: recyclerview height " + recyclerView.getHeight());
+                    Log.d(TAG, "done: layoutManager height " + layoutManager.getHeight());
 
-                            recyclerView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
+                    //
+                    DisplayMetrics dm = getResources().getDisplayMetrics();
+                    float adDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 135, dm);;
+                    float headDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, dm);;
+                    int hei = (int) ((int) (ads.size()* adDpInPx) + headDpInPx);
 
-                            Log.d(TAG, "anuncios : " + mAds.size());
-                        }
-                    } else {
-                        Log.e(TAG, "error al obtener los Anuncios");
-                        e.printStackTrace();
-                        //wait 5 secons to try again
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                getAdsFromWeb(userId);
-                            }
-                        }, 5000);
-                    }
+                    Log.d(TAG, "done: Height px :" + hei );
+
+                    userads.setLayoutParams(new LinearLayout.LayoutParams(layoutManager.getWidth(), hei ));
+
+
+
+
+
+                    Log.d(TAG, "anuncios : " + mAds.size());
                 }
-            });
-        } else {
-            Toast.makeText(this, "No se pudieron descargar los anuncios, no hay conexion a internet.", Toast.LENGTH_SHORT).show();
-        }
+            }
+        });
+
+//        if (networkInfo != null && networkInfo.isConnected()) {
+//            AdUtils.fetchAds(u, this, new AdUtils.FetchAdsCallback() {
+//                @Override
+//                public void done(List<Ad> ads, Exception e) {
+//                    if (e == null) {
+//                        Log.v(TAG, "---Ads get!");
+//                        if (ads != null) {
+//                            mAds = ads;
+//                            adapter = new AdsAdapter(context, mAds);
+//
+//                            recyclerView.setAdapter(adapter);
+//                            adapter.notifyDataSetChanged();
+//
+//                            Log.d(TAG, "anuncios : " + mAds.size());
+//                        }
+//                    } else {
+//                        Log.e(TAG, "error al obtener los Anuncios");
+//                        e.printStackTrace();
+//                        //wait 5 secons to try again
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                getAdsFromWeb(userId);
+//                            }
+//                        }, 5000);
+//                    }
+//                }
+//            });
+//        } else {
+//            Toast.makeText(this, "No se pudieron descargar los anuncios, no hay conexion a internet.", Toast.LENGTH_SHORT).show();
+//        }
     }
 
 

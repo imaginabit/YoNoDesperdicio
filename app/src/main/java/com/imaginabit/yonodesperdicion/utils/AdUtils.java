@@ -5,7 +5,14 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
+import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.User;
 
@@ -22,6 +29,55 @@ import java.util.List;
  */
 public class AdUtils {
     private static final String TAG = "AdUtils";
+
+    public static void fetchAdsVolley(User user, final Activity activity, final FetchAdsCallback cb){
+        Log.d(TAG, "fetchAdsVolley() called with: " + "user = [" + user + "], activity = [" + activity + "], cb = [" + cb + "]");
+
+        //ProgressDialog pd = new ProgressDialog(activity);
+
+        JSONObject jsonRequest = new JSONObject();
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
+                Constants.USER_ADS_API_URL + Integer.toString(user.getUserId()),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse() called with: " + "response = [" + response + "]");
+                        List<Ad> ads = new ArrayList<>();
+//                        Exception error = null;
+                        if (response.has("ads")) {
+                            JSONArray jsonItems = new JSONArray();
+                            try {
+                                jsonItems = response.getJSONArray("ads");
+                                Log.d(TAG,"User has Ads " + jsonItems.length());
+                                if (jsonItems.length() > 0) {
+                                    ResultAds resultAds;
+                                    resultAds = createAdList(jsonItems);
+                                    ads = resultAds.ads;
+                                    cb.done(ads,null);
+                                }
+
+                            } catch (JSONException e) {
+                                cb.done(null,e);
+                                e.printStackTrace();
+                            }
+                        } else Log.d(TAG, "doInBackground: User without ads");
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                        String errorMessage = VolleyErrorHelper.getMessage(activity, error);
+                        String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
+                    }
+                }
+        );
+
+        queue.add(request);
+    }
 
     public static void fetchAds(final User u,final Activity activity, final FetchAdsCallback callback ){
         final String TAG= AdUtils.TAG + " fetchAds filter user";
@@ -42,7 +98,7 @@ public class AdUtils {
             protected Void doInBackground(Void... params) {
                 String json = null;
                 try {
-                    json = Utils.downloadJsonUrl(Constants.USER_ADS_API_URS + u.getUserId());
+                    json = Utils.downloadJsonUrl(Constants.USER_ADS_API_URL + u.getUserId());
                 } catch (IOException e) {
                     Log.e( TAG , "IOExeption " + e.toString());
                     this.e = e;

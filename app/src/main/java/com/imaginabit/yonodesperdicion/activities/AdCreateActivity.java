@@ -347,7 +347,8 @@ public class AdCreateActivity extends NavigationBaseActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String errorMessage = VolleyErrorHelper.getMessage(context, error);
-                String errorDialogMsg = Utils.showErrorsJson(errorMessage, AdCreateActivity.this);
+                //String errorDialogMsg = Utils.showErrorsJson(errorMessage, AdCreateActivity.this);
+                Toast.makeText(AdCreateActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
 
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
 

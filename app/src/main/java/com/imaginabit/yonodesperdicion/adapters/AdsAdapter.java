@@ -58,13 +58,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
 
             Log.d(TAG, "ViewHolder: ");
         }
-
-        
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public AdsAdapter(Context context, List<Ad> adsList) {
-        Log.d(TAG, "AdsAdapter: Constructor --");
+        Log.d(TAG, "AdsAdapter() called with: " + "context = [" + context + "], adsList = [" + adsList.size() + "]");
 
         this.context = context;
         this.adsList = adsList;
