@@ -155,7 +155,8 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        clickEdidAd(ad);
+                        //clickEdidAd(ad); 
+                        Toast.makeText(AdDetailActivity.this, "No disponible", Toast.LENGTH_SHORT).show();
                     }
                 });
 

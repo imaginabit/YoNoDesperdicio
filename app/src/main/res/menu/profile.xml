@@ -10,6 +10,7 @@
     android:icon="@drawable/ic_mode_edit_white">
 
     <menu>
+        <!--
 
         <item android:id="@+id/edit_name"
               android:title="@string/edic_name"
@@ -28,12 +29,14 @@
               android:orderInCategory="3"
               android:icon="@drawable/ic_image_black"
               app:showAsAction="never"/>
+
         <item android:id="@+id/edit_location"
               android:title="@string/edit_location"
               android:orderInCategory="100"
               android:icon="@drawable/ic_pin_drop_black"
               app:showAsAction="never"/>
 
+        -->
     </menu>
 
 </item>
