@@ -90,4 +90,5 @@
 
 
     <string name="chat_input_hint">Escribe aqui tu mensaje</string>
+    <string name="menu_refresh">Actualizar</string>
 </resources>

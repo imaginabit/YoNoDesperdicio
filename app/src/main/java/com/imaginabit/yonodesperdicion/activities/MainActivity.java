@@ -9,10 +9,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,6 +47,7 @@ public class MainActivity extends NavigationBaseActivity {
     private RecyclerView.LayoutManager layoutManager;
 
     private List<Ad> mAds;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     @Override
@@ -107,6 +110,8 @@ public class MainActivity extends NavigationBaseActivity {
                 .build();
         ImageLoader.getInstance().init(config);
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_ads);
         recyclerView.setHasFixedSize(true);
@@ -123,6 +128,24 @@ public class MainActivity extends NavigationBaseActivity {
 
         //Get Ads
         getAdsFromWeb();
+
+
+        /*
+         * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
+         * performs a swipe-to-refresh gesture.
+         */
+        mSwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        getAdsFromWeb();
+                    }
+                }
+        );
 
 
     }
@@ -193,6 +216,7 @@ public class MainActivity extends NavigationBaseActivity {
                 public void done(List<Ad> ads, Exception e) {
                     if (e == null) {
                         Log.v(TAG, "---Ads get!");
+                        mSwipeRefreshLayout.setRefreshing(false);
                         if (ads != null) {
                             mAds = ads;
                             adapter = new AdsAdapter(context, mAds);
@@ -202,6 +226,7 @@ public class MainActivity extends NavigationBaseActivity {
                         }
                     } else {
                         Log.e(TAG, "error al obtener los Anuncios");
+                        mSwipeRefreshLayout.setRefreshing(false);
                         e.printStackTrace();
                         //wait 5 secons to try again
                         handler.postDelayed(new Runnable() {
@@ -225,6 +250,28 @@ public class MainActivity extends NavigationBaseActivity {
         AppSession.release();
         // App is not running
         App.setIsAppRunning(false);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            // Check if user triggered a refresh:
+            case R.id.menu_refresh:
+                Log.i(TAG, "Refresh menu item selected");
+
+                // Signal SwipeRefreshLayout to start the progress indicator
+                mSwipeRefreshLayout.setRefreshing(true);
+
+                // Start the refresh background task.
+                // This method calls setRefreshing(false) when it's finished.
+                getAdsFromWeb();
+
+                return true;
+        }
+
+        // User didn't trigger a refresh, let the superclass handle this action
+        return super.onOptionsItemSelected(item);
+
     }
 
 
