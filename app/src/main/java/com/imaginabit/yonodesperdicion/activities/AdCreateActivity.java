@@ -68,6 +68,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
     EditText expiration_date;
     EditText adDescription;
     EditText adZipCode;
+    Ad ad;
 
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_PICTURE = 1;
@@ -128,7 +129,10 @@ public class AdCreateActivity extends NavigationBaseActivity {
 
         // Retrieve args
         Bundle data = getIntent().getExtras();
-        final Ad ad = (Ad) data.getParcelable("ad");
+        if (data != null) {
+            Log.d(TAG, "onCreate: data " + data.toString());
+            ad = (Ad) data.getParcelable("ad");
+        }
         if (ad != null) {
             isEditing= true;
             getSupportActionBar().setTitle("Editar " + ad.getTitle());

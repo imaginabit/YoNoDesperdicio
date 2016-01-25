@@ -1,9 +1,7 @@
 package com.imaginabit.yonodesperdicion.activities;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -181,19 +179,18 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
      * Restart the app
      */
     private void restart() {
+        //final ProgressDialog pd = ProgressDialog.show(this, "a", "b");
+
         // Restart Intent
         Intent restartIntent = new Intent(this, MainActivity.class);
         restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
-                                                                  this,
-                                                                  0,
-                                                                  restartIntent,
-                                                                  PendingIntent.FLAG_CANCEL_CURRENT
-                                                               );
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
+                this,
+                0,
+                restartIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        );
 
         // Release session
         AppSession.release();
@@ -201,6 +198,14 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
         // App is not running
         App.setIsAppRunning(false);
 
+
+        // i dont get why wait for this
+//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
+
+        startActivity(restartIntent);
+
         finish();
     }
+
 }
