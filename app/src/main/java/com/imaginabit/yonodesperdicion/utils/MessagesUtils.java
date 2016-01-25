@@ -79,7 +79,14 @@ public class MessagesUtils {
                        }
 
                        @Override
-                       public void onFinished(List<Conversation> conversations, Exception e, ProgressDialog pd) {}
+                       public void onFinished(List<Conversation> conversationsSent, Exception e, ProgressDialog pd) {
+                           //normalmente llama a este
+                           Log.d(TAG, "getConversationsSent onFinished() called with: " + "conversations = [" + conversations + "], e = [" + e + "], pd = [" + pd + "]");
+                           conversations.addAll(conversationsSent);
+                           if (conversations.size() > 0) {
+                               callback.onFinished(conversations, null, MessagesUtils.pd);
+                           }
+                       }
 
                        @Override
                        public void onError(String errorMessage) {
@@ -299,9 +306,7 @@ public class MessagesUtils {
         return new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject response) {
-                Log.i("--->", "authenticate:" + response.toString());
-                Log.d(TAG, "onResponse: current activity:");
-
+                Log.d("--->", "authenticate:" + response.toString());
 
                 try {
                     Utils.dismissProgressDialog(MessagesUtils.pd);
@@ -325,7 +330,7 @@ public class MessagesUtils {
 
                         conversations = resultConversations.getConversations();
                         if (resultConversations.e!=null) error = resultConversations.e;
-                        Log.d(TAG, "onResponse: conversations size" + conversations.size());
+                        Log.d(TAG, "onResponse: conversations size " + conversations.size());
 
                         callback.onFinished(conversations, error, pd);
                     }
