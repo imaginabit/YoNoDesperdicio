@@ -46,6 +46,7 @@
                 android:layout_height="wrap_content"
                 android:text="Nombre Usuario"
                 android:layout_gravity="top|left"
+                android:gravity="top|left"
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 />
             <TextView
@@ -57,7 +58,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.25"
                 android:layout_gravity="right"
-                android:gravity="right"
+                android:gravity="top|right"
                 android:text="2h"
                 />
             </LinearLayout>
