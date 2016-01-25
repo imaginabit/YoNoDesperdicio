@@ -7,8 +7,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.AppSession;
@@ -31,6 +33,8 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     private RecyclerView.LayoutManager layoutManager;
     private EditText chatInput;
     private List<Message> mMessages;
+    private ImageView mBtnSend;
+    private boolean pushed;
 
 
     @Override
@@ -40,14 +44,6 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mConversation = AppSession.currentConversation;
 
@@ -61,54 +57,69 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
         getMessages();
         checkMessages();
+        pushed= false;
 
         chatInput = (EditText) findViewById(R.id.chat_input_text);
         chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     String msg = v.getText().toString();
-                    MessagesUtils.reply(mConversation.getId(), msg, new MessagesUtils.MessagesCallback() {
-                        @Override
-                        public void onFinished(List<Message> messages, Exception e) {
-                            Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
-
-                            //refresh adapter content
-                            MessagesAdapter ma = (MessagesAdapter) adapter;
-                            Message oMsg = messages.get(messages.size()-1);
-                            if (oMsg !=null){
-                                ma.add(oMsg);
-                                Log.d(TAG, "onFinished: message size" + mMessages.size());
-                                recyclerView.scrollToPosition(mMessages.size() - 1);
-                                chatInput.setText("");
-                                chatInput.clearFocus();
-                                //recyclerView.smoothScrollToPosition(0);
-                                recyclerView.smoothScrollToPosition(mMessages.size()-1);
-                            } else {
-                                Log.d(TAG, "onFinished: message null?");
-                                Log.d(TAG, "onFinished: messages: "+ messages.toString());
-                            }
-                            
-                            
-                        }
-
-                        @Override
-                        public void onFinished(List<Message> messages, Exception e, ArrayList data) {
-                            //do nothing
-                        }
-
-                        @Override
-                        public void onError(String errorMessage) {
-                            Log.d(TAG, "onError() called with: " + "errorMessage = [" + errorMessage + "]");
-                        }
-                    });
-
+                    pushedSendMessageButton(msg);
                     return true;
                 }
                 return false;
             }
         });
 
+        mBtnSend = (ImageView) findViewById(R.id.btn_send);
+        mBtnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pushedSendMessageButton(chatInput.getText().toString());
+            }
+        });
 
+
+    }
+
+    private void pushedSendMessageButton(String msg){
+        if(pushed==false) {
+            pushed=true;//avoid accidental double tapping
+
+            MessagesUtils.reply(mConversation.getId(), msg, new MessagesUtils.MessagesCallback() {
+                @Override
+                public void onFinished(List<Message> messages, Exception e) {
+                    Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+
+                    //refresh adapter content
+                    MessagesAdapter ma = (MessagesAdapter) adapter;
+                    Message oMsg = messages.get(messages.size() - 1);
+                    if (oMsg != null) {
+                        ma.add(oMsg);
+                        Log.d(TAG, "onFinished: message size" + mMessages.size());
+                        recyclerView.scrollToPosition(mMessages.size() - 1);
+                        chatInput.setText("");
+                        //chatInput.clearFocus();
+                        //recyclerView.smoothScrollToPosition(0);
+                        recyclerView.smoothScrollToPosition(mMessages.size() - 1);
+                        pushed = false;
+                    } else {
+                        Log.d(TAG, "onFinished: message null?");
+                        Log.d(TAG, "onFinished: messages: " + messages.toString());
+                    }
+                }
+
+                @Override
+                public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                    //do nothing
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    Log.d(TAG, "onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                }
+            });
+        }
     }
 
     private void checkMessages(){
