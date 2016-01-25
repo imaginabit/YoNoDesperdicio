@@ -132,12 +132,12 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             }
 
         }
-        else if (id == R.id.nav_favoritos) {
+//        else if (id == R.id.nav_favoritos) {
             // TODO: quitar pruebas para que haga lo que de verdad tiene que hacer
             // he puesto ver el detalle del anuncio aqui como prueba
 //            Intent itntFav = new Intent(context, AdDetailActivity.class);
 //            startActivity(itntFav);
-        }
+//        }
         else if (id == R.id.nav_mensajes) {
             // TODO: quitar pruebas
             // he puesto ver el formulaciro de crear el anuncio aqui como prueba
@@ -145,18 +145,18 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             startActivity(itntMsgs);
 
         }
+
         else if (id == R.id.nav_masinfo) {
             Intent itntInfo = new Intent(context, MoreInfoActivity.class);
             itntInfo.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity( itntInfo );
 
         }
-        else if (id == R.id.nav_ajustes) {
+//        else if (id == R.id.nav_ajustes) {
             //cargar ajustes
 //            Intent itntSettings = new Intent(context, SettingsActivity.class);
 //            startActivity( itntSettings );
-
-        }
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
