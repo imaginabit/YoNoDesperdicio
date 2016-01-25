@@ -27,9 +27,13 @@ public class Constants {
     public static final String CONVERSATIONS_SENT_API_URL = HOME_URL + "api/mailboxes/sent/conversations";
     public static final String NEW_CONVERSATION_API_URL = HOME_URL + "api/new_message/"; // + RECIPIENT_ID
 
+    public static final String IDEA_URL = HOME_URL + "idea/"; //+ idea id
+
+
     public static final String longline = "--------------------------------------------------------";
 
     public static final String WEIGHT_TOTAL_KG_URL = HOME_URL + "api/total_kg";
+
 
     public static Double weightTotal;
 
