@@ -162,6 +162,22 @@ public class Ad implements Parcelable {
         this.userName = userName;
         this.favorite = false;
     }
+    public Ad(
+            String title,
+            String body
+    ) {
+        // Set properties
+        this.title = title;
+        this.body = body;
+        this.imageUrl = "";
+        this.weightGrams = 0;
+        this.expiration = null;
+        this.postalCode = 0;
+        this.status = Status.AVAILABLE;
+        this.userId = 0;
+        this.userName = "";
+        this.favorite = false;
+    }
 
     public String getTitle() {
         return title;

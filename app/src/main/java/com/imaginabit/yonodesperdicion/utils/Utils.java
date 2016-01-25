@@ -21,10 +21,15 @@ import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.AppSession;
@@ -513,6 +518,7 @@ public class Utils {
 	show dialgo with errors from json
 	 */
 	public static String showErrorsJson(String errorMessage, Activity activity){
+		Log.d(TAG, "showErrorsJson() called with: " + "errorMessage = [" + errorMessage + "], activity = [" + activity.getLocalClassName() + "]");
 		String errorDialogMsg="";
 		Boolean simpleMessage= false;
 
@@ -581,5 +587,31 @@ public class Utils {
 
 
 		return errorDialogMsg;
+	}
+
+	/**
+	 * Set listview hegith based on children for fix nestedscroll problems
+	 * @param listView
+	 */
+	public static void setListViewHeightBasedOnChildren(ListView listView) {
+		ListAdapter listAdapter = listView.getAdapter();
+		if (listAdapter == null) {
+			// pre-condition
+			return;
+		}
+
+		int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+		for (int i = 0; i < listAdapter.getCount(); i++) {
+			View listItem = listAdapter.getView(i, null, listView);
+			if (listItem instanceof ViewGroup) {
+				listItem.setLayoutParams(new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT));
+			}
+			listItem.measure(0, 0);
+			totalHeight += listItem.getMeasuredHeight();
+		}
+
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+		listView.setLayoutParams(params);
 	}
 }

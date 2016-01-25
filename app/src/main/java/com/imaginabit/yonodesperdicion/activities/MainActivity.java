@@ -47,6 +47,7 @@ public class MainActivity extends NavigationBaseActivity {
     private RecyclerView.LayoutManager layoutManager;
 
     private List<Ad> mAds;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
@@ -60,7 +61,7 @@ public class MainActivity extends NavigationBaseActivity {
         if (user != null) {
             AppSession.setCurrentUser(user);
         }
-
+        mAds = new ArrayList<>();
 
         // Fix action bar and drawer
         Toolbar toolbar = setSupportedActionBar();

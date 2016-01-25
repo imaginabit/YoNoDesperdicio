@@ -60,13 +60,13 @@
             android:layout_height="match_parent"
             android:background="@color/activity_background"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:fillViewport="true"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-
                 >
 
                 <LinearLayout
@@ -160,11 +160,11 @@
                 <LinearLayout
                     android:id="@+id/user_ads"
                     android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:background="@color/activity_background"
                     android:orientation="vertical"
                     android:paddingTop="@dimen/activity_vertical_margin"
-                    android:nestedScrollingEnabled="true">
+                    >
 
                     <TextView
                         style="@style/Base.TextAppearance.AppCompat.Headline"
@@ -174,20 +174,13 @@
                         android:text="ALIMENTOS COMPARTIDOS"
                         />
 
-                    <LinearLayout
-                        android:paddingTop="?attr/actionBarSize"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:nestedScrollingEnabled="true">
-
+                    <!--android:paddingTop="?attr/actionBarSize"-->
                         <android.support.v7.widget.RecyclerView
+                            android:isScrollContainer="false"
                             android:id="@+id/recycler_userads"
                             android:layout_width="match_parent"
-                            android:layout_height="fill_parent"
+                            android:layout_height="wrap_content"
                             />
-                    </LinearLayout>
-
                 </LinearLayout>
 
             </LinearLayout>
@@ -208,6 +201,7 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
+
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -217,6 +211,7 @@
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer"
         />
+
 
 
 </android.support.v4.widget.DrawerLayout>
