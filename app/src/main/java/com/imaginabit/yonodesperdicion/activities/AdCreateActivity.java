@@ -232,9 +232,9 @@ public class AdCreateActivity extends NavigationBaseActivity {
                     .put("pick_up_date", expiration_date.getText());
 
             if (isEditing){
+                //TODO: edit ad
                 // no funciona por ahora
                 //jsonAd.put("id");
-
             }
 
 
@@ -346,12 +346,12 @@ public class AdCreateActivity extends NavigationBaseActivity {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorMessage = VolleyErrorHelper.getMessage(context, error);
-                //String errorDialogMsg = Utils.showErrorsJson(errorMessage, AdCreateActivity.this);
-                Toast.makeText(AdCreateActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-
+                String errorMessage;
+                String errorDialogMsg;
+                errorMessage = VolleyErrorHelper.getMessage(context, error);
+                errorDialogMsg = Utils.showErrorsJson(errorMessage, AdCreateActivity.this);
+                //Toast.makeText(AdCreateActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
-
             }
         };
     }

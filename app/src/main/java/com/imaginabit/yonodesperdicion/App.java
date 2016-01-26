@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.utils.Utils;
@@ -10,6 +11,8 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
  */
 public class App extends Application {
 	private static boolean isAppRunning = false;
+
+	public static Context appContext;
 
 	// Uncaught Exception Handler
 	private Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = null;
@@ -33,6 +36,7 @@ public class App extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		appContext = getApplicationContext();
 		try {
 			// get: Default Uncaught Exception Handler
 			defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
