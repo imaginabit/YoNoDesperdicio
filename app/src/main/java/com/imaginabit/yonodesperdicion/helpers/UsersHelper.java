@@ -15,7 +15,6 @@ import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -154,10 +153,17 @@ public class UsersHelper {
         }
     }
 
+
+    private static String extractErrorMessage(Context context, VolleyError error) {
+        String errorMessage = VolleyErrorHelper.getMessage(context, error);
+        String message = null;
+        return Utils.showErrorsJson(errorMessage);
+    }
+
     /**
      * Extract the error message from VolleyError encapsulation
      */
-    private static String extractErrorMessage(Context context, VolleyError error) {
+    /*private static String extractErrorMessage(Context context, VolleyError error) {
         // Default error message
         String errorMessage = VolleyErrorHelper.getMessage(context, error);
         String message = null;
@@ -165,6 +171,7 @@ public class UsersHelper {
         try {
             JSONObject jsonErrorMessage = new JSONObject(errorMessage);
             // {"errors":"Not authenticated"}
+
             try{
                 message = jsonErrorMessage.getString("errors");
                 if (Utils.isNotEmptyOrNull(message)) {
@@ -204,7 +211,7 @@ public class UsersHelper {
             // Ignored
         }
         return errorMessage;
-    }
+    }*/
 
     /**
      * Extract the user data from json response

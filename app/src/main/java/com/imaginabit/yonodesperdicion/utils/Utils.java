@@ -32,6 +32,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
@@ -476,13 +477,29 @@ public class Utils {
         if ( AppSession.getCurrentUser() == null ) {
             Log.d(TAG, "checkLoginAndRedirect: go to login activity");
             Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+			//loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            activity.startActivity(loginPanelIntent);
+			context.startActivity(loginPanelIntent);
+//            activity.startActivity(loginPanelIntent);
             return false;
         } else {
             return true;
         }
     }
+	public static boolean checkLoginAndRedirect(){
+		Log.d(TAG, "checkLoginAndRedirect() called");
+
+		if ( AppSession.getCurrentUser() == null ) {
+			Log.d(TAG, "checkLoginAndRedirect: go to login activity");
+			Intent loginPanelIntent = new Intent(App.appContext, LoginPanelActivity.class);
+			//loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			App.appContext.startActivity(loginPanelIntent);
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	/*
 	Android > 6.0
@@ -513,12 +530,14 @@ public class Utils {
 		return false;
 	}
 
-
-	/*
-	show dialgo with errors from json
+	/**
+	 * Show errors in readable format
+	 * @param errorMessage
+	 * @return
 	 */
-	public static String showErrorsJson(String errorMessage, Activity activity){
-		Log.d(TAG, "showErrorsJson() called with: " + "errorMessage = [" + errorMessage + "], activity = [" + activity.getLocalClassName() + "]");
+	public static String showErrorsJson(String errorMessage ){
+		Log.d(TAG, "showErrorsJson() called with: " + "errorMessage = [" + errorMessage + "]");
+
 		String errorDialogMsg="";
 		Boolean simpleMessage= false;
 
@@ -526,65 +545,100 @@ public class Utils {
 			JSONObject errorJSON = new JSONObject(errorMessage.substring(errorMessage.indexOf("{"), errorMessage.lastIndexOf("}") + 1));;
 			try {
 				String errorStr = errorJSON.getString("errors");;
-				Log.d(TAG, "showErrorsJson: errorStr : "+ errorStr);
+				Log.d(TAG, "showErrorsJson: errorStr : " + errorStr);
 				simpleMessage=true;
 				errorDialogMsg=errorStr;
 
 				//TODO: check session at app created
-				AppSession.release();
-				AppSession.release();
-				Utils.checkLoginAndRedirect(activity);
-
+				if (AppSession.getCurrentUser() == null) {
+					AppSession.release();
+					AppSession.release();
+					//Utils.checkLoginAndRedirect(activity);
+					checkLoginAndRedirect();
+				}
 			}catch (Exception e){
+				try {
+					if (errorJSON.has("error")) {
+						errorDialogMsg = errorJSON.optString("error", "");
+					}
+				}catch (Exception e1 ) {
+					simpleMessage = false;
+					Log.d(TAG, "showErrorsJson: error getStrig ERROR");
+					e1.printStackTrace();
+				}
+				Log.d(TAG, "showErrorsJson: error getStrig errors");
+				e.printStackTrace();
+			}
+
+			try {
+				JSONObject err = errorJSON.getJSONObject("errors");
+				Log.d(TAG, "showErrorsJson: err\n" + err.toString(2));
+				errorDialogMsg="";
 				simpleMessage=false;
+			} catch (Exception e){
 				e.printStackTrace();
 			}
 
 			if (errorJSON.has("errors") && !simpleMessage){
+				Log.d(TAG, "showErrorsJson: errorJSON.has(\"errors\")");
 
 				JSONObject err = errorJSON.getJSONObject("errors");
 
 				Iterator<?> errores = err.keys();
 				while(errores.hasNext() ){
 					String key = (String)errores.next();
+					Log.d(TAG, "showErrorsJson: iterando errores, error "+ key );
 					switch (key){
 						case "title":
-							errorDialogMsg += "Título, ";
+							errorDialogMsg += "Título: ";
 							break;
 						case "body":
-							errorDialogMsg += "Descripción, ";
+							errorDialogMsg += "Descripción: ";
+							break;
+						case "password":
+							errorDialogMsg += "Clave: ";
 							break;
 					}
 
 					if( err.get(key) instanceof String ) {
 						String value = (String) err.get(key);
 						errorDialogMsg += value.toString();
-						errorDialogMsg += "\n";
+						errorDialogMsg += ".\n";
 					} else if(err.get(key) instanceof JSONArray){
-						errorDialogMsg += ((JSONArray) err.get(key)).join(",").replace('"',' ').trim();
-						errorDialogMsg += "\n";
+						errorDialogMsg += ((JSONArray) err.get(key)).join(", ").replace("\"","").trim();
+						errorDialogMsg += ".\n";
 						//Iterator<?> tipo = err.getJSONObject(key).keys();
 //                            while(tipo.hasNext()){
 //                                String key2 = (String)tipo.next();
 //                                json.getJSONObject(key).getJSONArray(key2).toString();
 //                            }
 					}
-				}
+					errorDialogMsg += "\n";				}
 
-				//show dialog with error
-				AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.yndDialog);
-				builder.setTitle("Errores")
-						.setMessage(errorDialogMsg)
-						.setCancelable(false)
-						.setPositiveButton("OK", null);
-				AlertDialog alert = builder.create();
-				alert.show();
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		return errorDialogMsg;
+	}
 
 
+	/*
+	show dialgo with errors from json
+	 */
+	public static String showErrorsJson(String errorMessage, Activity activity){
+		Log.d(TAG, "showErrorsJson() called with: " + "errorMessage = [" + errorMessage + "], activity = [" + activity.getLocalClassName() + "]");
+
+		String errorDialogMsg = showErrorsJson(errorMessage);
+
+		//show dialog with error
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.yndDialog);
+		builder.setTitle("Errores")
+				.setMessage(errorDialogMsg)
+				.setCancelable(false)
+				.setPositiveButton("OK", null);
+		AlertDialog alert = builder.create();
+		alert.show();
 
 		return errorDialogMsg;
 	}
