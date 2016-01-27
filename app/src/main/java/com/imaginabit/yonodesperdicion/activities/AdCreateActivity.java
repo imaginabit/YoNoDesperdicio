@@ -190,7 +190,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear,
                               int dayOfMonth) {
-            // TODO Auto-generated method stub
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -635,7 +634,6 @@ public class AdCreateActivity extends NavigationBaseActivity {
             image.setVisibility(View.VISIBLE);
             //storeImageTosdCard(bitmap);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

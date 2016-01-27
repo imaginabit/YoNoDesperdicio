@@ -8,12 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.IdeasAdapter;
 import com.imaginabit.yonodesperdicion.models.Idea;
-import com.imaginabit.yonodesperdicion.Constants;
-import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.imaginabit.yonodesperdicion.utils.IdeaUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import java.util.List;
 

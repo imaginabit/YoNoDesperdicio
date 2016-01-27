@@ -125,6 +125,16 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
                     context.startActivity(i);
                 }
             });
+
+            //Log.d(TAG, "onBindViewHolder: position "+ position + " total size "+ ideasList.size());
+
+            //if last item add space
+//            if (ideasList.size()==position+1){
+//                Log.d(TAG, "onBindViewHolder: last position");
+//                holder.cardView.setUseCompatPadding(true);
+////                holder.cardView.setCardBackgroundColor(R.color.accent);
+//            }
+
         }
 
 
