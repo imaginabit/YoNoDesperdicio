@@ -94,7 +94,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -133,8 +133,6 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
         }
 //        else if (id == R.id.nav_favoritos) {
-            // TODO: quitar pruebas para que haga lo que de verdad tiene que hacer
-            // he puesto ver el detalle del anuncio aqui como prueba
 //            Intent itntFav = new Intent(context, AdDetailActivity.class);
 //            startActivity(itntFav);
 //        }

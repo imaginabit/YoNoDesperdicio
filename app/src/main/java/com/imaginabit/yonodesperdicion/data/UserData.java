@@ -109,6 +109,7 @@ public class UserData {
             return null;
         }
 
+
         String fullname = sp.getString(PREFS_KEY_FULLNAME, "");
         String email = sp.getString(PREFS_KEY_EMAIL, "");
         String password = sp.getString(PREFS_KEY_PASSWORD, "");

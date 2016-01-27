@@ -99,12 +99,11 @@
     </style>
 
     <style name="IdeaCard" parent="CardView">
-        <item name="android:layout_marginLeft">@dimen/articulo_card_margin</item>
-        <item name="android:layout_marginRight">@dimen/articulo_card_margin</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_marginTop">0dp</item>
-        <item name="android:layout_marginBottom">@dimen/card_margin_tiny</item>
-        <item name="android:layout_alignParentBottom">@dimen/articulo_card_margin</item>
-
+        <item name="android:layout_marginBottom">8dp</item>
+        <!--<item name="android:layout_alignParentBottom">@dimen/articulo_card_margin</item>-->
     </style>
 
 

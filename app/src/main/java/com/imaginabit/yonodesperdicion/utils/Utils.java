@@ -477,8 +477,9 @@ public class Utils {
         if ( AppSession.getCurrentUser() == null ) {
             Log.d(TAG, "checkLoginAndRedirect: go to login activity");
             Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
-			//loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			//TODO da problemas con 2.3.3
 			context.startActivity(loginPanelIntent);
 //            activity.startActivity(loginPanelIntent);
             return false;
@@ -576,7 +577,8 @@ public class Utils {
 				errorDialogMsg="";
 				simpleMessage=false;
 			} catch (Exception e){
-				e.printStackTrace();
+//				e.printStackTrace();
+				Log.d(TAG, "showErrorsJson: error: 'errors' is not a jsonobject , just a string");
 			}
 
 			if (errorJSON.has("errors") && !simpleMessage){

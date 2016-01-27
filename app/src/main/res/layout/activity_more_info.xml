@@ -16,30 +16,23 @@
         android:fitsSystemWindows="true"
         >
 
-        <include layout="@layout/appbar" />
+        <include layout="@layout/appbar"/>
 
 
         <LinearLayout
-            android:paddingTop="?attr/actionBarSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:nestedScrollingEnabled="true"
+            android:orientation="vertical"
+            android:paddingTop="?attr/actionBarSize"
             >
-<!--
-            <include
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/articulo_card_margin"
-                layout="@layout/more_info_stats" />
--->
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_ideas"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-            <Space android:layout_width="match_parent"
-                  android:layout_height="16dp"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
                 />
 
         </LinearLayout>

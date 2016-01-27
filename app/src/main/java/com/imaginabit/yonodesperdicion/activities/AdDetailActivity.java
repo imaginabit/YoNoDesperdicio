@@ -45,7 +45,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
         Bundle data = getIntent().getExtras();
         final Ad ad = (Ad) data.getParcelable("ad");
         if (ad == null) {
-            // @TODO find another way
+
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
         } else {
             // Fix action bar and drawer
