@@ -40,7 +40,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class MessagesUtils {
     private static final String TAG = "MessagesUtils";
-    private static Context context;
+    private static Context context = null;
     private static ProgressDialog pd;
 
     public static Activity mCurrentActivity;
@@ -124,7 +124,7 @@ public class MessagesUtils {
         Log.d(TAG, "getConversationsBase() called with: " + "url = [" + url + "], context = [" + context.getPackageName() + "], callback = [" + callback.getClass().getSimpleName() + "], activity = [" + activity.getClass().getSimpleName() + "]");
         MessagesUtils.context = context;
         // Show Loading dialog
-        MessagesUtils.pd = ProgressDialog.show(context, "", context.getString(R.string.loading));
+        MessagesUtils.pd = ProgressDialog.show(MessagesUtils.context, "", context.getString(R.string.loading));
         mCurrentActivity = activity;
 
         try{
@@ -253,7 +253,8 @@ public class MessagesUtils {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Log.d(TAG, "getConversationMessages onErrorResponse: ");
+                                Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+
 
                             }
                         }
@@ -353,7 +354,7 @@ public class MessagesUtils {
                     e.printStackTrace();
                 }
 
-                String errorMessage = VolleyErrorHelper.getMessage(context, error);
+                String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
 
                 //String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
@@ -570,8 +571,13 @@ public class MessagesUtils {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "getConversationMessages onErrorResponse: ");
+                        Log.v(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                        //TODO: on android 2.3.3 app crashed here :(
+                        String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
+                        String errorDialogMsg = Utils.showErrorsJson(errorMessage, (Activity) MessagesUtils.context);
 
+                        Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                        callback.onError(errorMessage);
                     }
                 }
                 //MessagesUtils.createReqErrorListener((ConversationsCallback) callback, activity)
@@ -605,13 +611,21 @@ public class MessagesUtils {
     public static void createConversation(final String title, int sendTo, final MessagesCallback callback){
         Log.d(TAG, "createConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
 
-        final String msg = "Nuevo mensaje";
+        final String msg = "##Nuevo mensaje";
 
         JSONObject jsonRequest = new JSONObject();
+        JSONObject jsonMessage = new JSONObject();
+
         RequestQueue queue = VolleySingleton.getRequestQueue();
         try {
-            jsonRequest.put("subject",title);
-            jsonRequest.put("body",msg);
+            jsonMessage.put("subject",title);
+            jsonMessage.put("body",msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            jsonRequest.putOpt("message", jsonMessage);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -666,16 +680,20 @@ public class MessagesUtils {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "getConversationMessages onErrorResponse: ");
+                        String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
 
+                        Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                        callback.onError(errorMessage);
                     }
                 }
-                //MessagesUtils.createReqErrorListener((ConversationsCallback) callback, activity)
         ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 return AppSession.authHeaders();
             }
         };
+        Log.d(TAG, "createConversation: request to string " + jsonRequest.toString() );
+
         queue.add(request);
 
 

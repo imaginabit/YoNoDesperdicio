@@ -470,7 +470,7 @@ public class Utils {
 		return txt;
 	}
 
-	public static boolean checkLoginAndRedirect(Activity activity){
+	public static boolean checkLoginAndRedirect(final Activity activity){
         Context context = activity.getApplicationContext();
 		//Log.d(TAG, "checkLoginAndRedirect: current user "+ AppSession.getCurrentUser().username);
 
@@ -501,6 +501,8 @@ public class Utils {
 			return true;
 		}
 	}
+
+
 
 	/*
 	Android > 6.0
@@ -541,6 +543,9 @@ public class Utils {
 
 		String errorDialogMsg="";
 		Boolean simpleMessage= false;
+		if (!(errorMessage.contains("{") &&  errorMessage.contains("}"))){
+			return errorMessage;
+		}
 
 		try {
 			JSONObject errorJSON = new JSONObject(errorMessage.substring(errorMessage.indexOf("{"), errorMessage.lastIndexOf("}") + 1));;

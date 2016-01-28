@@ -10,6 +10,7 @@ import com.android.volley.NoConnectionError;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.R;
 
 /**
@@ -29,7 +30,18 @@ public class VolleyErrorHelper {
             return handleServerError(context, error);
         }
         else if(isNetworkProblem(error)) {
-            return context.getResources().getString(R.string.volley_error_no_internet);
+            Log.d(TAG, "getMessage: isNetworkProblem");
+            String errorMs="";
+            if (context.getResources()== null){
+                Log.d(TAG, "getMessage: context.getResources()== null");
+                return App.appContext.getResources().getString(R.string.volley_error_no_internet);
+            }
+            try {
+                errorMs=context.getResources().getString(R.string.volley_error_no_internet);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            return  errorMs;
         }
         else {
             return context.getResources().getString(R.string.volley_error_generic);
