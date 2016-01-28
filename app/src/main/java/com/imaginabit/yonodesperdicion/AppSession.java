@@ -1,5 +1,6 @@
 package com.imaginabit.yonodesperdicion;
 
+import android.location.Location;
 import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.data.UserData;
@@ -33,6 +34,9 @@ public class AppSession {
     }
 
     public static Conversation currentConversation;
+
+    public static Location lastLocation;
+
 
 
     /**

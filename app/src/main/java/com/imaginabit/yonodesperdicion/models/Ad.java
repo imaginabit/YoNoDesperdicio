@@ -1,5 +1,6 @@
 package com.imaginabit.yonodesperdicion.models;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -40,6 +41,8 @@ public class Ad implements Parcelable {
     private int userId;
     private String userName;
     private boolean favorite;
+    private Location location;
+    private int lastDistance;
 
     // Constructors
 
@@ -374,54 +377,6 @@ public class Ad implements Parcelable {
         this.id = id;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeString(this.title);
-        dest.writeString(this.body);
-        dest.writeString(this.imageUrl);
-        dest.writeInt(this.weightGrams);
-        dest.writeLong(expiration != null ? expiration.getTime() : -1);
-        dest.writeInt(this.postalCode);
-        dest.writeInt(this.status == null ? -1 : this.status.ordinal());
-        dest.writeInt(this.userId);
-        dest.writeByte(favorite ? (byte) 1 : (byte) 0);
-        dest.writeString(this.userName);
-    }
-
-    protected Ad(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-        this.body = in.readString();
-        this.imageUrl = in.readString();
-        this.weightGrams = in.readInt();
-
-        long tmpExpiration = in.readLong();
-        this.expiration = (tmpExpiration == -1) ? null : new Date(tmpExpiration);
-
-        this.postalCode = in.readInt();
-
-        int tmpStatus = in.readInt();
-        this.status = (tmpStatus == -1) ? null : Status.values()[tmpStatus];
-
-        this.userId = in.readInt();
-        this.favorite = in.readByte() != 0;
-        this.userName = in.readString();
-    }
-
-    public static final Creator<Ad> CREATOR = new Creator<Ad>() {
-        public Ad createFromParcel(Parcel source) {
-            return new Ad(source);
-        }
-        public Ad[] newArray(int size) {
-            return new Ad[size];
-        }
-    };
 
     @Override
     public String toString() {
@@ -446,4 +401,70 @@ public class Ad implements Parcelable {
                 ", scribeContents=" + describeContents() +
                 '}';
     }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public int getLastDistance() {
+        return lastDistance;
+    }
+
+    public void setLastDistance(int lastDistance) {
+        this.lastDistance = lastDistance;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.title);
+        dest.writeString(this.body);
+        dest.writeString(this.imageUrl);
+        dest.writeInt(this.weightGrams);
+        dest.writeLong(expiration != null ? expiration.getTime() : -1);
+        dest.writeInt(this.postalCode);
+        dest.writeInt(this.status == null ? -1 : this.status.ordinal());
+        dest.writeInt(this.userId);
+        dest.writeString(this.userName);
+        dest.writeByte(favorite ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.location, 0);
+        dest.writeInt(this.lastDistance);
+    }
+
+    protected Ad(Parcel in) {
+        this.id = in.readInt();
+        this.title = in.readString();
+        this.body = in.readString();
+        this.imageUrl = in.readString();
+        this.weightGrams = in.readInt();
+        long tmpExpiration = in.readLong();
+        this.expiration = tmpExpiration == -1 ? null : new Date(tmpExpiration);
+        this.postalCode = in.readInt();
+        int tmpStatus = in.readInt();
+        this.status = tmpStatus == -1 ? null : Status.values()[tmpStatus];
+        this.userId = in.readInt();
+        this.userName = in.readString();
+        this.favorite = in.readByte() != 0;
+        this.location = in.readParcelable(Location.class.getClassLoader());
+        this.lastDistance = in.readInt();
+    }
+
+    public static final Creator<Ad> CREATOR = new Creator<Ad>() {
+        public Ad createFromParcel(Parcel source) {
+            return new Ad(source);
+        }
+
+        public Ad[] newArray(int size) {
+            return new Ad[size];
+        }
+    };
 }

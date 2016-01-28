@@ -2,8 +2,10 @@ package com.imaginabit.yonodesperdicion.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.location.LocationListener;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
@@ -11,6 +13,8 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
  * Represent the user data in memory
  */
 public class UserData {
+    private static final String TAG = "UserData";
+
     // Prefs keys
     private static final String PREFS_KEY_ID = "user_id";
     private static final String PREFS_KEY_CREATED = "user_created";
@@ -25,6 +29,7 @@ public class UserData {
     private static final String PREFS_KEY_RATING = "user_rating";
     private static final String PREFS_KEY_TOTAL_QUANTITY = "user_total_quantity";
 
+
     public long id = 0L;
     public String created = "";
     public String authToken = "";
@@ -38,6 +43,10 @@ public class UserData {
     public float rating = 0.0f;
     public int totalQuantity = 0;
 
+    private static LocationListener locationListener = null;
+    private static LocationManager locationMangaer = null;
+
+
     // Constructors
 
     public UserData() {
@@ -45,19 +54,19 @@ public class UserData {
     }
 
     public UserData(
-                       long id,
-                       String created,
-                       String authToken,
-                       String fullname,
-                       String username,
-                       String email,
-                       String password,
-                       String city,
-                       String province,
-                       String zipCode,
-                       float rating,
-                       int totalQuantity
-                   ) {
+            long id,
+            String created,
+            String authToken,
+            String fullname,
+            String username,
+            String email,
+            String password,
+            String city,
+            String province,
+            String zipCode,
+            float rating,
+            int totalQuantity
+    ) {
         this.id = id;
         this.created = created;
         this.authToken = authToken;
@@ -109,6 +118,30 @@ public class UserData {
             return null;
         }
 
+        //get user gps info
+//        if (Utils.isGPSLocationProviderEnabled(App.appContext)) {
+//            Log.d(TAG, "prefsFetch: GPS ON");
+//
+//            locationListener = new MyLocationListener();
+//
+//            if (ActivityCompat.checkSelfPermission(App.appContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                // TODO: Consider calling
+//                //    ActivityCompat#requestPermissions
+//                // here to request the missing permissions, and then overriding
+//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                //                                          int[] grantResults)
+//                // to handle the case where the user grants the permission. See the documentation
+//                // for ActivityCompat#requestPermissions for more details.
+////                return TODO;
+//
+//                locationMangaer.requestLocationUpdates(LocationManager
+//                        .GPS_PROVIDER, 5000, 10, (android.location.LocationListener) locationListener);
+//            }
+//
+//
+//        }
+
+
 
         String fullname = sp.getString(PREFS_KEY_FULLNAME, "");
         String email = sp.getString(PREFS_KEY_EMAIL, "");
@@ -158,4 +191,5 @@ public class UserData {
 
         return ed.commit();
     }
+
 }

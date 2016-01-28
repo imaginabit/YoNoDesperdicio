@@ -1,14 +1,17 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.os.ResultReceiver;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,11 +22,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
@@ -40,7 +48,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends NavigationBaseActivity {
+public class MainActivity extends NavigationBaseActivity
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
     private final String TAG = getClass().getSimpleName();
 
     private RecyclerView recyclerView;
@@ -50,12 +59,19 @@ public class MainActivity extends NavigationBaseActivity {
     private List<Ad> mAds;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private GoogleApiClient mGoogleApiClient;
+
+    private AddressResultReceiver mResultReceiver;
+    private boolean mAddressRequested;
+    private String mAddressOutput;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        App.appContext = context;//for make getGPSfromZip works
 
         // Put on session
         UserData user = UserData.prefsFetch(this);
@@ -148,6 +164,18 @@ public class MainActivity extends NavigationBaseActivity {
                     }
                 }
         );
+
+
+        //Get Last Location
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            Log.d(TAG, "onCreate: google api client");
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
 
 
     }
@@ -279,9 +307,129 @@ public class MainActivity extends NavigationBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate( R.menu.main , menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
 
+    @Override
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "onConnected() called with: " + "bundle = [" + bundle + "]");
+        // Gets the best and most recent location currently available,
+        // which may be null in rare cases when a location is not available.
+        AppSession.lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        if (AppSession.lastLocation != null) {
+
+            // Determine whether a Geocoder is available.
+            if (!Geocoder.isPresent()) {
+                startIntentService();
+                Toast.makeText(this, R.string.no_geocoder_available,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (mAddressRequested) {
+                Log.d(TAG, "onConnected: maddrest requested");
+                startIntentService();
+            }
+
+        } else{
+            Log.d(TAG, "onConnected: LOCATION NULL");
+            Handler handler= new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    fetchAddressButtonHandler(null);
+                }
+            }, 5000);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed() called with: " + "connectionResult = [" + connectionResult + "]");
+    }
+
+    /**
+     * Start service for get gps data and address geocoder
+     */
+    protected void startIntentService() {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, AppSession.lastLocation);
+        startService(intent);
+    }
+
+
+
+    public void fetchAddressButtonHandler(View view) {
+        // Only start the service to fetch the address if GoogleApiClient is
+        // connected.
+        if (mGoogleApiClient.isConnected() && AppSession.lastLocation != null) {
+            Log.d(TAG, "fetchAddressButtonHandler: start intent service");
+            startIntentService();
+        }
+
+        // If GoogleApiClient isn't connected, process the user's request by
+        // setting mAddressRequested to true. Later, when GoogleApiClient connects,
+        // launch the service to fetch the address. As far as the user is
+        // concerned, pressing the Fetch Address button
+        // immediately kicks off the process of getting the address.
+        mAddressRequested = true;
+//        updateUIWidgets();
+    }
+
+    @SuppressLint("ParcelCreator")
+    class AddressResultReceiver extends ResultReceiver {
+        private static final String TAG = "AddressResultReceiver";
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+            Log.d(TAG, "AddressResultReceiver() called with: " + "handler = [" + handler + "]");
+        }
+
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            Log.d(TAG, "onReceiveResult() called with: " + "resultCode = [" + resultCode + "], resultData = [" + resultData + "]");
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+
+            Log.d(TAG, "onReceiveResult: Result: " + resultCode);
+
+//            displayAddressOutput();
+
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+//                showToast(getString(R.string.address_found));
+                showToast(mAddressOutput);
+            }
+
+        }
+    }
+
+    private void showToast(String string) {
+        Toast.makeText(MainActivity.this, string, Toast.LENGTH_SHORT).show();
+    }
 }
