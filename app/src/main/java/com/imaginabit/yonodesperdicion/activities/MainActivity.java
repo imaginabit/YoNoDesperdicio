@@ -24,6 +24,7 @@ import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
@@ -43,14 +44,14 @@ import java.util.List;
 public class MainActivity extends NavigationBaseActivity {
     private final String TAG = getClass().getSimpleName();
 
+
+
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
     private List<Ad> mAds;
-
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,9 @@ public class MainActivity extends NavigationBaseActivity {
         // Put on session
         UserData user = UserData.prefsFetch(this);
         if (user != null) {
+            VolleySingleton.init(this);
             AppSession.setCurrentUser(user);
+            AppSession.checkAuthCredentials(this);
         }
         mAds = new ArrayList<>();
 
@@ -69,7 +72,6 @@ public class MainActivity extends NavigationBaseActivity {
         setDrawerLayout(toolbar);
 
         final Activity mainActivity = this;
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -114,7 +116,6 @@ public class MainActivity extends NavigationBaseActivity {
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 
-
         recyclerView = (RecyclerView) findViewById(R.id.recycler_ads);
         recyclerView.setHasFixedSize(true);
 
@@ -148,8 +149,6 @@ public class MainActivity extends NavigationBaseActivity {
                     }
                 }
         );
-
-
     }
 
     private void initializeData() {

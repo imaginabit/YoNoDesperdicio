@@ -83,6 +83,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     }
 
     private void pushedSendMessageButton(String msg){
+        Log.d(TAG, "pushedSendMessageButton() called with: " + "msg = [" + msg + "]");
         if(pushed==false) {
             pushed=true;//avoid accidental double tapping
 
@@ -138,6 +139,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     }
 
     private void getMessages(){
+        Log.v(TAG, "getMessages: from conversation "+ mConversation.getId() );
         mMessages = mConversation.getMessages();
         if( mMessages != null ) {
             Log.d(TAG, "onCreate: Conversation messages " + mMessages.size());

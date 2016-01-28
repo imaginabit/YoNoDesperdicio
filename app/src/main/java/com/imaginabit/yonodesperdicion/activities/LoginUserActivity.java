@@ -1,7 +1,6 @@
 package com.imaginabit.yonodesperdicion.activities;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.data.UserData;
@@ -141,7 +139,7 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
                                             } else {
                                                 user.prefsRemove(getActivity());
                                                 user.prefsCommit(getActivity());
-                                                restart();
+                                                AppSession.restart(getActivity());
                                             }
                                         }
 
@@ -175,37 +173,6 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
         return false;
     }
 
-    /**
-     * Restart the app
-     */
-    private void restart() {
-        //final ProgressDialog pd = ProgressDialog.show(this, "a", "b");
 
-        // Restart Intent
-        Intent restartIntent = new Intent(this, MainActivity.class);
-        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                restartIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT
-        );
-
-        // Release session
-        AppSession.release();
-
-        // App is not running
-        App.setIsAppRunning(false);
-
-
-        // i dont get why wait for this
-//        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
-
-        startActivity(restartIntent);
-
-        finish();
-    }
 
 }

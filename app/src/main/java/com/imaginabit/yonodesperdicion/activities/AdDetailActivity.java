@@ -1,8 +1,10 @@
 package com.imaginabit.yonodesperdicion.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -26,6 +28,7 @@ import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
+import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -35,6 +38,9 @@ import java.util.List;
 
 public class AdDetailActivity extends NavigationBaseActivity {
     String TAG = "AdDetailActivity";
+
+    SharedPreferences.Editor prefsEdit = PrefsUtils.getSharedPreferencesEditor(context);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,36 +177,65 @@ public class AdDetailActivity extends NavigationBaseActivity {
         }
     }
 
-    private void clickMessage(Ad ad){
+    private void clickMessage(final Ad ad){
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         if (Utils.checkLoginAndRedirect(AdDetailActivity.this)) {
-            Log.d(TAG, "onClick: is logged!");
-            //create a new conversation, new message for this ad and go to it
-            MessagesUtils.createConversation(ad.getUserName() + " " + ad.getTitle(), ad.getUserId(), new MessagesUtils.MessagesCallback() {
-                @Override
-                public void onFinished(List<Message> messages, Exception e) {
-                    //do nothing
-                }
+            Log.v(TAG, "onClick: is logged!");
 
-                @Override
-                public void onFinished(List<Message> messages, Exception e, ArrayList data) {
-                    Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
-                    if (data != null && data.size() > 0) {
-                        Conversation conversation = ((Conversation) data.get(0));
-                        //Toast.makeText(AdDetailActivity.this, "" + conversation.getId(), Toast.LENGTH_SHORT).show();
+            //check if there is a conversation created for this ad
+            final String converForAd = "conversationForAd" + ad.getId();
+            int converId = prefs.getInt(converForAd, 0);
+            String converTitle = ad.getUserName() + " " + ad.getTitle();
 
-                        Intent intent = new Intent(context, MessagesChatActivity.class);
-                        intent.putExtra("conversationId", conversation.getId());
-                        //intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-                        AppSession.currentConversation = conversation;
-                        context.startActivity(intent);
+            Log.d(TAG, "clickMessage: converId "+ converId );
+
+            if(converId == 0) {
+                Log.d(TAG, "clickMessage: convertId = 0");
+                //create a new conversation, new message for this ad and go to it
+                MessagesUtils.createConversation(converTitle, ad.getUserId(), new MessagesUtils.MessagesCallback() {
+                    @Override
+                    public void onFinished(List<Message> messages, Exception e) {
+                        Log.d(TAG, "clickMessage_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+                        //do nothing
                     }
-                }
 
-                @Override
-                public void onError(String errorMessage) {
-                    //TODO: onError
-                }
-            });
+                    @Override
+                    public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                        Log.d(TAG, "clickMessage_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+                        if (data != null && data.size() > 0) {
+                            Conversation conversation = ((Conversation) data.get(0));
+                            int converId= conversation.getId();
+                            //Toast.makeText(AdDetailActivity.this, "" + conversation.getId(), Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "------------------------onFinished: converforad "+ converForAd + " cid " + converId );
+
+                            prefsEdit.putInt(converForAd, conversation.getId());
+                            prefsEdit.commit();
+                            Intent intent = new Intent(context, MessagesChatActivity.class);
+                            intent.putExtra("conversationId", conversation.getId());
+                            intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                            AppSession.currentConversation = conversation;
+                            context.startActivity(intent);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.d(TAG, "clickMessage_onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                        //if (errorMessage=="{\"errors\":\"Not authenticated\"}");
+                        //TODO: onError
+                    }
+                });
+            } else {
+                Conversation conversation = new Conversation(converId, converTitle);
+
+                Intent intent = new Intent(context, MessagesChatActivity.class);
+                intent.putExtra("conversationId", converId );
+                AppSession.currentConversation = conversation;
+                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+
+            }
         }
     }
 

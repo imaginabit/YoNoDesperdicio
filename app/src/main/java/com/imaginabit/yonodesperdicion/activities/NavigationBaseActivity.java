@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.data.UserData;
@@ -31,6 +32,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         // Set the context
         this.context = getApplicationContext();
+        App.appContext = context;
     }
 
     /**
