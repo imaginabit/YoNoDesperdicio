@@ -207,7 +207,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         } else {
             //add new messages only
             if (((MessagesAdapter)adapter).getItemCount()>0) {
-                Log.d(TAG, "updateScreen: MessageAdapter count"+ ((MessagesAdapter)adapter).getItemCount() );
+                Log.d(TAG, "updateScreen: MessageAdapter count "+ ((MessagesAdapter)adapter).getItemCount() );
                 for (int i = ((MessagesAdapter) adapter).getItemCount() - 1; i < mMessages.size(); i++) {//
                     ((MessagesAdapter) adapter).add(mMessages.get(i));
                 }

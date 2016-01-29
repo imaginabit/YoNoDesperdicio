@@ -38,6 +38,7 @@ import java.util.List;
 
 public class AdDetailActivity extends NavigationBaseActivity {
     String TAG = "AdDetailActivity";
+    Ad mAd;
 
     SharedPreferences.Editor prefsEdit = PrefsUtils.getSharedPreferencesEditor(context);
 
@@ -50,6 +51,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
         // Retrieve args
         Bundle data = getIntent().getExtras();
         final Ad ad = (Ad) data.getParcelable("ad");
+        mAd = ad;
         if (ad == null) {
 
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
@@ -125,6 +127,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 AdUtils.fetchAd(ad.getId(), new AdUtils.FetchAdCallback() {
                     @Override
                     public void done(Ad ad, User user, Exception e) {
+                        mAd = ad;
                         TextView userName = (TextView) findViewById(R.id.user_name);
                         userName.setText(user.getUserName());
                         TextView userLocation = (TextView) findViewById(R.id.user_location);
@@ -186,7 +189,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             //check if there is a conversation created for this ad
             final String converForAd = "conversationForAd" + ad.getId();
             int converId = prefs.getInt(converForAd, 0);
-            String converTitle = ad.getUserName() + " " + ad.getTitle();
+            String converTitle = mAd.getUserName() + " " + mAd.getTitle();
 
             Log.d(TAG, "clickMessage: converId "+ converId );
 

@@ -30,6 +30,13 @@ public class Ad implements Parcelable {
                                 DELIVERED
                               };
 
+    public static enum Categoria {
+        AVAILABLE,
+        BOOKED,
+        DELIVERED
+    };
+
+
     private int id;
     private String title;
     private String body;

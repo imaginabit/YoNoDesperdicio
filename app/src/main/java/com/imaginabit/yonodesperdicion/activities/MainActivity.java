@@ -31,8 +31,8 @@ import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
-import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
+import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
@@ -49,6 +49,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends NavigationBaseActivity
@@ -247,6 +248,8 @@ public class MainActivity extends NavigationBaseActivity
                             mAds = ads;
                             adapter = new AdsAdapter(context, mAds);
                             recyclerView.setAdapter(adapter);
+                            removeExpiredAds();
+
                             adapter.notifyDataSetChanged();
                             Log.d(TAG, "Anuncios general : " + mAds.size());
                         }
@@ -477,6 +480,7 @@ public class MainActivity extends NavigationBaseActivity
     }
 
     private void sortAdsByDistance(List<Ad> ads){
+
         Collections.sort(ads, new Comparator<Ad>() {
             public int compare(Ad o1, Ad o2) {
                 if (o1.getLastDistance() == o2.getLastDistance())
@@ -486,6 +490,22 @@ public class MainActivity extends NavigationBaseActivity
         });
 
         adapter.notifyDataSetChanged();
+    }
+
+    private void removeExpiredAds(){
+        Log.d(TAG, "removeExpiredAds: ads size before: " + mAds.size());
+
+        for (int i=0;i<mAds.size();i++){
+            Date adExpiration= mAds.get(i).getExpiration();
+            Date today =new Date();
+
+            if ( adExpiration!=null && today.before(adExpiration) ){
+                mAds.remove(i);
+            }
+        }
+        Log.d(TAG, "removeExpiredAds: ads size after: " + mAds.size());
+
+//        adapter.notifyDataSetChanged();
     }
 
 }
