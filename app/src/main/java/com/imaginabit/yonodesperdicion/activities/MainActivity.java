@@ -499,7 +499,10 @@ public class MainActivity extends NavigationBaseActivity
             Date adExpiration= mAds.get(i).getExpiration();
             Date today =new Date();
 
-            if ( adExpiration!=null && today.before(adExpiration) ){
+            if ( adExpiration!=null && today.after(adExpiration) ){
+                String strAdExpiration = Constants.DATE_LOCAL_FORMAT.format(adExpiration);
+                Log.d(TAG, "removeExpiredAds: strAdExpiration " + mAds.get(i).getTitle() + " " + strAdExpiration);
+
                 mAds.remove(i);
             }
         }
