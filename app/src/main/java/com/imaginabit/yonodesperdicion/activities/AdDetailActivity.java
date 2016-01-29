@@ -189,7 +189,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             //check if there is a conversation created for this ad
             final String converForAd = "conversationForAd" + ad.getId();
             int converId = prefs.getInt(converForAd, 0);
-            String converTitle = mAd.getTitle();
+            String converTitle = ad.getTitle();
 
             Log.d(TAG, "clickMessage: converId "+ converId );
 
