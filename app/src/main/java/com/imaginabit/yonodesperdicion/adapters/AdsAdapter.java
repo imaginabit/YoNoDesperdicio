@@ -2,7 +2,6 @@ package com.imaginabit.yonodesperdicion.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
 import android.location.Location;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
@@ -18,9 +17,7 @@ import android.widget.TextView;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.AdDetailActivity;
-import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.models.Ad;
-import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -37,6 +34,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
 
     private List<Ad> adsList = new ArrayList<Ad>();
     private Context context;
+    private Location userLocation;
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -47,7 +45,6 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         private TextView weight;
         private TextView distance;
         private ImageView image;
-        private float fDistance;
 
         public ViewHolder(View view) {
             super(view);
@@ -97,46 +94,21 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: start");
         Ad ad = adsList.get(position);
-        
-        
+
 
         holder.title.setText(ad.getTitle());
         // holder.status.setText(ad.getStatus());
-        holder.status.getDrawable().setColorFilter(ContextCompat.getColor(context, ad.getStatusColor()),  android.graphics.PorterDuff.Mode.MULTIPLY);
+        holder.status.getDrawable().setColorFilter(ContextCompat.getColor(context, ad.getStatusColor()), android.graphics.PorterDuff.Mode.MULTIPLY);
         holder.weight.setText(ad.getWeightKgStr());
         holder.expiration.setText(ad.getExpirationDateLong());
 
-        //TODO: calcular distancia
-        //holder.distance
-        // get user location , get ad location in base of zipcode, calculate distance
-        if (holder.fDistance == 0.0) {
-            Log.d(TAG, "onBindViewHolder: Calculating distance");
-            try {
-                //Parece que sobrecarga mucho estar calculando esto todo el rato
-                Address adAddress = Utils.getGPSfromZip(context, ad.getPostalCode());
-                //TODO get user GPS location
-                Log.d(TAG, "onBindViewHolder: User zipcode "+ UserData.prefsFetch(context).zipCode );
-                Address userAddress = Utils.getGPSfromZip(context, Integer.parseInt( UserData.prefsFetch(context).zipCode ) );
-                Location adLocation = new Location("Articulo Anuncio");
-                adLocation.setLatitude(adAddress.getLatitude());
-                adLocation.setLongitude(adAddress.getLongitude());
-                Location userLocation = new Location("User");
-                userLocation.setLatitude(userAddress.getLatitude());
-                userLocation.setLongitude(userAddress.getLongitude());
-                float d = adLocation.distanceTo(userLocation);
-                if(d==0.0) {
-                    holder.fDistance = 100;
-                }else {
-                    holder.fDistance = d;
-                }
-                Log.d(TAG, "onBindViewHolder: fDistance" + holder.fDistance );
-
-//                holder.dblDistance = 0.1;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (ad.getLastDistance()>0) {
+            String distance = Integer.toString(ad.getLastDistance());
+            holder.distance.setText( distance + "Km " );
+//            holder.title.setText( + );
+        } else {
+            holder.distance.setText("Sin Determinar");
         }
-        holder.distance.setText( Float.toString(holder.fDistance) + "m");
 
 
         //get image from website

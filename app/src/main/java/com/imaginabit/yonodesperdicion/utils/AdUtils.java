@@ -2,6 +2,8 @@ package com.imaginabit.yonodesperdicion.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.location.Address;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -10,6 +12,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.imaginabit.yonodesperdicion.App;
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
@@ -200,7 +204,8 @@ public class AdUtils {
                 if ( Utils.isNotEmptyOrNull(title) && status != 3 ) {
                     //Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName)
                     Ad item = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
-
+                    item.setLocation( calculateLocation(item) );
+                    item.setLastDistance( calculateDistance(item) );
                     ads.add(item);
                 }
             } catch ( Exception e1 ){
@@ -211,6 +216,75 @@ public class AdUtils {
         }
         return new ResultAds(ads,e);
 
+    }
+
+    public static Location calculateLocation(Ad ad){
+        Log.d(TAG, "calculateLocation() called with: " + "ad = [" + ad.getTitle() + "]");
+        Location adLocation = new Location(ad.getTitle());
+        Address adAddress = Utils.getGPSfromZip( App.appContext , ad.getPostalCode());
+
+        if (adAddress!= null ) {
+
+            //TODO: need user postal code to get location from postal code zip
+            //Address userAddress = Utils.getGPSfromZip(context, Integer.parseInt( UserData.prefsFetch(context).zipCode ) );
+
+            Log.d(TAG, "calculateLocation: Address" + ad.getPostalCode() + " " + adAddress.getAddressLine(0));
+            String countryCode = adAddress.getCountryName();
+            Log.d(TAG, "calculateLocation: COUNTRY CODE " + countryCode );
+
+
+            try {
+                adLocation.setLatitude(adAddress.getLatitude());
+                adLocation.setLongitude(adAddress.getLongitude());
+
+                return adLocation;
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+
+
+
+
+        } else {
+            Log.d(TAG, "calculateLocation: No se pudo determinar la localizacion");
+        }
+        return null;
+    }
+
+    /**
+     * Calculate last distance from ad and the user in Kilometers and set it in Ad
+     * @param ad
+     * @return distance in xilometer
+     */
+    public static int calculateDistance(final Ad ad){
+        Log.d(TAG, "calculateDistance() called with: " + "ad = [" + ad.getTitle() + "]");
+        Location userLocation;
+
+        if (AppSession.lastLocation != null && ad.getLocation()!=null) {
+            userLocation = AppSession.lastLocation;
+            Log.d(TAG, "onBindViewHolder:" + ad.getTitle() + " lat:" + userLocation.getLatitude() + " lng: " + userLocation.getLongitude());
+
+            float d = (ad.getLocation().distanceTo(userLocation))/1000;//kilometers
+            int distance = Math.round(d);
+            ad.setLastDistance(distance);
+            return distance;
+        } else {
+            if (AppSession.lastLocation == null) {
+                Log.d(TAG, "calculateDistance: no hay last location del gps");
+            }
+            if(ad.getLocation()== null){
+                Log.d(TAG, "calculateDistance: no hay ad location ");
+            }
+//            userLocation = new Location("User");
+//            userLocation.setLatitude(adAddress.getLatitude());
+//            userLocation.setLongitude(adAddress.getLongitude());
+//                    userLocation.setLatitude(userAddress.getLatitude());
+//                    userLocation.setLongitude(userAddress.getLongitude());
+        }
+        return 5000;
     }
 
     public static void fetchAds(final Activity activity, final FetchAdsCallback callback ){
@@ -278,7 +352,11 @@ public class AdUtils {
             @Override
             protected void onPostExecute(Void result) {
                 if (pd != null && pd.isShowing()) {
-                    pd.dismiss();
+                    try {
+                        pd.dismiss();
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
 
                 if (e == null) {

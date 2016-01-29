@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
@@ -377,7 +376,16 @@ public class Utils {
 	public static Address getGPSfromZip(Context context,int zip){
         final Geocoder geocoder = new Geocoder( context );
 		try {
-			List<Address> addresses = geocoder.getFromLocationName( Integer.toString(zip), 1);
+			List<Address> addresses = geocoder.getFromLocationName( "Spain " + Integer.toString(zip), 1);
+
+//			String listString = "getGPSfromZip: addresses: ";
+//			for (Address a : addresses)
+//			{
+//				listString += "\n~~~~~" + a ;
+//			}
+//			listString += "\n ---------------------------------------------------- \n ";
+//			Log.d(TAG, listString );
+
 			if (addresses != null && !addresses.isEmpty()) {
 				Address address = addresses.get(0);
 				// Use the address as needed
@@ -388,11 +396,12 @@ public class Utils {
 				return address;
 			} else {
 				// Display appropriate message when Geocoder services are not available
-				Toast.makeText(context, "Unable to geocode zipcode", Toast.LENGTH_SHORT).show();
+//				Toast.makeText(context, "Unable to geocode zipcode", Toast.LENGTH_SHORT).show();
 				Log.d(TAG, "getGPSfromZip: Unable to geocode zipcode");
 				return null;
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			// handle exception
 		}
 		return null;
