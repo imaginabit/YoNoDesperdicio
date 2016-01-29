@@ -377,6 +377,15 @@ public class Utils {
         final Geocoder geocoder = new Geocoder( context );
 		try {
 			List<Address> addresses = geocoder.getFromLocationName( "Spain " + Integer.toString(zip), 1);
+
+//			String listString = "getGPSfromZip: addresses: ";
+//			for (Address a : addresses)
+//			{
+//				listString += "\n~~~~~" + a ;
+//			}
+//			listString += "\n ---------------------------------------------------- \n ";
+//			Log.d(TAG, listString );
+
 			if (addresses != null && !addresses.isEmpty()) {
 				Address address = addresses.get(0);
 				// Use the address as needed
@@ -392,6 +401,7 @@ public class Utils {
 				return null;
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			// handle exception
 		}
 		return null;

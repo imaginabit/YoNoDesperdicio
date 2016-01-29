@@ -94,8 +94,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: start");
         Ad ad = adsList.get(position);
-        
-        
+
 
         holder.title.setText(ad.getTitle());
         // holder.status.setText(ad.getStatus());
@@ -104,7 +103,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         holder.expiration.setText(ad.getExpirationDateLong());
 
         if (ad.getLastDistance()>0) {
-            holder.distance.setText(Integer.toString(ad.getLastDistance()));
+            String distance = Integer.toString(ad.getLastDistance());
+            holder.distance.setText( distance + "Km " );
+//            holder.title.setText( + );
+        } else {
+            holder.distance.setText("Sin Determinar");
         }
 
 
