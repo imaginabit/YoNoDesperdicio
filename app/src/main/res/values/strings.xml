@@ -91,4 +91,16 @@
 
     <string name="chat_input_hint">Escribe aqui tu mensaje</string>
     <string name="menu_refresh">Actualizar</string>
+    <string name="menu_order_distance">Ordenar por distancia</string>
+    <string name="menu_force_update_gps">Actualizar mi ubicación</string>
+
+
+    <!-- Fecth Address Intent Service Strings-->
+    <string name="service_not_available">Servicio no disponible</string>
+    <string name="invalid_lat_long_used">Coordenadas invalidas</string>
+    <string name="invalid_location">Sin localizacion</string>
+    <string name="no_address_found">No se encontro localizacion</string>
+    <string name="address_found">Encontrada localizacion</string>
+    <string name="no_geocoder_available">geocoder no disponible</string>
+
 </resources>

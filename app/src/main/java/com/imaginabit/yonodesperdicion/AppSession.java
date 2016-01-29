@@ -50,6 +50,9 @@ public class AppSession {
 
     public static Conversation currentConversation;
 
+    public static Location lastLocation;
+
+
 
     /**
      *  AuthHeaders
