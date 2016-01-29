@@ -6,22 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?attr/actionBarSize"
-    tools:context=".activities.CreateUserActivity">
+    tools:context=".activities.CreateUserActivity"
+    >
 
 
 
     <!-- First Page -->
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        >
     <LinearLayout
         android:id="@+id/create_user_page_1"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
         >
 
         <!-- Fullname -->
@@ -91,159 +93,165 @@
     </LinearLayout>
     </ScrollView>
 
+
     <!-- Second Page -->
+
     <ScrollView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout
-        android:id="@+id/create_user_page_2"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
-
-        <!-- Password -->
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/create_user_user_password_wrapper"
-            app:hintTextAppearance="?android:attr/textAppearanceMedium"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        >
+        <LinearLayout
+            android:id="@+id/create_user_page_2"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
-
-            <EditText
-                android:id="@+id/create_user_user_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:padding="8dp"
-                android:hint="Contraseña"
-                android:inputType="textPassword"
-                android:password="true"
-            />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <!-- Repeat Password -->
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/create_user_user_repeat_password_wrapper"
-            app:hintTextAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="@dimen/botton_button_space"
+            android:layout_alignParentTop="true"
             >
 
-            <EditText
-                android:id="@+id/create_user_user_repeat_password"
+            <!-- Password -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/create_user_user_password_wrapper"
+                app:hintTextAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:padding="8dp"
-                android:hint="Repita la contraseña"
-                android:inputType="textPassword"
-                android:password="true"
-            />
+                android:layout_marginTop="10dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/create_user_user_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:padding="8dp"
+                    android:hint="Contraseña"
+                    android:inputType="textPassword"
+                    android:password="true"
+                    />
 
-    </LinearLayout>
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- Repeat Password -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/create_user_user_repeat_password_wrapper"
+                app:hintTextAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="@dimen/botton_button_space"
+                >
+
+                <EditText
+                    android:id="@+id/create_user_user_repeat_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:padding="8dp"
+                    android:hint="Repita la contraseña"
+                    android:inputType="textPassword"
+                    android:password="true"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
     </ScrollView>
 
     <!-- Third Page -->
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-    <LinearLayout
-        android:id="@+id/create_user_page_3"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
-
-        <!-- City -->
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/create_user_user_city_wrapper"
-            app:hintTextAppearance="?android:attr/textAppearanceMedium"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        >
+        <LinearLayout
+            android:id="@+id/create_user_page_3"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_alignParentTop="true"
+            >
 
-            <EditText
-                android:id="@+id/create_user_user_city"
+            <!-- City -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/create_user_user_city_wrapper"
+                app:hintTextAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:padding="8dp"
-                android:hint="Ciudad"
-                android:inputType="text"
-            />
+                android:layout_marginTop="10dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/create_user_user_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:padding="8dp"
+                    android:hint="Ciudad"
+                    android:inputType="text"
+                    />
 
-        <!-- Province -->
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/create_user_user_province_wrapper"
-            app:hintTextAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/create_user_user_province"
+            <!-- Province -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/create_user_user_province_wrapper"
+                app:hintTextAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:padding="8dp"
-                android:hint="Provincia"
-                android:inputType="text"
-            />
+                android:layout_marginTop="10dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/create_user_user_province"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:padding="8dp"
+                    android:hint="Provincia"
+                    android:inputType="text"
+                    />
 
-        <!-- Zip Code -->
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/create_user_user_zip_code_wrapper"
-            app:hintTextAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/create_user_user_zip_code"
+            <!-- Zip Code -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/create_user_user_zip_code_wrapper"
+                app:hintTextAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:padding="8dp"
-                android:hint="Código Postal"
-                android:inputType="number"
-            />
+                android:layout_marginTop="10dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/create_user_user_zip_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:padding="8dp"
+                    android:hint="Código Postal"
+                    android:inputType="number"
+                    />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:text="Al hacer clic en CONFIRMAR acepto las condiciones de uso y política de protección de datos que figuran en la"
-            android:textColor="#90000000"
-        />
-        <TextView
-            android:id="@+id/link_informacion_legal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:text="Información Legal."
-            android:layout_marginBottom="@dimen/botton_button_space"
-            />
+            </android.support.design.widget.TextInputLayout>
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="Al hacer clic en CONFIRMAR acepto las condiciones de uso y política de protección de datos que figuran en la"
+                android:textColor="#90000000"
+                />
+            <TextView
+                android:id="@+id/link_informacion_legal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="Información Legal."
+                android:layout_marginBottom="@dimen/botton_button_space"
+                />
+
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout
