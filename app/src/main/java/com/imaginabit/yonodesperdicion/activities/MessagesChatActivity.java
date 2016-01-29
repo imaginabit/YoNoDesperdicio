@@ -67,6 +67,14 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         pushed= false;
 
         chatInput = (EditText) findViewById(R.id.chat_input_text);
+        //when selected text input show keybord and hide messages
+        //this move the scoll to made last messages visibles
+        chatInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.smoothScrollToPosition(mMessages.size() - 1);
+            }
+        });
         chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {

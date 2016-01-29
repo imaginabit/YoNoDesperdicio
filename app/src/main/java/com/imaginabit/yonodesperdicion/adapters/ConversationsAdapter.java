@@ -88,8 +88,6 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
 
 
         long now = System.currentTimeMillis();
-        //String d = DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt(), now, DateUtils.DAY_IN_MILLIS);
-
         String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime(), now, DateUtils.HOUR_IN_MILLIS);
         holder.updatedAt.setText( d );
 
