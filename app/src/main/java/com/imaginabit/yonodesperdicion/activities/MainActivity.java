@@ -46,6 +46,8 @@ import com.rubengees.introduction.entity.Slide;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends NavigationBaseActivity
@@ -168,16 +170,7 @@ public class MainActivity extends NavigationBaseActivity
 
         //Get Last Location
         // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            Log.d(TAG, "onCreate: google api client");
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-
-
+        checkGoogleApiClient();
     }
 
     private void initializeData() {
@@ -249,6 +242,7 @@ public class MainActivity extends NavigationBaseActivity
                         mSwipeRefreshLayout.setRefreshing(false);
                         if (ads != null) {
                             mAds = ads;
+
                             adapter = new AdsAdapter(context, mAds);
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
@@ -297,6 +291,15 @@ public class MainActivity extends NavigationBaseActivity
                 getAdsFromWeb();
 
                 return true;
+
+            case R.id.menu_order_distance:
+                sortAdsByDistance(mAds);
+                return true;
+            case R.id.menu_force_update_gps:
+                mSwipeRefreshLayout.setRefreshing(true);
+                fetchAddressButtonHandler(null);
+                getAdsFromWeb();
+                return true;
         }
 
         // User didn't trigger a refresh, let the superclass handle this action
@@ -326,29 +329,27 @@ public class MainActivity extends NavigationBaseActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d(TAG, "onConnected() called with: " + "bundle = [" + bundle + "]");
+        Log.d(TAG, "gps onConnected() called with: " + "bundle = [" + bundle + "]");
         // Gets the best and most recent location currently available,
         // which may be null in rare cases when a location is not available.
         AppSession.lastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        if (AppSession.lastLocation != null) {
+        // Determine whether a Geocoder is available.
+        if ( !Geocoder.isPresent() ) {
+            startIntentService();
+            Toast.makeText(this, R.string.no_geocoder_available,
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
 
-            // Determine whether a Geocoder is available.
-            if (!Geocoder.isPresent()) {
-                startIntentService();
-                Toast.makeText(this, R.string.no_geocoder_available,
-                        Toast.LENGTH_LONG).show();
-                return;
-            }
+        if (mAddressRequested) {
+            Log.d(TAG, "onConnected: maddrest requested");
+            startIntentService();
+        }
 
-            if (mAddressRequested) {
-                Log.d(TAG, "onConnected: maddrest requested");
-                startIntentService();
-            }
-
-        } else{
-            Log.d(TAG, "onConnected: LOCATION NULL");
+        if (AppSession.lastLocation == null) {
+            Log.d(TAG, "gps onConnected: LOCATION NULL");
             Handler handler= new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -356,17 +357,19 @@ public class MainActivity extends NavigationBaseActivity
                     fetchAddressButtonHandler(null);
                 }
             }, 5000);
+        }else {
+            Log.d(TAG, "onConnected: LOCATION GET !");
         }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.d(TAG, "gps onConnectionSuspended() called with: " + "i = [" + i + "]");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed() called with: " + "connectionResult = [" + connectionResult + "]");
+        Log.d(TAG, "gps onConnectionFailed() called with: " + "connectionResult = [" + connectionResult + "]");
     }
 
     /**
@@ -380,14 +383,52 @@ public class MainActivity extends NavigationBaseActivity
     }
 
 
+    /**
+     * Create an instance of GoogleAPIClient.
+     */
+    private void checkGoogleApiClient(){
+        if (mGoogleApiClient == null) {
+            Log.d(TAG, "onCreate: google api client");
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
 
-    public void fetchAddressButtonHandler(View view) {
+        if (mGoogleApiClient == null) {
+            Log.d(TAG, "gps checkGoogleApiClient: mGoogleApiClient: "+null);
+        }
+
+        if(!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        } else {
+            AppSession.lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }
+    }
+
+    private void fetchAddressButtonHandler(View view) {
+        checkGoogleApiClient();
+
         // Only start the service to fetch the address if GoogleApiClient is
         // connected.
         if (mGoogleApiClient.isConnected() && AppSession.lastLocation != null) {
-            Log.d(TAG, "fetchAddressButtonHandler: start intent service");
+            Log.d(TAG, "gps fetchAddressButtonHandler: start intent service");
             startIntentService();
+        } else {
+            if(!mGoogleApiClient.isConnected()) {
+                Log.d(TAG, "gps fetchAddressButtonHandler: not connected!");
+                mGoogleApiClient.connect();
+            }
+            if (AppSession.lastLocation== null) {
+                Log.d(TAG, "gps fetchAddressButtonHandler: null lastLocation");
+                mGoogleApiClient.disconnect();
+                mGoogleApiClient.connect();
+
+            }
         }
+
 
         // If GoogleApiClient isn't connected, process the user's request by
         // setting mAddressRequested to true. Later, when GoogleApiClient connects,
@@ -395,7 +436,7 @@ public class MainActivity extends NavigationBaseActivity
         // concerned, pressing the Fetch Address button
         // immediately kicks off the process of getting the address.
         mAddressRequested = true;
-//        updateUIWidgets();
+
     }
 
     @SuppressLint("ParcelCreator")
@@ -432,4 +473,17 @@ public class MainActivity extends NavigationBaseActivity
     private void showToast(String string) {
         Toast.makeText(MainActivity.this, string, Toast.LENGTH_SHORT).show();
     }
+
+    private void sortAdsByDistance(List<Ad> ads){
+        Collections.sort(ads, new Comparator<Ad>() {
+            public int compare(Ad o1, Ad o2) {
+                if (o1.getLastDistance() == o2.getLastDistance())
+                    return 0;
+                return o1.getLastDistance() < o2.getLastDistance() ? -1 : 1;
+            }
+        });
+
+        adapter.notifyDataSetChanged();
+    }
+
 }

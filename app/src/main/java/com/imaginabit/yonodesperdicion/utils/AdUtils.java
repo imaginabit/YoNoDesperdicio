@@ -352,7 +352,11 @@ public class AdUtils {
             @Override
             protected void onPostExecute(Void result) {
                 if (pd != null && pd.isShowing()) {
-                    pd.dismiss();
+                    try {
+                        pd.dismiss();
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
 
                 if (e == null) {

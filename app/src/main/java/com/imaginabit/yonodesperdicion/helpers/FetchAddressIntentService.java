@@ -22,8 +22,13 @@ import java.util.Locale;
  * Created by Fernando Ramírez on 27/01/16.
  */
 public class FetchAddressIntentService extends IntentService {
-    private static final String TAG = "FetchAddressIntentService";
+    private static final String TAG = "FetchAddress IS";
     private ResultReceiver mReceiver;
+
+    /**
+     * Fix the FetchAddressIntentService has no zero argument constructor
+     */
+    public FetchAddressIntentService() { super("yonodesp");  }
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -61,6 +66,9 @@ public class FetchAddressIntentService extends IntentService {
                     "Latitude = " + location.getLatitude() +
                     ", Longitude = " +
                     location.getLongitude(), illegalArgumentException);
+        } catch (NullPointerException nullExeption){
+            errorMessage = getString(R.string.invalid_location);
+            Log.e(TAG, "onHandleIntent: "+ errorMessage );
         }
 
         // Handle case where no address was found.
@@ -89,8 +97,13 @@ public class FetchAddressIntentService extends IntentService {
     }
 
     private void deliverResultToReceiver(int resultCode, String message) {
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.RESULT_DATA_KEY, message);
-        mReceiver.send(resultCode, bundle);
+        try {
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.RESULT_DATA_KEY, message);
+            mReceiver.send(resultCode, bundle);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }

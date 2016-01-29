@@ -16,7 +16,6 @@
         android:fitsSystemWindows="true"
         >
 
-        <include layout="@layout/appbar" />
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
@@ -38,6 +37,8 @@
                 />
         </LinearLayout>
         </android.support.v4.widget.SwipeRefreshLayout>
+
+        <include layout="@layout/appbar" />
 
 
         <android.support.design.widget.FloatingActionButton
