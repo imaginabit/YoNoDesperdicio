@@ -47,6 +47,7 @@ import com.rubengees.introduction.entity.Slide;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -499,11 +500,20 @@ public class MainActivity extends NavigationBaseActivity
             Date adExpiration= mAds.get(i).getExpiration();
             Date today =new Date();
 
-            if ( adExpiration!=null && today.after(adExpiration) ){
-                String strAdExpiration = Constants.DATE_LOCAL_FORMAT.format(adExpiration);
-                Log.d(TAG, "removeExpiredAds: strAdExpiration " + mAds.get(i).getTitle() + " " + strAdExpiration);
+            if (adExpiration!=null  ){
+                Date adExpirationPlus1 = null;
+                Calendar c = Calendar.getInstance();
+                c.setTime(adExpiration);
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                adExpirationPlus1 = c.getTime();
 
-                mAds.remove(i);
+                if (today.after(adExpirationPlus1)) {
+                    String strAdExpiration = Constants.DATE_LOCAL_FORMAT.format(adExpiration);
+                    String strAdExpirationPlus = Constants.DATE_LOCAL_FORMAT.format(adExpirationPlus1);
+                    Log.d(TAG, "removeExpiredAds: strAdExpiration " + mAds.get(i).getTitle() + " " + strAdExpiration + " " + strAdExpirationPlus);
+
+                    mAds.remove(i);
+                }
             }
         }
         Log.d(TAG, "removeExpiredAds: ads size after: " + mAds.size());
