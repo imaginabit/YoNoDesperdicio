@@ -16,6 +16,7 @@ public class Conversation {
     private Date mUpdatedAt;
     private int mThreadId;
     public boolean loaded= false;
+    private int mOtherUserId;
 
     private List<Message> mMessages;
 
@@ -102,6 +103,22 @@ public class Conversation {
         mMessages = messages;
     }
 
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
+
+    public int getOtherUserId() {
+        return mOtherUserId;
+    }
+
+    public void setOtherUserId(int otherUserId) {
+        mOtherUserId = otherUserId;
+    }
+
     @Override
     public String toString() {
         return "Conversation{" +
@@ -111,6 +128,7 @@ public class Conversation {
                 ", mUpdatedAt=" + mUpdatedAt +
                 ", mThreadId=" + mThreadId +
                 ", loaded=" + loaded +
+                ", mOtherUserId=" + mOtherUserId +
                 ", mMessages=" + mMessages +
                 '}';
     }
