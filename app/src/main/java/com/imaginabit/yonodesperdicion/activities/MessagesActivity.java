@@ -150,12 +150,29 @@ public class MessagesActivity extends NavigationBaseActivity {
                     }
                     */
 
-                    adapter = new ConversationsAdapter(context, conversations);
+                    mConversationList = conversations;
+//                    for (int i = 0; i < conversations.size(); i++) {
+//                        final Conversation c = conversations.get(i);
+//                        int otheuserId = getOtherUser(c);
+//                        c.setOtherUserId(otheuserId);
+//                        UserUtils.getUser(getOtherUser(c), MessagesActivity.this, new UserUtils.FetchUserCallback() {
+//                            @Override
+//                            public void done(User user, Exception e) {
+//                                c.setSubject(user.getName()+ " - "+ c.getSubject());
+//
+//
+//
+//                            }
+//                        });
+//                    }
+
+
+                    adapter = new ConversationsAdapter(context, mConversationList);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                     Log.v(TAG, "Conversacionesl : " + conversations.size());
                     Log.v(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
-                    mConversationList = conversations;
+
 
                     Date d = new Date();
                     Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
@@ -201,6 +218,17 @@ public class MessagesActivity extends NavigationBaseActivity {
             }
         }, MessagesActivity.this);
     }
+
+//    Esto solo se puede hacer si obtengo primero todos los mensajes
+//    private int getOtherUser(Conversation conversation){
+//        List<Message> messages = conversation.getMessages();
+//        for (int j = 0; j < messages.size(); j++) {
+//            int userid = messages.get(j).getSender_id();
+//            if (userid != AppSession.getCurrentUser().id){
+//                return userid;            }
+//        }
+//        return 0;
+//    }
 
 
 
