@@ -45,68 +45,76 @@ public class MessagesUtils {
 
     public static Activity mCurrentActivity;
 
-    //Users Credentials needed
-    /*
-    Get list of user conversations and last message of this conversation
-    first get inbox conversation,
-    them sent conversations ,
-    them all conversation messages??
+    /**
+     * Get list of user conversations and last message of this conversation
+     * first get inbox conversation, them sentbox conversations , them all conversation messages??
+     * @param context
+     * @param callback
+     * @param activity
      */
     public static void getConversations(final Context context, final ConversationsCallback callback, final Activity activity){
 
         Log.d(TAG, "getConversations() called with: " + "context = [" + context.getPackageName() + "], activity = [" + activity.getLocalClassName() + "]");
         final List<Conversation> conversationsFinal;
         getConversationsInbox(context, new ConversationsCallback() {
-           @Override
-           public void onFinished(List<Conversation> conversation, Exception e) { }
+            @Override
+            public void onFinished(List<Conversation> conversation, Exception e) {
+                Log.d(TAG, "getConversations_onFinished: ");
+            }
 
-           @Override
-           public void onFinished(final List<Conversation> conversations, Exception e, ProgressDialog pd) {
-               if (conversations != null) {
+            @Override
+            public void onFinished(final List<Conversation> conversations, Exception e, ProgressDialog pd) {
+                Log.d(TAG, "getConversations_onFinished_pd: ");
+                if (conversations != null) {
+                    getConversationSent(context, callback, activity, conversations);
+                }
+            }
 
-                   //we can use data or just conversations anyway this is just called after pass all the conversations
-                   getConversationsSent(context, new ConversationsCallback() {
-                       @Override
-                       public void onFinished(List<Conversation> conversationsSent, Exception e) {
-                           Log.d(TAG, "getConversationsSent conversationCallback onFinished() called with: " + "conversations = [" + conversations.size() + ", " + conversationsSent.size() + "], e = [" + e + "]");
-                           //add conversations from sent to conversations
-                           conversations.addAll(conversationsSent);
+            @Override
+            public void onError(String errorMessage) {
+                Log.d(TAG, "getConversations_onError() called with: " + "errorMessage = [" + errorMessage + "]");
 
-                           //getConversationMessagesFull(conversations,callback);
-                           if (conversations.size() > 0) {
-                               callback.onFinished(conversations, null, MessagesUtils.pd);
-                           }
-                       }
+//                String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
+                //if you dont have inbox messages get sentbox anyway
+                List<Conversation> conversations = new ArrayList<Conversation>();
+                getConversationSent(context, callback, activity, conversations);
+            }
+        }, activity);
+    }
 
-                       @Override
-                       public void onFinished(List<Conversation> conversationsSent, Exception e, ProgressDialog pd) {
-                           //normalmente llama a este
-                           Log.d(TAG, "getConversationsSent onFinished() called with: " + "conversations = [" + conversations + "], e = [" + e + "], pd = [" + pd + "]");
-                           conversations.addAll(conversationsSent);
-                           if (conversations.size() > 0) {
-                               callback.onFinished(conversations, null, MessagesUtils.pd);
-                           }
-                       }
+    private static void getConversationSent(Context context, final ConversationsCallback callback, Activity activity, final List<Conversation> conversations) {
+        //we can use data or just conversations anyway this is just called after pass all the conversations
+        getConversationsSent(context, new ConversationsCallback() {
+            @Override
+            public void onFinished(List<Conversation> conversationsSent, Exception e) {
+                Log.d(TAG, "getConversationsSent_conversationCallback onFinished() called with: " + "conversations = [" + conversations.size() + ", " + conversationsSent.size() + "], e = [" + e + "]");
+                //add conversations from sent to conversations
+                conversations.addAll(conversationsSent);
 
-                       @Override
-                       public void onError(String errorMessage) {
-                           Log.d(TAG, "getConversationsSent conversationCallback.onError() called with: " + "errorMessage = [" + errorMessage + "]");
-                           //ahora siempre devuelve error por que esta fallando la api
-                           // si fala al obtener conversaciones de sent tiene que obtener de inbox de todas formas
-                          if (conversations.size() > 0) {
-                           callback.onFinished(conversations, null, MessagesUtils.pd);
-                          }
-                       }
-                   }, activity);
+                if (conversations.size() > 0) {
+                    callback.onFinished(conversations, null, MessagesUtils.pd);
+                }
+            }
 
+            @Override
+            public void onFinished(List<Conversation> conversationsSent, Exception e, ProgressDialog pd) {
+                //normalmente llama a este
+                Log.d(TAG, "getConversationsSent_onFinished() called with: " + "conversations = [" + conversations + "], e = [" + e + "], pd = [" + pd + "]");
+                conversations.addAll(conversationsSent);
+                if (conversations.size() > 0) {
+                    callback.onFinished(conversations, null, MessagesUtils.pd);
+                }
+            }
 
-               }
-           }
-
-           @Override
-           public void onError(String errorMessage) {
-
-           }
+            @Override
+            public void onError(String errorMessage) {
+                Log.d(TAG, "getConversationsSent_conversationCallback.onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                //ahora siempre devuelve error por que esta fallando la api
+                // si fala al obtener conversaciones de sent tiene que obtener de inbox de todas formas
+                if (conversations.size() > 0) {
+                    callback.onFinished(conversations, null, MessagesUtils.pd);
+                }
+            }
         }, activity);
     }
 
@@ -120,7 +128,7 @@ public class MessagesUtils {
         getConversationsBase(Constants.CONVERSATIONS_API_URL, c, cb, a);
     }
 
-    public static void getConversationsBase(String url, final Context context,final ConversationsCallback callback , Activity activity){
+    private static void getConversationsBase(String url, final Context context,final ConversationsCallback callback , Activity activity){
         Log.d(TAG, "getConversationsBase() called with: " + "url = [" + url + "], context = [" + context.getPackageName() + "], callback = [" + callback.getClass().getSimpleName() + "], activity = [" + activity.getClass().getSimpleName() + "]");
         MessagesUtils.context = context;
         // Show Loading dialog
@@ -156,6 +164,7 @@ public class MessagesUtils {
 
     /* get messages */
     public static List<Message> getMessages(int conversationId){
+        Log.d(TAG, "getMessages() called with: " + "conversationId = [" + conversationId + "]");
         List<Message> messages = null;
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest request = new JsonObjectRequest(Constants.CONVERSATIONS_API_URL + "/" + conversationId + "/messages", null, future, future){
@@ -177,22 +186,30 @@ public class MessagesUtils {
         } catch (TimeoutException e) {
             Log.d(TAG, "getMessages: TIMEOUT");
             Date d = new Date();
-            Log.d(TAG, "getMessages: "+ Constants.DATE_JSON_FORMAT.format( d.getTime()) );
+            Log.d(TAG, "getMessages: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
             e.printStackTrace();
         }
         return messages;
     }
 
 
-    /** Get all the messages <<THIS MAKE A API CALL FOR EVERY CONVERSATION>>
+    public static void getConversationMessagesSent(final List<Conversation> conversations, final MessagesCallback cb ){
+        String url = Constants.CONVERSATIONS_SENT_API_URL;
+        getConversationMessagesBase(url, conversations, cb );
+    }
+    public static void getConversationMessagesInbox(final List<Conversation> conversations, final MessagesCallback cb ){
+        String url = Constants.CONVERSATIONS_API_URL;
+        getConversationMessagesBase(url, conversations, cb );
+    }
+
+    /**
+     * Get all the messages <<THIS MAKE A API CALL FOR EVERY CONVERSATION>>
+     *     get messages from coversation async
      * @param conversations
      * @param callback
      */
-    /*
-    get messages from coversation async
-     */
-    public static void getConversationMessages( final List<Conversation> conversations, final MessagesCallback callback ){
-        Activity activity = mCurrentActivity;
+    public static void getConversationMessagesBase(String url, final List<Conversation> conversations, final MessagesCallback callback ){
+        final Activity activity = mCurrentActivity;
         Conversation conversation;
         final ArrayList<Conversation> allConversations = new ArrayList<>();
         for (int i = 0; i < conversations.size(); i++) {
@@ -206,7 +223,7 @@ public class MessagesUtils {
                 final Conversation finalConversation = conversation;
                 final int finalI = i;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
-                        Constants.CONVERSATIONS_API_URL + "/" + conversation.getId() + "/messages",
+                        url + "/" + conversation.getId() + "/messages",
                         jsonRequest,
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -242,7 +259,6 @@ public class MessagesUtils {
                                         //
                                         if (finalI == conversations.size()-1 ){
                                             callback.onFinished(messages,error,allConversations);
-
                                         }
                                     }
                                 }
@@ -253,9 +269,9 @@ public class MessagesUtils {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
-
-
+                                Log.d(TAG, "getConversationMessages_onErrorResponse() called with: " + "error = [" + error + "]");
+                                String errorMessage = VolleyErrorHelper.getMessage(activity, error);
+                                callback.onError(errorMessage);
                             }
                         }
                         //MessagesUtils.createReqErrorListener((ConversationsCallback) callback, activity)
@@ -271,6 +287,79 @@ public class MessagesUtils {
                 e.printStackTrace();
             }
         }
+
+    }
+
+    /**
+     * Get all messages in conversations passes by param
+     * @param conversations List of Conversation
+     * @param cb callback
+     */
+    public static void getConversationMessages(final List<Conversation> conversations, final MessagesCallback cb ){
+        getConversationMessagesInbox(conversations, new MessagesCallback() {
+            @Override
+            public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                Log.d(TAG, "getConversationMessages_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+
+                //obtener los datos de mensajes en sent de esas conversaciones
+                //y agregar esas conversacioones<sent> a las existentes
+                // en data es tan las conversaicones con los mensajes
+                getConversationMessagesSentHelper(conversations, cb, data);
+
+                //este cb hay que llamarlo en sent
+                //cb.onFinished(messages,e,data);
+            }
+
+            @Override
+            public void onFinished(List<Message> messages, Exception e) {
+                Log.d(TAG, "getConversationMessages_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.d(TAG, "getConversationMessages_onError() called with: " + "errorMessage = [" + errorMessage + "]");
+
+//                List<Message> messages = new ArrayList<Message>();
+                ArrayList<Conversation> cns = new ArrayList<Conversation>();
+                getConversationMessagesSentHelper(conversations,cb, cns);
+
+                cb.onError(errorMessage);
+            }
+        });
+    }
+
+    /**
+     * Avoid duplicate code in getConversationMessages
+     * @param conversations
+     * @param cb
+     * @param dataInbox
+     */
+    private static void getConversationMessagesSentHelper(final List<Conversation> conversations, final MessagesCallback cb, final ArrayList dataInbox){
+        getConversationMessagesSent(conversations, new MessagesCallback() {
+            @Override
+            public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                Log.d(TAG, "getConversationMessagesSentHelper_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+                //TODO
+                // conversations = data?
+                dataInbox.addAll(data);
+                cb.onFinished(messages, e, dataInbox);
+            }
+
+            @Override
+            public void onFinished(List<Message> messages, Exception e) {
+                Log.d(TAG, "getConversationMessagesSentHelper_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.d(TAG, "getConversationMessagesSentHelper_onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                Conversation c = (Conversation) dataInbox.get(0);
+                List<Message> m = c.getMessages();
+
+                cb.onFinished(m, null, dataInbox);
+            }
+        });
     }
 
 
@@ -371,11 +460,11 @@ public class MessagesUtils {
      */
     private static void getConversationMessagesFull(final List<Conversation> conversations, final ConversationsCallback callback){
         Log.v(TAG, "getConversationMessagesFull() called with: " + "conversations = [" + conversations + "], callback = [" + callback + "]");
-        getConversationMessages(conversations, new MessagesCallback() {
+        getConversationMessagesInbox(conversations, new MessagesCallback() {
             @Override
             public void onFinished(List<Message> messages, Exception e) {
                 //eeer this just change conversation inside because conversations is Final
-                Log.d(TAG, "getConversationsSent->getConversationMessages->onFinished()");
+                Log.d(TAG, "getConversationsSent->getConversationMessagesInbox->onFinished()");
                 //Log.d(TAG, "onFinished:  called with: messages = [" + messages + "], e = [\" + e + \"]");
                 //after all the three petition we sent the final callback!
                 callback.onFinished(conversations, null, pd);
@@ -533,6 +622,12 @@ public class MessagesUtils {
         return null;
     }
 
+    /**
+     * send a message to a conversation alredy started
+     * @param conversationId
+     * @param msg
+     * @param callback
+     */
     public static void reply(int conversationId, final String msg, final MessagesCallback callback){
         Log.d(TAG, "reply() called with: " + "conversationId = [" + conversationId + "], msg = [" + msg + "], callback = [" + callback + "]");
 
@@ -571,7 +666,7 @@ public class MessagesUtils {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.v(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                        Log.v(TAG, "reply_onErrorResponse() called with: " + "error = [" + error + "]");
                         //TODO: on android 2.3.3 app crashed here :(
                         String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
                         String errorDialogMsg = Utils.showErrorsJson(errorMessage, (Activity) MessagesUtils.context);
@@ -679,7 +774,7 @@ public class MessagesUtils {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "getConversationMessages onErrorResponse: ");
+                        Log.d(TAG, "getConversationMessagesInbox onErrorResponse: ");
                         String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
 
                         Log.d(TAG, "onErrorResponse: error message:" + errorMessage);

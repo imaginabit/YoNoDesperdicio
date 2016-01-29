@@ -163,7 +163,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                     Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
 
                     //get messages from all conversations
-                    MessagesUtils.getConversationMessages(conversations, new MessagesUtils.MessagesCallback() {
+                    MessagesUtils.getConversationMessagesInbox(conversations, new MessagesUtils.MessagesCallback() {
                         @Override
                         public void onFinished(List<Message> messages, Exception e) {
                             Log.d(TAG, "onFinished: messages.size " + messages.size());
