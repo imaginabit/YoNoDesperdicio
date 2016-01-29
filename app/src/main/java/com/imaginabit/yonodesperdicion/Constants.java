@@ -34,6 +34,11 @@ public class Constants {
 
     public static final String WEIGHT_TOTAL_KG_URL = HOME_URL + "api/total_kg";
 
+    //time costants
+    public static int SECOND = 1000;
+    public static int MINUTE = 60 * SECOND;
+    public static int HOUR = 60 * MINUTE;
+
 
     public static Double weightTotal;
 

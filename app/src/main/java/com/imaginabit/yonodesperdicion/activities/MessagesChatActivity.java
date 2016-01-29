@@ -14,11 +14,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.MessagesAdapter;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private EditText chatInput;
-    private List<Message> mMessages;
+    private List<Message> mMessages = new ArrayList<Message>();
     private ImageView mBtnSend;
     private boolean pushed;
 
@@ -44,17 +46,22 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Bundle data = getIntent().getExtras();
+        if (data!=null) {
+            mConversation = new Conversation((Integer) data.get("conversationId"), " ");
+        }
         mConversation = AppSession.currentConversation;
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(mConversation.getSubject());
 
         recyclerView = (RecyclerView) findViewById(R.id.list_chat_messages);
-        //recyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
+        recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
+        updateScreen();//set adpater
         getMessages();
         checkMessages();
         pushed= false;
@@ -84,40 +91,44 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
     private void pushedSendMessageButton(String msg){
         Log.d(TAG, "pushedSendMessageButton() called with: " + "msg = [" + msg + "]");
-        if(pushed==false) {
+        if(pushed==false && Utils.isNotEmptyOrNull(msg)) {
             pushed=true;//avoid accidental double tapping
 
             MessagesUtils.reply(mConversation.getId(), msg, new MessagesUtils.MessagesCallback() {
                 @Override
                 public void onFinished(List<Message> messages, Exception e) {
-                    Log.d(TAG, "onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+                    Log.d(TAG, "pushedSendMessageButton_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
 
                     //refresh adapter content
                     MessagesAdapter ma = (MessagesAdapter) adapter;
                     Message oMsg = messages.get(messages.size() - 1);
-                    if (oMsg != null) {
+                    if (oMsg != null && adapter!= null) {
+                        //adapter.add(oMsg);// ????
+                        mMessages.add(oMsg);
                         ma.add(oMsg);
-                        Log.d(TAG, "onFinished: message size" + mMessages.size());
-                        recyclerView.scrollToPosition(mMessages.size() - 1);
+
+                        Log.d(TAG, "pushedSendMessageButton_onFinished: message size" + mMessages.size());
+
                         chatInput.setText("");
                         //chatInput.clearFocus();
-                        //recyclerView.smoothScrollToPosition(0);
+
                         recyclerView.smoothScrollToPosition(mMessages.size() - 1);
                         pushed = false;
                     } else {
-                        Log.d(TAG, "onFinished: message null?");
-                        Log.d(TAG, "onFinished: messages: " + messages.toString());
+                        Log.d(TAG, "pushedSendMessageButton_onFinished: message null?");
+                        Log.d(TAG, "pushedSendMessageButtonon_Finished: messages: " + messages.toString());
                     }
                 }
 
                 @Override
                 public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                    Log.d(TAG, "pushedSendMessageButton_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
                     //do nothing
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    Log.d(TAG, "onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                    Log.d(TAG, "pushedSendMessageButton_onError() called with: " + "errorMessage = [" + errorMessage + "]");
                 }
             });
         }
@@ -129,36 +140,90 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             public void run() {
                 Log.v(TAG, "checkMessages run() called with: " + "");
                 NavigationBaseActivity a = (NavigationBaseActivity) mActivity;
-                if ( a.isActive() ){
+                if (a.isActive()) {
                     Log.d(TAG, "run: active!");
                     getMessages();
                 }
                 checkMessages();
             }
-        }, 60000);
+        }, 1 * Constants.MINUTE);
     }
 
     private void getMessages(){
-        Log.v(TAG, "getMessages: from conversation "+ mConversation.getId() );
-        mMessages = mConversation.getMessages();
+        Log.v(TAG, "getMessages: from conversation " + mConversation.getId());
+//        mMessages = mConversation.getMessages();
+        MessagesUtils.mCurrentActivity = this;
+        List<Conversation> conversations = new ArrayList<>();
+        conversations.add(mConversation);
+
+        MessagesUtils.getConversationMessages(conversations, new MessagesUtils.MessagesCallback() {
+            @Override
+            public void onFinished(List<Message> messages, Exception e, ArrayList data) {
+                Log.d(TAG, "getMessages_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+//                Toast.makeText(MessagesChatActivity.this, "Mensajes recibidos", Toast.LENGTH_SHORT).show();
+                mConversation = (Conversation) data.get(0);
+                mMessages = mConversation.getMessages();
+
+                Log.d(TAG, "getMessages_onFinished: message status" + Constants.longline);
+                messageStatus();
+                updateScreen();
+            }
+
+            @Override
+            public void onFinished(List<Message> messages, Exception e) {
+                Log.d(TAG, "getMessages_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+                //nothing
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.d(TAG, "getMessages_onError() called with: " + "errorMessage = [" + errorMessage + "]");
+
+            }
+        });
+
+        //MessagesUtils.getMessages(mConversation.getId());
+        Log.d(TAG, "getMessages: Message Status -----------------------------");
+        messageStatus();
+        
+
+
+    }
+
+    private void updateScreen(){
+        Log.d(TAG, "updateScreen: ");
+        getSupportActionBar().setTitle(mConversation.getSubject());
+
+        if (adapter== null){
+            adapter = new MessagesAdapter(mMessages);
+        } else {
+            //add new messages only
+            if (((MessagesAdapter)adapter).getItemCount()>0) {
+                Log.d(TAG, "updateScreen: MessageAdapter count"+ ((MessagesAdapter)adapter).getItemCount() );
+                for (int i = ((MessagesAdapter) adapter).getItemCount() - 1; i < mMessages.size(); i++) {//
+                    ((MessagesAdapter) adapter).add(mMessages.get(i));
+                }
+            } else {
+                adapter = new MessagesAdapter(mMessages);
+            }
+        }
+        recyclerView.setAdapter(adapter);
+
+        adapter.notifyDataSetChanged();
+        Log.d(TAG, "getMessages: scrollstate" + recyclerView.getScrollState());
+
+        recyclerView.scrollToPosition(mMessages.size() - 1);
+    }
+    
+    private void messageStatus(){
         if( mMessages != null ) {
             Log.d(TAG, "onCreate: Conversation messages " + mMessages.size());
-            Log.d(TAG, "onCreate: Conversation messages " + mMessages.get(0).toString());
+            if (mMessages.size()>0)
+                Log.d(TAG, "onCreate: Conversation messages " + mMessages.get(0).toString());
         }else{
             mMessages = new ArrayList<Message>();
             Log.d(TAG, "onCreate: Conversation messages null" );
         }
-
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new MessagesAdapter(mMessages);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        Log.d(TAG, "getMessages: scrollstate" + recyclerView.getScrollState() );
-
-
-        recyclerView.scrollToPosition(mMessages.size() - 1);
     }
-
-
 
 }

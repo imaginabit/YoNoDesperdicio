@@ -27,7 +27,7 @@ public class Conversation {
         mThreadId = threadId;
 
 
-//        MessagesUtils.getConversationMessages(id, new MessagesUtils.MessagesCallback() {
+//        MessagesUtils.getConversationMessagesInbox(id, new MessagesUtils.MessagesCallback() {
 //            @Override
 //            public void onFinished(List<Message> messages, Exception e) {
 //                Log.d(TAG, "onFinished: getConversation messages");
