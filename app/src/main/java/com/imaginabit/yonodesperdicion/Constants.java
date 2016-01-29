@@ -43,6 +43,9 @@ public class Constants {
     public static Double weightTotal;
 
     public static java.text.DateFormat DATE_JSON_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+    public static java.text.DateFormat DATE_LOCAL_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
+
 
 
     //GPS SERVICE
