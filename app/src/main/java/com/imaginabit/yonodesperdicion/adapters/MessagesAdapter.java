@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +58,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(final MessagesAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         Log.v(TAG, "onBindViewHolder() called with: " + "holder = [" + holder + "], position = [" + position + "]");
 
         holder.userName.setText("");
@@ -90,6 +91,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             }
         }
         holder.chatMessage.setText(mMessages.get(position).getBody().toString());
+
+        long now = System.currentTimeMillis();
+        Date msgCreated = mMessages.get(position).getCreated_at();
+        if ( msgCreated != null ) {
+            Log.d(TAG, "onBindViewHolder: msgCreated" + msgCreated.toString());
+            String d = (String) DateUtils.getRelativeTimeSpanString(msgCreated.getTime(), now, DateUtils.HOUR_IN_MILLIS);
+            Log.d(TAG, "onBindViewHolder: msgCreated relative: " + d);
+
+            holder.time.setText(d);
+        } else {
+            holder.time.setText("");
+            holder.time.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -105,6 +120,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         private TextView chatMessage;
         private TextView userName;
+        private TextView time;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -112,19 +128,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
             chatMessage = (TextView) itemView.findViewById(R.id.chat_messages);
             userName = (TextView) itemView.findViewById(R.id.chat_user_name);
+            time = (TextView) itemView.findViewById(R.id.chat_time);
         }
     }
 
-   public void add(Message msg){
-       mMessages.add(msg);
-       notifyDataSetChanged();
-   }
+    public void add(Message msg){
+        mMessages.add(msg);
+        notifyDataSetChanged();
+    }
 
-   public void add(String msg){
-       Message oMsg = new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date());
-       mMessages.add(oMsg);
-       notifyDataSetChanged();
-   }
+    public void add(String msg){
+        Message oMsg = new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date());
+        mMessages.add(oMsg);
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemViewType(int position) {

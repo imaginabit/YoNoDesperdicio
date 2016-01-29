@@ -16,10 +16,8 @@ import com.imaginabit.yonodesperdicion.adapters.ConversationsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
-import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -163,6 +161,8 @@ public class MessagesActivity extends NavigationBaseActivity {
                     Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
 
                     //get messages from all conversations
+                    //TAKE too much time to load
+                    /*
                     MessagesUtils.getConversationMessagesInbox(conversations, new MessagesUtils.MessagesCallback() {
                         @Override
                         public void onFinished(List<Message> messages, Exception e) {
@@ -188,12 +188,10 @@ public class MessagesActivity extends NavigationBaseActivity {
                         public void onFinished(List<Message> messages, Exception e, ArrayList data) {
                             //do nothing
                         }
-
                         @Override
-                        public void onError(String errorMessage) {
-
-                        }
+                        public void onError(String errorMessage) {}
                     });
+                    */
                 }
             }
 
