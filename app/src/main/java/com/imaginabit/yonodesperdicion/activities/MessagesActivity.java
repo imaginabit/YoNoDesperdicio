@@ -18,6 +18,8 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -151,21 +153,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                     */
 
                     mConversationList = conversations;
-//                    for (int i = 0; i < conversations.size(); i++) {
-//                        final Conversation c = conversations.get(i);
-//                        int otheuserId = getOtherUser(c);
-//                        c.setOtherUserId(otheuserId);
-//                        UserUtils.getUser(getOtherUser(c), MessagesActivity.this, new UserUtils.FetchUserCallback() {
-//                            @Override
-//                            public void done(User user, Exception e) {
-//                                c.setSubject(user.getName()+ " - "+ c.getSubject());
-//
-//
-//
-//                            }
-//                        });
-//                    }
-
+                    sortByDate(mConversationList);
 
                     adapter = new ConversationsAdapter(context, mConversationList);
                     recyclerView.setAdapter(adapter);
@@ -229,6 +217,20 @@ public class MessagesActivity extends NavigationBaseActivity {
 //        }
 //        return 0;
 //    }
+
+    private void sortByDate(List<Conversation> conversations){
+
+        Collections.sort(conversations, new Comparator<Conversation>() {
+            @Override
+            public int compare(Conversation lhs, Conversation rhs) {
+                if (lhs.getUpdatedAt() == rhs.getUpdatedAt())
+                    return 0;
+                return lhs.getUpdatedAt().after(rhs.getUpdatedAt()) ? -1 : 1;
+            }
+        });
+
+        adapter.notifyDataSetChanged();
+    }
 
 
 
