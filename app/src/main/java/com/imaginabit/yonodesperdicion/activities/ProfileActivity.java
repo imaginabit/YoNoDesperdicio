@@ -1,10 +1,6 @@
 package com.imaginabit.yonodesperdicion.activities;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -74,9 +70,6 @@ public class ProfileActivity extends NavigationBaseActivity {
         adapter = new AdsAdapter(context, mAds);
         recyclerView.setAdapter(adapter);
 
-
-
-
         // Back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -100,8 +93,6 @@ public class ProfileActivity extends NavigationBaseActivity {
 
             getAdsFromWeb((int) mUser.id);
         }
-
-
     }
 
     @Override
@@ -125,74 +116,34 @@ public class ProfileActivity extends NavigationBaseActivity {
     }
 
     private void getAdsFromWeb(final int userId) {
-
         User u = new User(userId,"","","","",0,0);
         Log.d(TAG, "get Ads From Web");
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        final Handler handler = new Handler();
 
         AdUtils.fetchAdsVolley(u, this, new AdUtils.FetchAdsCallback() {
             @Override
             public void done(List<Ad> ads, Exception e) {
+                Log.d(TAG, "done");
                 if (ads != null) {
                     mAds = ads;
                     adapter = new AdsAdapter(context, mAds);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
-                    Log.d(TAG, "done: recyclerview height " + recyclerView.getHeight());
-                    Log.d(TAG, "done: layoutManager height " + layoutManager.getHeight());
+//                    Log.d(TAG, "done: recyclerview height " + recyclerView.getHeight());
+//                    Log.d(TAG, "done: layoutManager height " + layoutManager.getHeight());
 
                     //
                     DisplayMetrics dm = getResources().getDisplayMetrics();
-                    float adDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 135, dm);;
-                    float headDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, dm);;
-                    int hei = (int) ((int) (ads.size()* adDpInPx) + headDpInPx);
-
-                    Log.d(TAG, "done: Height px :" + hei );
-
-                    userads.setLayoutParams(new LinearLayout.LayoutParams(layoutManager.getWidth(), hei ));
-
-
-
-
+                    float adDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 135, dm);
+                    float headDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, dm);
+                    int adsTotalHeight = (int) ((int) (ads.size() * adDpInPx) + headDpInPx);
+                    Log.d(TAG, "done: Height px :" + adsTotalHeight);
+                    userads.setLayoutParams(new LinearLayout.LayoutParams(layoutManager.getWidth(), adsTotalHeight));
 
                     Log.d(TAG, "anuncios : " + mAds.size());
                 }
             }
         });
 
-//        if (networkInfo != null && networkInfo.isConnected()) {
-//            AdUtils.fetchAds(u, this, new AdUtils.FetchAdsCallback() {
-//                @Override
-//                public void done(List<Ad> ads, Exception e) {
-//                    if (e == null) {
-//                        Log.v(TAG, "---Ads get!");
-//                        if (ads != null) {
-//                            mAds = ads;
-//                            adapter = new AdsAdapter(context, mAds);
-//
-//                            recyclerView.setAdapter(adapter);
-//                            adapter.notifyDataSetChanged();
-//
-//                            Log.d(TAG, "anuncios : " + mAds.size());
-//                        }
-//                    } else {
-//                        Log.e(TAG, "error al obtener los Anuncios");
-//                        e.printStackTrace();
-//                        //wait 5 secons to try again
-//                        handler.postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                getAdsFromWeb(userId);
-//                            }
-//                        }, 5000);
-//                    }
-//                }
-//            });
-//        } else {
-//            Toast.makeText(this, "No se pudieron descargar los anuncios, no hay conexion a internet.", Toast.LENGTH_SHORT).show();
-//        }
     }
 
 

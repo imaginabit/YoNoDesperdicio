@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -40,14 +39,19 @@ public class AdUtils {
         //ProgressDialog pd = new ProgressDialog(activity);
 
         JSONObject jsonRequest = new JSONObject();
-        RequestQueue queue = VolleySingleton.getRequestQueue();
+//        RequestQueue queue = VolleySingleton.getRequestQueue();
+        AppSession.requestQueue = VolleySingleton.getRequestQueue();
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                 Constants.USER_ADS_API_URL + Integer.toString(user.getUserId()),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d(TAG, "onResponse() called with: " + "response = [" + response + "]");
+                        try {
+                            Log.d(TAG, "onResponse() called with: " + "response = [" + response.toString(2) + "]");
+                        } catch (JSONException e) {
+                            Log.d(TAG, "onResponse: error");
+                        }
                         List<Ad> ads = new ArrayList<>();
 //                        Exception error = null;
                         if (response.has("ads")) {
@@ -67,6 +71,7 @@ public class AdUtils {
                                 e.printStackTrace();
                             }
                         } else Log.d(TAG, "doInBackground: User without ads");
+                        Log.d(TAG, "onResponse: Fin");
 
                     }
                 },
@@ -79,8 +84,7 @@ public class AdUtils {
                     }
                 }
         );
-
-        queue.add(request);
+        AppSession.requestQueue.add(request);
     }
 
     public static void fetchAds(final User u,final Activity activity, final FetchAdsCallback callback ){
@@ -172,8 +176,24 @@ public class AdUtils {
     }
 
     private static ResultAds createAdList(JSONArray jsonItems){
+        Log.d(TAG, "createAdList: ");
         List<Ad> ads = new ArrayList<>();
         Exception e = null;
+
+        String categoria;
+        String zipcode;
+        int ad_id;
+        String title;
+        String category;
+        String image_url;
+        String body;
+        int status;
+        int grams;
+        int user_id;
+        String pick_up_date;
+
+        Ad item;
+
         for (int i = 0; i < jsonItems.length(); i++) {
             JSONObject jsonItem = null;
             try {
@@ -184,17 +204,17 @@ public class AdUtils {
 
             // title, id, category, image_url, introduction
             //long idea_id = jsonItem.optLong("id", 0L);
-            int ad_id = jsonItem.optInt("id", 0);
-            String title = jsonItem.optString("title", "");
-            String category = jsonItem.optString("food_category", "");
-            String image_url = jsonItem.optString("image", "");
-            String body = jsonItem.optString("body", "");
-            int status = jsonItem.optInt("status", 0);
-            int grams = jsonItem.optInt("grams", 0);
-            int user_id = jsonItem.optInt("user_id", 0);
-            String pick_up_date =jsonItem.optString("pick_up_date", "");
-            String zipcode =jsonItem.optString("zipcode", "");
-            String categoria = jsonItem.optString("food_category", "");
+            ad_id = jsonItem.optInt("id", 0);
+            title = jsonItem.optString("title", "");
+            category = jsonItem.optString("food_category", "");
+            image_url = jsonItem.optString("image", "");
+            body = jsonItem.optString("body", "");
+            status = jsonItem.optInt("status", 0);
+            grams = jsonItem.optInt("grams", 0);
+            user_id = jsonItem.optInt("user_id", 0);
+            pick_up_date = jsonItem.optString("pick_up_date", "");
+            zipcode = jsonItem.optString("zipcode", "");
+            categoria = jsonItem.optString("food_category", "");
 
             Log.v(TAG, "add ad " + jsonItem.toString()  );
             Log.v(TAG, "add Ad id:" + ad_id + " title:" + title + " cat:" + category + " image:" + image_url + " ");
@@ -204,18 +224,17 @@ public class AdUtils {
                 //status 3 => producto entregado
                 if ( Utils.isNotEmptyOrNull(title) && status != 3 ) {
                     //Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName)
-                    Ad item = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
-                    item.setLocation( calculateLocation(item) );
+                    item = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
+                    item.setLocation( calculateLocation(item));
                     item.setLastDistance( calculateDistance(item) );
                     item.setCategoria(categoria);
                     ads.add(item);
                 }
             } catch ( Exception e1 ){
-                //e.printStackTrace();
                 e = e1;
             }
-            //Log.d(TAG,"added " + ads.size() );
         }
+        Log.d(TAG, "createAdList: FIN");
         return new ResultAds(ads,e);
 
     }

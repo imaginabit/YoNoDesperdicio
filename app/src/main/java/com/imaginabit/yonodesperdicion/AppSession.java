@@ -35,7 +35,6 @@ public class AppSession {
     private static UserData user;
 
     // User
-
     public static void setCurrentUser(UserData user) {
         AppSession.user = user;
     }
@@ -50,8 +49,8 @@ public class AppSession {
     }
 
     public static Conversation currentConversation;
-
     public static Location lastLocation;
+    public static RequestQueue requestQueue;
 
 
 
