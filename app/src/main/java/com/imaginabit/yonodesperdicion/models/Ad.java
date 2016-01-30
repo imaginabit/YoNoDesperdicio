@@ -31,9 +31,18 @@ public class Ad implements Parcelable {
                               };
 
     public static enum Categoria {
-        AVAILABLE,
-        BOOKED,
-        DELIVERED
+        CARNE_Y_AVES,
+        PESCADO_Y_MARISCO,
+        FRUTA,
+        VERDURAS_Y_HORTALIZAS,
+        CHARCUTERÍA,
+        LÁCTEOS,
+        LEGUMBRES,
+        BEBIDAS,
+        ONDIMENTOS,
+        PAN_Y_BOLLERÍA,
+        CONSERVAS,
+        PLATOS_PREPARADOS
     };
 
 
@@ -50,6 +59,7 @@ public class Ad implements Parcelable {
     private boolean favorite;
     private Location location;
     private int lastDistance;
+    private String categoria;
 
     // Constructors
 
@@ -385,30 +395,6 @@ public class Ad implements Parcelable {
     }
 
 
-    @Override
-    public String toString() {
-        return "Ad{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", body='" + body + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", weightGrams=" + weightGrams +
-                ", expiration=" + expiration +
-                ", postalCode=" + postalCode +
-                ", status=" + status +
-                ", userId=" + userId +
-                ", userName='" + userName + '\'' +
-                ", favorite=" + favorite +
-                ", weightKgStr='" + getWeightKgStr() + '\'' +
-                ", expirationDateLong='" + getExpirationDateLong() + '\'' +
-                ", expirationDateRelative='" + getExpirationDateRelative() + '\'' +
-                ", statusInt=" + getStatusInt() +
-                ", statusStr='" + getStatusStr() + '\'' +
-                ", statusColor=" + getStatusColor() +
-                ", scribeContents=" + describeContents() +
-                '}';
-    }
-
     public Location getLocation() {
         return location;
     }
@@ -423,6 +409,35 @@ public class Ad implements Parcelable {
 
     public void setLastDistance(int lastDistance) {
         this.lastDistance = lastDistance;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", weightGrams=" + weightGrams +
+                ", expiration=" + expiration +
+                ", postalCode=" + postalCode +
+                ", status=" + status +
+                ", userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", favorite=" + favorite +
+                ", location=" + location +
+                ", lastDistance=" + lastDistance +
+                ", categoria=" + categoria +
+                '}';
+    }
+
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     @Override
@@ -445,6 +460,7 @@ public class Ad implements Parcelable {
         dest.writeByte(favorite ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.location, 0);
         dest.writeInt(this.lastDistance);
+        dest.writeString(this.categoria);
     }
 
     protected Ad(Parcel in) {
@@ -463,6 +479,7 @@ public class Ad implements Parcelable {
         this.favorite = in.readByte() != 0;
         this.location = in.readParcelable(Location.class.getClassLoader());
         this.lastDistance = in.readInt();
+        this.categoria = in.readString();
     }
 
     public static final Creator<Ad> CREATOR = new Creator<Ad>() {

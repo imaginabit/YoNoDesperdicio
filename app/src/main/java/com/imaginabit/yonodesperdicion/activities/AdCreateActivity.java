@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,11 +25,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -61,7 +65,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class AdCreateActivity extends NavigationBaseActivity {
+public class AdCreateActivity extends NavigationBaseActivity
+        implements AdapterView.OnItemSelectedListener {
 
     private static final String TAG = "AdCreateActivity";
     ImageView image;
@@ -72,6 +77,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
     EditText adDescription;
     EditText adZipCode;
     Ad ad;
+    String foodCategory;
 
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_PICTURE = 1;
@@ -114,6 +120,17 @@ public class AdCreateActivity extends NavigationBaseActivity {
         adDescription = (EditText) findViewById(R.id.ad_description);
         adZipCode = (EditText) findViewById(R.id.postal_code);
 
+        Spinner spinner = (Spinner) findViewById(R.id.input_categoria);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.food_categories, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
+
 
         Button btnDeleteAd = (Button) findViewById(R.id.delete_ad);
         btnDeleteAd.setVisibility(View.GONE);
@@ -149,7 +166,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
             title.setText(ad.getTitle());
             weight.setText(ad.getWeightKgStr());
             expiration_date.setText( ad.getExpirationDate() );
-            adZipCode.setText( Integer.toString(ad.getPostalCode()) );
+            adZipCode.setText(Integer.toString(ad.getPostalCode()));
             adDescription.setText(ad.getBody());
 
             Log.d(TAG, "onCreate: image:"+ ad.getImageUrl());
@@ -157,6 +174,7 @@ public class AdCreateActivity extends NavigationBaseActivity {
             ImageLoader imageLoader; // Get singleton instance
             imageLoader = ImageLoader.getInstance();
             String imageUri = Constants.HOME_URL + ad.getImageUrl();
+
 
             //me da a mi que ha esto no le esta haciendo ningun caso
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
@@ -260,9 +278,9 @@ public class AdCreateActivity extends NavigationBaseActivity {
                     .put("body", adDescription.getText())
                     .put("grams", grams )
                     .put("status", 1)
-                    .put("food_category", "bebidas")
                     .put("province", provincia)
                     .put("zipcode", adZipCode.getText() )
+                    .put("food_category", this.foodCategory )
                     .put("pick_up_date", expiration_date.getText());
 
             if (isEditing){
@@ -636,6 +654,21 @@ public class AdCreateActivity extends NavigationBaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "onItemSelected() called with: " + "parent = [" + parent + "], view = [" + view + "], position = [" + position + "], id = [" + id + "]");
+
+        Resources res = getResources();
+        String[] categories = res.getStringArray(R.array.food_categories);
+        this.foodCategory = categories[position];
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Log.d(TAG, "onNothingSelected() called with: " + "parent = [" + parent + "]");
+
     }
 
 }
