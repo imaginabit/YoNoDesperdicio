@@ -47,7 +47,8 @@ public class MessagesUtils {
 
     /**
      * Get list of user conversations and last message of this conversation
-     * first get inbox conversation, them sentbox conversations , them all conversation messages??
+     * first get inbox conversation them sentbox conversations
+     *
      * @param context
      * @param callback
      * @param activity
@@ -87,9 +88,11 @@ public class MessagesUtils {
         getConversationsSent(context, new ConversationsCallback() {
             @Override
             public void onFinished(List<Conversation> conversationsSent, Exception e) {
-                Log.d(TAG, "getConversationsSent_conversationCallback onFinished() called with: " + "conversations = [" + conversations.size() + ", " + conversationsSent.size() + "], e = [" + e + "]");
+                Log.d(TAG, "getConversationSent_conversationCallback onFinished() called with: " + "conversations = [" + conversations.size() + ", " + conversationsSent.size() + "], e = [" + e + "]");
                 //add conversations from sent to conversations
                 conversations.addAll(conversationsSent);
+                Log.d(TAG, "getConversationSent_conversationCallback onFinished: conversationsSent size: " + conversationsSent.size());
+                Log.d(TAG, "getConversationSent_conversationCallback onFinished: conversations size: "+conversations.size());
 
                 if (conversations.size() > 0) {
                     callback.onFinished(conversations, null, MessagesUtils.pd);
@@ -99,7 +102,7 @@ public class MessagesUtils {
             @Override
             public void onFinished(List<Conversation> conversationsSent, Exception e, ProgressDialog pd) {
                 //normalmente llama a este
-                Log.d(TAG, "getConversationsSent_onFinished() called with: " + "conversations = [" + conversations + "], e = [" + e + "], pd = [" + pd + "]");
+                Log.d(TAG, "getConversationSent_onFinished() called with: " + "conversations = [" + conversations + "], e = [" + e + "], pd = [" + pd + "]");
                 conversations.addAll(conversationsSent);
                 if (conversations.size() > 0) {
                     callback.onFinished(conversations, null, MessagesUtils.pd);
@@ -108,12 +111,12 @@ public class MessagesUtils {
 
             @Override
             public void onError(String errorMessage) {
-                Log.d(TAG, "getConversationsSent_conversationCallback.onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                Log.d(TAG, "getConversationSent_conversationCallback.onError() called with: " + "errorMessage = [" + errorMessage + "]");
                 //ahora siempre devuelve error por que esta fallando la api
                 // si fala al obtener conversaciones de sent tiene que obtener de inbox de todas formas
-                if (conversations.size() > 0) {
+//                if (conversations.size() > 0) {
                     callback.onFinished(conversations, null, MessagesUtils.pd);
-                }
+//                }
             }
         }, activity);
     }
