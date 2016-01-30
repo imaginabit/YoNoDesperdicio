@@ -66,9 +66,7 @@ public class MessagesUtils {
             @Override
             public void onFinished(final List<Conversation> conversations, Exception e, ProgressDialog pd) {
                 Log.d(TAG, "getConversations_onFinished_pd: ");
-                if (conversations != null) {
-                    getConversationSent(context, callback, activity, conversations);
-                }
+                getConversationSent(context, callback, activity, conversations);
             }
 
             @Override
@@ -92,7 +90,7 @@ public class MessagesUtils {
                 //add conversations from sent to conversations
                 conversations.addAll(conversationsSent);
                 Log.d(TAG, "getConversationSent_conversationCallback onFinished: conversationsSent size: " + conversationsSent.size());
-                Log.d(TAG, "getConversationSent_conversationCallback onFinished: conversations size: "+conversations.size());
+                Log.d(TAG, "getConversationSent_conversationCallback onFinished: conversations size: " + conversations.size());
 
                 if (conversations.size() > 0) {
                     callback.onFinished(conversations, null, MessagesUtils.pd);
@@ -115,7 +113,7 @@ public class MessagesUtils {
                 //ahora siempre devuelve error por que esta fallando la api
                 // si fala al obtener conversaciones de sent tiene que obtener de inbox de todas formas
 //                if (conversations.size() > 0) {
-                    callback.onFinished(conversations, null, MessagesUtils.pd);
+                callback.onFinished(conversations, null, MessagesUtils.pd);
 //                }
             }
         }, activity);
@@ -141,15 +139,14 @@ public class MessagesUtils {
         try{
             JSONObject jsonRequest = new JSONObject();
 //           Mailbox_id puede ser: “inbox”, “sent” o “trash”
-
             RequestQueue queue = VolleySingleton.getRequestQueue();
 
-            //get Menssages in "inbox"
+            //get Menssages
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                     url,
                     jsonRequest,
                     MessagesUtils.createResponseSuccessListener(callback),
-                    MessagesUtils.createReqErrorListener(callback, activity)
+                    MessagesUtils.createReqErrorListener(callback)
             ){
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {return AppSession.authHeaders();}
@@ -357,8 +354,11 @@ public class MessagesUtils {
             @Override
             public void onError(String errorMessage) {
                 Log.d(TAG, "getConversationMessagesSentHelper_onError() called with: " + "errorMessage = [" + errorMessage + "]");
-                Conversation c = (Conversation) dataInbox.get(0);
-                List<Message> m = c.getMessages();
+                List<Message> m = new ArrayList<Message>();
+                if(dataInbox.size()>0) {
+                    Conversation c = (Conversation) dataInbox.get(0);
+                    m = c.getMessages();
+                }
 
                 cb.onFinished(m, null, dataInbox);
             }
@@ -399,7 +399,7 @@ public class MessagesUtils {
         return new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject response) {
-                Log.d("--->", "authenticate:" + response.toString());
+                Log.d(TAG, "createResponseSuccessListener authenticate:" + response.toString());
 
                 try {
                     Utils.dismissProgressDialog(MessagesUtils.pd);
@@ -426,17 +426,24 @@ public class MessagesUtils {
                         Log.d(TAG, "onResponse: conversations size " + conversations.size());
 
                         callback.onFinished(conversations, error, pd);
+                    } else {
+                        Log.d(TAG, "onResponse: No conversations");
+                        callback.onError("no conversations");
                     }
+                } else {
+                    Log.d(TAG, "onResponse: No conversations");
+                    callback.onError("no conversations");
                 }
             }
         };
     }
-    private static Response.ErrorListener createReqErrorListener(final ConversationsCallback callback, final Activity activity){
-        Log.d(TAG, "createReqErrorListener() called with: " + "callback = [" + callback + "], activity = [" + activity + "]");
+    private static Response.ErrorListener createReqErrorListener(final ConversationsCallback callback){
+        Log.d(TAG, "createReqErrorListener() called with: " + "callback = [" + callback + "]");
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.v(TAG, "createReqErrorListener onErrorResponse() called with: " + "error = [" + error + "]");
+                Log.d(TAG, "createReqErrorListener onErrorResponse: ");
+//                Log.d(TAG, "createReqErrorListener onErrorResponse() called with: " + "error = [" + error + "]");
 
                 try {
                     if(MessagesUtils.pd!=null) {
@@ -451,7 +458,6 @@ public class MessagesUtils {
                 //String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
                 Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
                 callback.onError(errorMessage);
-
             }
         };
     }

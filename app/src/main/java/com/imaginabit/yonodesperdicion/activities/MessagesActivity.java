@@ -233,5 +233,4 @@ public class MessagesActivity extends NavigationBaseActivity {
     }
 
 
-
 }
