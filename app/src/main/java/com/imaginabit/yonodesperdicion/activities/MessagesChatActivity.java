@@ -34,7 +34,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private EditText chatInput;
-    private List<Message> mMessages = new ArrayList<Message>();
+    private ArrayList<Message> mMessages = new ArrayList<Message>();
     private ImageView mBtnSend;
     private boolean pushed;
 
@@ -61,7 +61,9 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        updateScreen();//set adpater
+        adapter = new MessagesAdapter(mMessages);
+        recyclerView.setAdapter(adapter);
+
         getMessages();
         checkMessages();
         pushed= false;
@@ -106,26 +108,14 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                 @Override
                 public void onFinished(List<Message> messages, Exception e) {
                     Log.d(TAG, "pushedSendMessageButton_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
+                    //Add the new message
+                    mMessages.addAll(messages);
+                    chatInput.setText("");
+                    pushed = false;
+                    updateScreen();
 
-                    //refresh adapter content
-                    MessagesAdapter ma = (MessagesAdapter) adapter;
-                    Message oMsg = messages.get(messages.size() - 1);
-                    if (oMsg != null && adapter!= null) {
-                        //adapter.add(oMsg);// ????
-                        mMessages.add(oMsg);
-                        ma.add(oMsg);
-
-                        Log.d(TAG, "pushedSendMessageButton_onFinished: message size" + mMessages.size());
-
-                        chatInput.setText("");
-                        //chatInput.clearFocus();
-
-                        recyclerView.smoothScrollToPosition(mMessages.size() - 1);
-                        pushed = false;
-                    } else {
-                        Log.d(TAG, "pushedSendMessageButton_onFinished: message null?");
-                        Log.d(TAG, "pushedSendMessageButtonon_Finished: messages: " + messages.toString());
-                    }
+                    Log.d(TAG, "pushedSendMessageButton_onFinished: message size " + messages.size());
+                    Log.d(TAG, "pushedSendMessageButton_onFinished: mMessage size " + mMessages.size());
                 }
 
                 @Override
@@ -169,8 +159,12 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             public void onFinished(List<Message> messages, Exception e, ArrayList data) {
                 Log.d(TAG, "getMessages_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
 //                Toast.makeText(MessagesChatActivity.this, "Mensajes recibidos", Toast.LENGTH_SHORT).show();
-                mConversation = (Conversation) data.get(0);
-                mMessages = mConversation.getMessages();
+                if (data.size()>0) {
+                    mConversation = (Conversation) data.get(0);
+                    mMessages = (ArrayList<Message>) mConversation.getMessages();
+                } else {
+                    Log.d(TAG, "onFinished: Data menor o igual 0");
+                }
 
                 Log.d(TAG, "getMessages_onFinished: message status" + Constants.longline);
                 messageStatus();
@@ -193,35 +187,19 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         //MessagesUtils.getMessages(mConversation.getId());
         Log.d(TAG, "getMessages: Message Status -----------------------------");
         messageStatus();
-        
-
-
     }
 
     private void updateScreen(){
-        Log.d(TAG, "updateScreen: ");
-        getSupportActionBar().setTitle(mConversation.getSubject());
-
-        if (adapter== null){
-            adapter = new MessagesAdapter(mMessages);
-        } else {
-            //add new messages only
-            if (((MessagesAdapter)adapter).getItemCount()>0) {
-                Log.d(TAG, "updateScreen: MessageAdapter count "+ ((MessagesAdapter)adapter).getItemCount() );
-                for (int i = ((MessagesAdapter) adapter).getItemCount() - 1; i < mMessages.size(); i++) {//
-                    ((MessagesAdapter) adapter).add(mMessages.get(i));
-                }
-            } else {
-                adapter = new MessagesAdapter(mMessages);
-            }
-        }
+        Log.d(TAG, "updateScreen: " + ((MessagesAdapter) adapter).getItemCount());
+//        TODO: this is wrong, notifyDataSetChanged must update the adapter but no working!
+        adapter = new MessagesAdapter(mMessages);
         recyclerView.setAdapter(adapter);
 
+        getSupportActionBar().setTitle(mConversation.getSubject());
         adapter.notifyDataSetChanged();
-        Log.d(TAG, "getMessages: scrollstate" + recyclerView.getScrollState());
-
         recyclerView.scrollToPosition(mMessages.size() - 1);
     }
+
     
     private void messageStatus(){
         if( mMessages != null ) {
