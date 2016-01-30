@@ -194,6 +194,7 @@ public class AdUtils {
             int user_id = jsonItem.optInt("user_id", 0);
             String pick_up_date =jsonItem.optString("pick_up_date", "");
             String zipcode =jsonItem.optString("zipcode", "");
+            String categoria = jsonItem.optString("food_category", "");
 
             Log.v(TAG, "add ad " + jsonItem.toString()  );
             Log.v(TAG, "add Ad id:" + ad_id + " title:" + title + " cat:" + category + " image:" + image_url + " ");
@@ -206,6 +207,7 @@ public class AdUtils {
                     Ad item = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
                     item.setLocation( calculateLocation(item) );
                     item.setLastDistance( calculateDistance(item) );
+                    item.setCategoria(categoria);
                     ads.add(item);
                 }
             } catch ( Exception e1 ){
