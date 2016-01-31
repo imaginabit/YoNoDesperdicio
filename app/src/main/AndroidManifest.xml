@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <permission android:name="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
+    <uses-permission android:name="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
+    
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -127,6 +130,15 @@
         <service
             android:name=".helpers.FetchAddressIntentService"
             android:exported="false"/>
+        
+        <provider
+            android:authorities="com.imaginabit.yonodesperdicion.ads.provider"
+            android:name="com.imaginabit.yonodesperdicion.data.AdsProvider"
+            android:exported="true"
+            android:readPermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE"
+            android:writePermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE"
+            />
+
     </application>
 
 </manifest>

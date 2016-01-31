@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -75,8 +76,28 @@ public class MainActivity extends NavigationBaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         App.appContext = context;//for make getGPSfromZip works
+
+        SQLiteDatabase sqLiteDatabase;
+        sqLiteDatabase = getBaseContext().openOrCreateDatabase( "yonodesperdicio.db",MODE_PRIVATE,null );
+        sqLiteDatabase.execSQL("DROP TABLE ads");
+//        sqLiteDatabase.execSQL("CREATE TABLE ads(id INTEGER, name TEXT)");
+//        sqLiteDatabase.execSQL("INSERT INTO ads VALUES(1,'PRUEBA DB');");
+//        sqLiteDatabase.execSQL("INSERT INTO ads VALUES(2,'PRUEBA DB2');");
+//        sqLiteDatabase.execSQL("INSERT INTO ads VALUES(3,'PRUEBA DB3');");
+//        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM ads",null);
+//        if(query.moveToFirst()){
+//            //cycle throught reccords
+//            do {
+//                int id = query.getInt(0);
+//                String name = query.getString(1);
+//                Toast.makeText(MainActivity.this, "id " + id + " name " + name, Toast.LENGTH_SHORT).show();
+//            }while (query.moveToNext());
+//        }else {
+//            Toast.makeText(MainActivity.this, "error retrieving data", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        sqLiteDatabase.close();
 
         // Put on session
         UserData user = UserData.prefsFetch(this);
