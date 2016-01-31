@@ -46,7 +46,7 @@ public class Ad implements Parcelable {
     };
 
 
-    private int id;
+    private int _id;
     private String title;
     private String body;
     private String imageUrl;
@@ -135,7 +135,7 @@ public class Ad implements Parcelable {
                 String userName
              ) throws ParseException {
         // Set the properties
-        this.id = id;
+        this._id = id;
         this.title = title;
         this.body = body;
         this.imageUrl = imageUrl;
@@ -388,10 +388,10 @@ public class Ad implements Parcelable {
     }
 
     public int getId() {
-        return id;
+        return _id;
     }
     public void setId(int id) {
-        this.id = id;
+        this._id = id;
     }
 
 
@@ -418,7 +418,7 @@ public class Ad implements Parcelable {
     @Override
     public String toString() {
         return "Ad{" +
-                "id=" + id +
+                "_id=" + _id +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
@@ -447,7 +447,7 @@ public class Ad implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeInt(this._id);
         dest.writeString(this.title);
         dest.writeString(this.body);
         dest.writeString(this.imageUrl);
@@ -464,7 +464,7 @@ public class Ad implements Parcelable {
     }
 
     protected Ad(Parcel in) {
-        this.id = in.readInt();
+        this._id = in.readInt();
         this.title = in.readString();
         this.body = in.readString();
         this.imageUrl = in.readString();
