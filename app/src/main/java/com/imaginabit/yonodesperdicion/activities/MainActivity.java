@@ -1,10 +1,11 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -12,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.os.ResultReceiver;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -55,7 +57,7 @@ import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends NavigationBaseActivity
-        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private final String TAG = getClass().getSimpleName();
 
     private RecyclerView recyclerView;
@@ -78,32 +80,6 @@ public class MainActivity extends NavigationBaseActivity
         setContentView(R.layout.activity_main);
         App.appContext = context;//for make getGPSfromZip works
 
-        SQLiteDatabase sqLiteDatabase;
-        sqLiteDatabase = getBaseContext().openOrCreateDatabase( "yonodesperdicio.db",MODE_PRIVATE,null );
-<<<<<<< Updated upstream
-        sqLiteDatabase.execSQL("DROP TABLE ads");
-//        sqLiteDatabase.execSQL("CREATE TABLE ads(id INTEGER, name TEXT)");
-//        sqLiteDatabase.execSQL("INSERT INTO ads VALUES(1,'PRUEBA DB');");
-//        sqLiteDatabase.execSQL("INSERT INTO ads VALUES(2,'PRUEBA DB2');");
-//        sqLiteDatabase.execSQL("INSERT INTO ads VALUES(3,'PRUEBA DB3');");
-//        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM ads",null);
-//        if(query.moveToFirst()){
-//            //cycle throught reccords
-//            do {
-//                int id = query.getInt(0);
-//                String name = query.getString(1);
-//                Toast.makeText(MainActivity.this, "id " + id + " name " + name, Toast.LENGTH_SHORT).show();
-//            }while (query.moveToNext());
-//        }else {
-//            Toast.makeText(MainActivity.this, "error retrieving data", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        sqLiteDatabase.close();
-=======
-        sqLiteDatabase.execSQL("CREATE TABLE ads(id INTEGER, name TEXT)");
-        sqLiteDatabase.execSQL("INSERT INTO contacts VALUES('1','PRUEBA DB');");
-        sqLiteDatabase.execSQL("INSERT INTO contacts VALUES('1','PRUEBA DB');");
->>>>>>> Stashed changes
 
         // Put on session
         UserData user = UserData.prefsFetch(this);
@@ -343,7 +319,7 @@ public class MainActivity extends NavigationBaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate( R.menu.main , menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -365,11 +341,22 @@ public class MainActivity extends NavigationBaseActivity
         Log.d(TAG, "gps onConnected() called with: " + "bundle = [" + bundle + "]");
         // Gets the best and most recent location currently available,
         // which may be null in rare cases when a location is not available.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "onConnected: No hay permisos para usar esto");
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         AppSession.lastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
         // Determine whether a Geocoder is available.
-        if ( !Geocoder.isPresent() ) {
+        if (!Geocoder.isPresent()) {
             startIntentService();
             Toast.makeText(this, R.string.no_geocoder_available,
                     Toast.LENGTH_LONG).show();
@@ -383,14 +370,14 @@ public class MainActivity extends NavigationBaseActivity
 
         if (AppSession.lastLocation == null) {
             Log.d(TAG, "gps onConnected: LOCATION NULL");
-            Handler handler= new Handler();
+            Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     fetchAddressButtonHandler(null);
                 }
             }, 5000);
-        }else {
+        } else {
             Log.d(TAG, "onConnected: LOCATION GET !");
         }
     }
@@ -419,7 +406,7 @@ public class MainActivity extends NavigationBaseActivity
     /**
      * Create an instance of GoogleAPIClient.
      */
-    private void checkGoogleApiClient(){
+    private void checkGoogleApiClient() {
         if (mGoogleApiClient == null) {
             Log.d(TAG, "onCreate: google api client");
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -430,12 +417,24 @@ public class MainActivity extends NavigationBaseActivity
         }
 
         if (mGoogleApiClient == null) {
-            Log.d(TAG, "gps checkGoogleApiClient: mGoogleApiClient: "+null);
+            Log.d(TAG, "gps checkGoogleApiClient: mGoogleApiClient: " + null);
         }
 
-        if(!mGoogleApiClient.isConnected()) {
+        if (!mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
         } else {
+            //google me obliga a poner esto
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicaicon del telefono");
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             AppSession.lastLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mGoogleApiClient);
         }
