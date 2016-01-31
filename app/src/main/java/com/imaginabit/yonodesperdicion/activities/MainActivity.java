@@ -80,6 +80,7 @@ public class MainActivity extends NavigationBaseActivity
 
         SQLiteDatabase sqLiteDatabase;
         sqLiteDatabase = getBaseContext().openOrCreateDatabase( "yonodesperdicio.db",MODE_PRIVATE,null );
+<<<<<<< Updated upstream
         sqLiteDatabase.execSQL("DROP TABLE ads");
 //        sqLiteDatabase.execSQL("CREATE TABLE ads(id INTEGER, name TEXT)");
 //        sqLiteDatabase.execSQL("INSERT INTO ads VALUES(1,'PRUEBA DB');");
@@ -98,6 +99,11 @@ public class MainActivity extends NavigationBaseActivity
 //        }
 //
 //        sqLiteDatabase.close();
+=======
+        sqLiteDatabase.execSQL("CREATE TABLE ads(id INTEGER, name TEXT)");
+        sqLiteDatabase.execSQL("INSERT INTO contacts VALUES('1','PRUEBA DB');");
+        sqLiteDatabase.execSQL("INSERT INTO contacts VALUES('1','PRUEBA DB');");
+>>>>>>> Stashed changes
 
         // Put on session
         UserData user = UserData.prefsFetch(this);
