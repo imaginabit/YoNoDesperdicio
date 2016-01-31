@@ -50,7 +50,11 @@ public class Constants {
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;
 
+<<<<<<< Updated upstream
     public static final String PACKAGE_NAME_BASE = "com.imaginabit.yonodesperdicion";
+=======
+    public static final String PACKAGE_NAME_BASE = "com.imaginabit.yonodesperdicio";
+>>>>>>> Stashed changes
     public static final String PACKAGE_NAME = PACKAGE_NAME_BASE + ".locationaddress";
     public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
     public static final String RESULT_DATA_KEY = PACKAGE_NAME +
