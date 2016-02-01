@@ -39,8 +39,12 @@ public final class AdsContract {
     private static final String PATH_ADS = "ads";
     public static final Uri URI_TABLE = Uri.parse(BASE_CONTENT_URI.toString() + "/" + PATH_ADS );
 
+    private static final String PATH_FAVORITES = "favorites";
+    public static final Uri URI_TABLE_FAVORITES = Uri.parse(BASE_CONTENT_URI.toString() + "/" + PATH_FAVORITES );
+
     public static final String[] TOP_LEVEL_PATHS = {
-            PATH_ADS
+            PATH_ADS,
+            PATH_FAVORITES
     };
 
     public static class Ads implements AdsColumns, BaseColumns{
@@ -56,6 +60,31 @@ public final class AdsContract {
         }
 
         public static String getAdId(Uri uri){
+            return uri.getPathSegments().get(1);
+        }
+    }
+
+
+    ///---------------Favs
+
+
+    public interface FavoritesColumns{
+        String FAV_ID = "_id";
+        String FAV_AD_ID = "ad_id";
+    }
+
+    public static class Favorites implements FavoritesColumns, BaseColumns{
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendEncodedPath(PATH_FAVORITES).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + CONTENT_AUTHORITY + ".favorites";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd." + CONTENT_AUTHORITY + ".favorites";
+
+        public static Uri buildFavoriteUri(String favId){
+            return CONTENT_URI.buildUpon().appendEncodedPath(favId).build();
+        }
+
+        public static String getFavoriteId(Uri uri){
             return uri.getPathSegments().get(1);
         }
     }

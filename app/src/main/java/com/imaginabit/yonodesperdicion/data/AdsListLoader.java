@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by fer2015julio on 2/09/15.
+ *
  */
 public class AdsListLoader extends AsyncTaskLoader<List<Ad>> {
     private static final String LOG_TAG = AdsListLoader.class.getSimpleName();

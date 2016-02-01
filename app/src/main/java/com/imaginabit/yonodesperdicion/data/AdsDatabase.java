@@ -13,7 +13,7 @@ import android.provider.BaseColumns;
 public class AdsDatabase extends SQLiteOpenHelper {
     private static final String TAG = AdsDatabase.class.getSimpleName();
     private static final String DATABASE_NAME = "yonodesperdicio.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private final Context mContext;
 
     interface Tables{
@@ -47,13 +47,13 @@ public class AdsDatabase extends SQLiteOpenHelper {
                         + AdsContract.AdsColumns.AD_IMAGE_FILENAME + " TEXT NOT NULL,"
                         + AdsContract.AdsColumns.AD_STATUS + " Integer NOT NULL,"
                         + AdsContract.AdsColumns.AD_TYPE + " INTEGER NOT NULL,"
-                        + AdsContract.AdsColumns.AD_FAVORITE + " BOOL NOT NULL"
+                        + AdsContract.AdsColumns.AD_FAVORITE + " BOOL NOT NULL,"
                         + AdsContract.AdsColumns.AD_USER_ID + " Integer,"
                         + AdsContract.AdsColumns.AD_LOCATIONS + " Integer,"
                         + AdsContract.AdsColumns.AD_EXPIRATION + " TEXT NOT NULL,"
                         + AdsContract.AdsColumns.AD_WEIGHT_GRAMS + " Integer NOT NULL,"
                         + AdsContract.AdsColumns.AD_POSTAL_CODE + " Integer NOT NULL,"
-                        + AdsContract.AdsColumns.AD_CATEGORIA + " Integer NOT NULL,"
+                        + AdsContract.AdsColumns.AD_CATEGORIA + " Integer NOT NULL"
                         + ")"
         );
 
@@ -68,7 +68,12 @@ public class AdsDatabase extends SQLiteOpenHelper {
 //                        + ")"
 //        );
 
-        //crear tabla favoritos ?
+        //crear tabla favoritos
+        db.execSQL("CREATE TABLE " + Tables.FAVORITES + " ("
+                        + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + AdsContract.FavoritesColumns.FAV_AD_ID + " INTEGER NOT NULL"
+                        + ")"
+        );
         //crear tabla usuarios ?
     }
     
@@ -76,13 +81,19 @@ public class AdsDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         int version = oldVersion;
-//        if (version == 1){
-//            //add fields
-//            version = 2;
-//        }
+        if (version == 1){
+            //add fields
+            db.execSQL("CREATE TABLE " + Tables.FAVORITES + " ("
+                            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                            + AdsContract.FavoritesColumns.FAV_AD_ID + " INTEGER NOT NULL,"
+                            + ")"
+            );
+            version = 2;
+        }
 
         if (version != DATABASE_VERSION){
             db.execSQL("DROP TABLE IF EXISTS " + Tables.ADS );
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.FAVORITES );
             onCreate(db);
         }
 

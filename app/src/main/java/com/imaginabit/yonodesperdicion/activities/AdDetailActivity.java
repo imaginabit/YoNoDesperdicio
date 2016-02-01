@@ -1,7 +1,10 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.Conversation;
@@ -51,11 +55,12 @@ public class AdDetailActivity extends NavigationBaseActivity {
         // Retrieve args
         Bundle data = getIntent().getExtras();
         final Ad ad = (Ad) data.getParcelable("ad");
-        mAd = ad;
-        if (ad == null) {
 
+        if (ad == null) {
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
         } else {
+            mAd = ad;
+            Log.d(TAG, "onCreate: mAd = " +mAd.getId() );
             // Fix action bar and drawer
             Toolbar toolbar = setSupportedActionBar();
             //toolbar.setTitle(ad.getTitle());
@@ -124,27 +129,32 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 }
             });
 
-            if ( ad!= null ) {
-                //actualy geting user info in ads api
-                Log.d(TAG, "onCreate: Ad id :" + ad.getId());
 
-                AdUtils.fetchAd(ad.getId(), new AdUtils.FetchAdCallback() {
+            //actualy geting user info in ads api
+            Log.d(TAG, "onCreate: Ad id :" + ad.getId());
+
+            AdUtils.fetchAd(ad.getId(), new AdUtils.FetchAdCallback() {
                     @Override
                     public void done(Ad ad, User user, Exception e) {
-                        mAd = ad;
-                        TextView userName = (TextView) findViewById(R.id.user_name);
-                        userName.setText(user.getUserName());
-                        TextView userLocation = (TextView) findViewById(R.id.user_location);
-                        userLocation.setText(user.getZipCode());
+                        Log.d(TAG, "done() called with: " + "ad = [" + ad + "], user = [" + user + "], e = [" + e + "]");
+                        if ( ad != null ) {
+                            mAd = ad;
+                            TextView userName = (TextView) findViewById(R.id.user_name);
+                            userName.setText(user.getUserName());
+                            TextView userLocation = (TextView) findViewById(R.id.user_location);
+                            userLocation.setText(user.getZipCode());
 
-                        RatingBar userRatting = (RatingBar) findViewById(R.id.user_ratting);
-                        userRatting.setRating(user.getRatting());
+                            RatingBar userRatting = (RatingBar) findViewById(R.id.user_ratting);
+                            userRatting.setRating(user.getRatting());
 
-                        TextView userWeight = (TextView) findViewById(R.id.user_weight);
-                        userWeight.setText(Utils.gramsToKgStr( user.getGrams()) );
+                            TextView userWeight = (TextView) findViewById(R.id.user_weight);
+                            userWeight.setText(Utils.gramsToKgStr(user.getGrams()));
+                            Log.d(TAG, "done: mad: " + mAd.getId());
+                        } else {
+                            Log.d(TAG, "AdUtils.fetchAd_done return null ad");
+                        }
                     }
-                });
-            }
+            });
 
 
 
@@ -262,7 +272,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate( R.menu.ad , menu);
+        getMenuInflater().inflate(R.menu.ad, menu);
         return true;
     }
 
@@ -271,13 +281,28 @@ public class AdDetailActivity extends NavigationBaseActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        ContentResolver contentResolver;
+        ContentValues values= new ContentValues();
+        contentResolver = getContentResolver();
+
         int id = item.getItemId();
         if (id == R.id.action_favorite ) {
             Toast.makeText(AdDetailActivity.this, "pulsado añadir a favoritos", Toast.LENGTH_SHORT).show();
+            if (mAd != null) {
+                Log.d(TAG, "onOptionsItemSelected: mAd "+ mAd.getId() );
+                values.put(AdsContract.FavoritesColumns.FAV_AD_ID, mAd.getId());
+
+                Uri returned = contentResolver.insert(AdsContract.URI_TABLE_FAVORITES, values);
+                Log.d(TAG, "onOptionsItemSelected: Record Id returned is " + returned.toString());
+            }
+//            Intent intent = new Intent(AdDetailActivity.this,MainActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            startActivity(intent);
+//            finish();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }
