@@ -24,12 +24,16 @@ public class AdsProvider extends ContentProvider {
 
     private static final int ADS = 100;
     private static final int ADS_ID = 101;
+    private static final int FAVORITES = 200;
+    private static final int FAVORITES_ID = 201;
 
     private static UriMatcher buildUriMatcher(){
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = AdsContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, "ads", ADS);
         matcher.addURI(authority, "ads/*", ADS_ID );
+        matcher.addURI(authority, "favorites", FAVORITES);
+        matcher.addURI(authority, "favorites/*", FAVORITES_ID );
 
         return matcher;
     }
@@ -39,8 +43,6 @@ public class AdsProvider extends ContentProvider {
         mOpenHelper = new AdsDatabase(getContext());
         return false;
     }
-
-
 
     private void deleteDatabase(){
         mOpenHelper.close();
@@ -56,6 +58,10 @@ public class AdsProvider extends ContentProvider {
                 return AdsContract.Ads.CONTENT_TYPE;
             case ADS_ID:
                 return AdsContract.Ads.CONTENT_ITEM_TYPE;
+            case FAVORITES:
+                return AdsContract.Favorites.CONTENT_TYPE;
+            case FAVORITES_ID:
+                return AdsContract.Favorites.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unkown Uri: "+ uri);
         }
@@ -68,6 +74,7 @@ public class AdsProvider extends ContentProvider {
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(AdsDatabase.Tables.ADS);
+        String id;
 
         switch (match){
             case ADS:
@@ -76,7 +83,16 @@ public class AdsProvider extends ContentProvider {
                 break;
             case ADS_ID:
                 // Get one Ad
-                String id = AdsContract.Ads.getAdId(uri);
+                id = AdsContract.Ads.getAdId(uri);
+                queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
+                break;
+            case FAVORITES:
+                // get all
+                // do nothing
+                break;
+            case FAVORITES_ID:
+                // Get one
+                id = AdsContract.Favorites.getFavoriteId(uri);
                 queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
                 break;
             default:
@@ -106,11 +122,16 @@ public class AdsProvider extends ContentProvider {
 
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
+        long recordId;
 
         switch (match){
             case ADS:
                 // get all ads
-                long recordId = db.insertOrThrow(AdsDatabase.Tables.ADS, null, values);
+                recordId = db.insertOrThrow(AdsDatabase.Tables.ADS, null, values);
+                return AdsContract.Ads.buildAdUri(String.valueOf(recordId));
+            case FAVORITES:
+                // get all ads
+                recordId = db.insertOrThrow(AdsDatabase.Tables.FAVORITES, null, values);
                 return AdsContract.Ads.buildAdUri(String.valueOf(recordId));
             default:
                 throw new IllegalArgumentException("Unkown Uri");
@@ -125,23 +146,35 @@ public class AdsProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
 
+        String id;
         String selectionCriteria = selection;
+        int updateCount = 0;
         switch (match){
             case ADS:
                 // get all ads
                 // do nothing, prevent update all records if not id provide
                 break;
             case ADS_ID:
-                String id = AdsContract.Ads.getAdId(uri);
+                id = AdsContract.Ads.getAdId(uri);
                 selectionCriteria = BaseColumns._ID + "=" + id
                         + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
+                updateCount = db.update(AdsDatabase.Tables.ADS, values, selectionCriteria, selectionArgs);
+                break;
+            case FAVORITES:
+                // get all ads
+                // do nothing, prevent update all records if not id provide
+                break;
+            case FAVORITES_ID:
+                id = AdsContract.Ads.getAdId(uri);
+                selectionCriteria = BaseColumns._ID + "=" + id
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
+                updateCount = db.update(AdsDatabase.Tables.FAVORITES, values, selectionCriteria, selectionArgs);
                 break;
 
             default:
                 throw new IllegalArgumentException("Unkown Uri");
         }
 
-        int updateCount = db.update(AdsDatabase.Tables.ADS, values, selectionCriteria, selectionArgs);
         return updateCount;
     }
 
@@ -157,12 +190,20 @@ public class AdsProvider extends ContentProvider {
 
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
+        String id;
+        String selectionCriteria;
         switch (match){
             case ADS_ID:
-                String id = AdsContract.Ads.getAdId(uri);
-                String selectionCriteria = BaseColumns._ID + "=" + id
+                id = AdsContract.Ads.getAdId(uri);
+                selectionCriteria = BaseColumns._ID + "=" + id
                         + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
                 return db.delete(AdsDatabase.Tables.ADS, selectionCriteria, selectionArgs);
+
+            case FAVORITES_ID:
+                id = AdsContract.Favorites.getFavoriteId(uri);
+                selectionCriteria = BaseColumns._ID + "=" + id
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
+                return db.delete(AdsDatabase.Tables.FAVORITES, selectionCriteria, selectionArgs);
 
             default:
                 throw new IllegalArgumentException("Unkown Uri");
