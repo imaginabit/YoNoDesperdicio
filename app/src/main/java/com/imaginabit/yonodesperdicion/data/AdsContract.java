@@ -87,6 +87,9 @@ public final class AdsContract {
         public static String getFavoriteId(Uri uri){
             return uri.getPathSegments().get(1);
         }
+        public static String getAdId(Uri uri){
+            return uri.getPathSegments().get(2);
+        }
     }
 }
 
