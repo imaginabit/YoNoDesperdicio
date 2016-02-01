@@ -44,6 +44,7 @@ public class Constants {
 
     public static java.text.DateFormat DATE_JSON_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
     public static java.text.DateFormat DATE_LOCAL_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    public static java.text.DateFormat DATE_JSON_SORT_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 
     //GPS SERVICE

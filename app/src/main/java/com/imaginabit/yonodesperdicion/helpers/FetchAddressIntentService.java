@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * Service to get localization of the device
  * Created by Fernando Ramírez on 27/01/16.
  */
 public class FetchAddressIntentService extends IntentService {

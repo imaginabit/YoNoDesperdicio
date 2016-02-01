@@ -134,10 +134,10 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             }
 
         }
-//        else if (id == R.id.nav_favoritos) {
-//            Intent itntFav = new Intent(context, AdDetailActivity.class);
-//            startActivity(itntFav);
-//        }
+        else if (id == R.id.nav_favoritos) {
+            Intent itntFav = new Intent(context, FavoritesActivity.class);
+            startActivity(itntFav);
+        }
         else if (id == R.id.nav_mensajes) {
             // TODO: quitar pruebas
             // he puesto ver el formulaciro de crear el anuncio aqui como prueba
@@ -152,11 +152,11 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             startActivity( itntInfo );
 
         }
-//        else if (id == R.id.nav_ajustes) {
+        else if (id == R.id.nav_ajustes) {
             //cargar ajustes
-//            Intent itntSettings = new Intent(context, SettingsActivity.class);
-//            startActivity( itntSettings );
-//        }
+            Intent itntSettings = new Intent(context, SettingsActivity.class);
+            startActivity( itntSettings );
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

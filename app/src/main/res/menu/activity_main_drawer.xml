@@ -6,12 +6,10 @@
             android:id="@+id/nav_anuncios"
             android:icon="@drawable/ic_store_black"
             android:title="Anuncios"/>
-        <!--
         <item
             android:id="@+id/nav_favoritos"
             android:icon="@drawable/ic_favorite_black"
             android:title="Favoritos"/>
-        -->
         <item
             android:id="@+id/nav_perfil"
             android:icon="@drawable/ic_face_black"
@@ -24,12 +22,10 @@
             android:id="@+id/nav_masinfo"
             android:icon="@drawable/ic_info_outline_black"
             android:title="Más Info"/>
-        <!--
         <item
             android:id="@+id/nav_ajustes"
             android:icon="@drawable/ic_settings_black"
             android:title="Ajustes"/>
-        -->
     </group>
 
    <!--

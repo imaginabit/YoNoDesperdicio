@@ -26,6 +26,7 @@ public class AdsProvider extends ContentProvider {
     private static final int ADS_ID = 101;
     private static final int FAVORITES = 200;
     private static final int FAVORITES_ID = 201;
+    private static final int FAVORITES_AD_ID = 202;
 
     private static UriMatcher buildUriMatcher(){
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -33,7 +34,9 @@ public class AdsProvider extends ContentProvider {
         matcher.addURI(authority, "ads", ADS);
         matcher.addURI(authority, "ads/*", ADS_ID );
         matcher.addURI(authority, "favorites", FAVORITES);
+        matcher.addURI(authority, "favorites/ad/*", FAVORITES_AD_ID );// like routes in rails you need this before
         matcher.addURI(authority, "favorites/*", FAVORITES_ID );
+
 
         return matcher;
     }
@@ -73,25 +76,28 @@ public class AdsProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(AdsDatabase.Tables.ADS);
+
         String id;
 
         switch (match){
             case ADS:
+                queryBuilder.setTables(AdsDatabase.Tables.ADS);
                 // get all ads
                 // do nothing
                 break;
             case ADS_ID:
                 // Get one Ad
+                queryBuilder.setTables(AdsDatabase.Tables.ADS);
                 id = AdsContract.Ads.getAdId(uri);
                 queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
                 break;
             case FAVORITES:
                 // get all
-                // do nothing
+                queryBuilder.setTables(AdsDatabase.Tables.FAVORITES);
                 break;
             case FAVORITES_ID:
                 // Get one
+                queryBuilder.setTables(AdsDatabase.Tables.FAVORITES);
                 id = AdsContract.Favorites.getFavoriteId(uri);
                 queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
                 break;
@@ -165,8 +171,14 @@ public class AdsProvider extends ContentProvider {
                 // do nothing, prevent update all records if not id provide
                 break;
             case FAVORITES_ID:
-                id = AdsContract.Ads.getAdId(uri);
+                id = AdsContract.Favorites.getFavoriteId(uri);
                 selectionCriteria = BaseColumns._ID + "=" + id
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
+                updateCount = db.update(AdsDatabase.Tables.FAVORITES, values, selectionCriteria, selectionArgs);
+                break;
+            case FAVORITES_AD_ID:
+                id = AdsContract.Ads.getAdId(uri);
+                selectionCriteria = AdsContract.FavoritesColumns.FAV_AD_ID + "=" + id
                         + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
                 updateCount = db.update(AdsDatabase.Tables.FAVORITES, values, selectionCriteria, selectionArgs);
                 break;
@@ -199,10 +211,21 @@ public class AdsProvider extends ContentProvider {
                         + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
                 return db.delete(AdsDatabase.Tables.ADS, selectionCriteria, selectionArgs);
 
+            case FAVORITES:
+                return db.delete(AdsDatabase.Tables.FAVORITES,"",selectionArgs);
+
             case FAVORITES_ID:
                 id = AdsContract.Favorites.getFavoriteId(uri);
                 selectionCriteria = BaseColumns._ID + "=" + id
                         + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
+                return db.delete(AdsDatabase.Tables.FAVORITES, selectionCriteria, selectionArgs);
+
+            case FAVORITES_AD_ID:
+                id = AdsContract.Favorites.getAdId(uri);
+                selectionCriteria = AdsContract.FavoritesColumns.FAV_AD_ID + "=" + id
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
+                Log.d(TAG, "delete: selectionCriteria "+ selectionCriteria + " args " + selectionArgs );
+                Log.d(TAG, "delete: selectionargs " + selectionArgs );
                 return db.delete(AdsDatabase.Tables.FAVORITES, selectionCriteria, selectionArgs);
 
             default:

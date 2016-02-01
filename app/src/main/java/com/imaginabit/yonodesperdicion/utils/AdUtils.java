@@ -180,6 +180,32 @@ public class AdUtils {
         List<Ad> ads = new ArrayList<>();
         Exception e = null;
 
+        Ad item;
+
+        for (int i = 0; i < jsonItems.length(); i++) {
+            JSONObject jsonItem = null;
+            try {
+                jsonItem = jsonItems.getJSONObject(i);
+            } catch (JSONException e1) {
+                e = e1;
+            }
+
+            try {
+                Ad ad = createAd(jsonItem);
+                if (ad != null) ads.add(ad);
+            } catch ( Exception e1 ){
+                e = e1;
+            }
+        }
+        Log.d(TAG, "createAdList: FIN");
+        return new ResultAds(ads,e);
+    }
+
+    private static Ad createAd(JSONObject jsondata){
+        Log.d(TAG, "createAd() called with: " + "jsondata = [" + jsondata + "]");
+
+        Ad ad;
+
         String categoria;
         String zipcode;
         int ad_id;
@@ -192,52 +218,40 @@ public class AdUtils {
         int user_id;
         String pick_up_date;
 
-        Ad item;
+        ad_id = jsondata.optInt("id", 0);
+        title = jsondata.optString("title", "");
+        category = jsondata.optString("food_category", "");
+        image_url = jsondata.optString("image", "");
+        body = jsondata.optString("body", "");
+        status = jsondata.optInt("status", 0);
+        grams = jsondata.optInt("grams", 0);
+        user_id = jsondata.optInt("user_id", 0);
+        pick_up_date = jsondata.optString("pick_up_date", "");
+        zipcode = jsondata.optString("zipcode", "");
+        categoria = jsondata.optString("food_category", "");
 
-        for (int i = 0; i < jsonItems.length(); i++) {
-            JSONObject jsonItem = null;
-            try {
-                jsonItem = jsonItems.getJSONObject(i);
-            } catch (JSONException e1) {
-                e = e1;
+        try {
+            //status 3 => producto entregado
+            if ( Utils.isNotEmptyOrNull(title)
+                    && status != 3
+                    && (pick_up_date==null || !Utils.isExpired(Constants.DATE_JSON_SORT_FORMAT.parse(pick_up_date) ) )
+                    ) {
+                //Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName)
+                ad = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
+                ad.setLocation(calculateLocation(ad));
+                ad.setLastDistance(calculateDistance(ad));
+                ad.setCategoria(categoria);
+
+                return ad;
+            }else {
+                return null;
             }
-
-            // title, id, category, image_url, introduction
-            //long idea_id = jsonItem.optLong("id", 0L);
-            ad_id = jsonItem.optInt("id", 0);
-            title = jsonItem.optString("title", "");
-            category = jsonItem.optString("food_category", "");
-            image_url = jsonItem.optString("image", "");
-            body = jsonItem.optString("body", "");
-            status = jsonItem.optInt("status", 0);
-            grams = jsonItem.optInt("grams", 0);
-            user_id = jsonItem.optInt("user_id", 0);
-            pick_up_date = jsonItem.optString("pick_up_date", "");
-            zipcode = jsonItem.optString("zipcode", "");
-            categoria = jsonItem.optString("food_category", "");
-
-            Log.v(TAG, "add ad " + jsonItem.toString()  );
-            Log.v(TAG, "add Ad id:" + ad_id + " title:" + title + " cat:" + category + " image:" + image_url + " ");
-            Log.v(TAG, "add Ad id:" + ad_id + " intro: " + zipcode.toString());
-
-            try {
-                //status 3 => producto entregado
-                if ( Utils.isNotEmptyOrNull(title) && status != 3 ) {
-                    //Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName)
-                    item = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
-                    item.setLocation( calculateLocation(item));
-                    item.setLastDistance( calculateDistance(item) );
-                    item.setCategoria(categoria);
-                    ads.add(item);
-                }
-            } catch ( Exception e1 ){
-                e = e1;
-            }
+        } catch ( Exception e1 ){
+            e1.printStackTrace();
+            return null;
         }
-        Log.d(TAG, "createAdList: FIN");
-        return new ResultAds(ads,e);
-
     }
+
 
     public static Location calculateLocation(Ad ad){
         Log.d(TAG, "calculateLocation() called with: " + "ad = [" + ad.getTitle() + "]");
@@ -404,11 +418,11 @@ public class AdUtils {
         public void done(Ad ad,User user, Exception e);
     }
 
-
     public static void fetchAd(final int adId, final FetchAdCallback callback ){
         final String TAG= AdUtils.TAG + " fetchAds";
         AsyncTask<Void, Void, Void> fetchAdTask = new AsyncTask<Void, Void, Void>() {
             JSONObject jObj = null;
+            JSONObject jsonData = null;
             private Ad ad = null;
             private User user = null;
             private Exception e = null;
@@ -435,7 +449,13 @@ public class AdUtils {
                 }
 
                 if (jObj.has("ad")){
-                    //
+                    try {
+                        jsonData = jObj.getJSONObject("ad");
+                        ad = createAd(jsonData);
+                    } catch (JSONException e) {
+                        this.e = e;
+                        //e2.printStackTrace();
+                    }
                 }
                 if (jObj.has("users")){
                     JSONArray users = null;
@@ -452,11 +472,6 @@ public class AdUtils {
                         this.e = e1;
                         //e1.printStackTrace();
                     }
-//                    "id": 5,
-//                    "username": "anita2",
-//                    "zipcode": "28903",
-//                    "total_quantity": 500,
-//                    "rating": 3,
                     int userId = userJson.optInt("id") ;
                     String userName = userJson.optString("username","");
                     String zip = userJson.optString("zipcode", "");

@@ -19,19 +19,23 @@
     <string name="edit_ad_title">edit_ad_title</string>
     <string name="search_ad_title">search_ad_title</string>
     <string name="user_name">Nombre de usuario</string>
+
     <string name="title_activity_base">Base</string>
+    <string name="title_activity_settigns">Ajustes</string>
+    <string name="title_activity_intro">Intro</string>
+    <string name="title_activity_maps">Map;</string>
+    <string name="title_activity_messages">Mensajes</string>
+    <string name="title_activity_messages_chat">Chat</string>
+    <string name="title_activity_favorites">Favoritos</string>
 
     <string name="cheese_ipsum">Jarlsberg lancashire edam. Dolcelatte hard cheese brie st. agur blue
     cheese caerphilly bavarian bergkase cheese and biscuits mascarpone. Cheeseburger swiss bavarian
     bergkase cream cheese fromage frais cheesy feet port-salut airedale. St. agur blue cheese rubber
     cheese caerphilly cheddar cheesecake cream cheese manchego lancashire. Roquefort squirty cheese
     the big cheese.</string>
-    <string name="title_activity_settigns">Settigns</string>
-    <string name="title_activity_intro">intro</string>
+
     <string name="save_fav">Guardar como favorito</string>
     <string name="texto_caritas">texto ramdom intetne añadir caras unicode pero no</string>
-
-    <string name="title_activity_maps">Map</string>
 
     <string name="edit_location">Editar ubicación</string>
     <string name="edit_wallpic">Cambiar foto de portada</string>
@@ -85,14 +89,14 @@
     <string name="volley_error_timeout">Agotado el tiempo de conexión con el backend.</string>
     <string name="volley_error_no_internet">No hay conexión a Internet.</string>
     <string name="volley_error_generic">No se ha podido completar con éxito la petición.</string>
-    <string name="title_activity_messages">Mensajes</string>
-    <string name="title_activity_messages_chat">Chat</string>
-
 
     <string name="chat_input_hint">Escribe aqui tu mensaje</string>
     <string name="menu_refresh">Actualizar</string>
     <string name="menu_order_distance">Ordenar por distancia</string>
     <string name="menu_force_update_gps">Actualizar mi ubicación</string>
+    <string name="menu_delete_all_favorites">Borrar todos</string>
+
+    <string name="delete_all_favorites_message">Esta seguro de querer borrar los favoritos</string>
 
 
     <!-- Fecth Address Intent Service Strings-->
@@ -102,8 +106,5 @@
     <string name="no_address_found">No se encontro localizacion</string>
     <string name="address_found">Encontrada localizacion</string>
     <string name="no_geocoder_available">geocoder no disponible</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

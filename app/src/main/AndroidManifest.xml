@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.imaginabit.yonodesperdicion"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/> -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Include following permission if you load images from Internet -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- Include following permission if you want to cache images on SD card -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <permission android:name="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
+
     <uses-permission android:name="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
-    
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
-        android:required="false"/>
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false"/>
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -41,31 +42,31 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"/>
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activities.CreateUserActivity"
             android:label="Crea tu cuenta"
             android:theme="@style/AppTheme.CreateUser"
-            android:windowSoftInputMode="stateVisible|adjustResize"/>
+            android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".activities.LoginUserActivity"
             android:label="Inicia sesión"
             android:theme="@style/AppTheme.CreateUser"
-            android:windowSoftInputMode="stateVisible|adjustResize"/>
+            android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".activities.LoginPanelActivity"
-            android:theme="@style/AppTheme.CreateUser"/>
+            android:theme="@style/AppTheme.CreateUser" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settigns"
@@ -73,42 +74,40 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity"/>
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.AdDetailActivity"
             android:label="Anuncio Titulo"
             android:parentActivityName=".activities.MainActivity" />
-
         <activity
             android:name=".activities.ProfileActivity"
             android:label=""
-            android:parentActivityName=".activities.MainActivity"
-            >
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity"/>
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.AdCreateActivity"
             android:label="Nuevo Anuncio"
-            android:parentActivityName=".activities.MainActivity"/>
+            android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.AdEditActivity"
             android:label="Editar Anuncio"
-            android:parentActivityName=".activities.AdDetailActivity"/>
-        <activity android:name=".activities.MoreInfoActivity"/>
+            android:parentActivityName=".activities.AdDetailActivity" />
+        <activity android:name=".activities.MoreInfoActivity" />
         <activity
             android:name=".activities.GoogleSignInActivity"
             android:label="CONTINUAR CON GOOGLE"
-            android:theme="@style/ThemeOverlay.NoTitleActivity"/>
+            android:theme="@style/ThemeOverlay.NoTitleActivity" />
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
         -->
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".activities.MessagesActivity"
@@ -116,7 +115,7 @@
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.imaginabit.yonodesperdicion.activities.MainActivity"/>
+                android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.MessagesChatActivity"
@@ -125,20 +124,29 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.imaginabit.yonodesperdicion.activities.MessagesActivity"/>
+                android:value="com.imaginabit.yonodesperdicion.activities.MessagesActivity" />
         </activity>
+
         <service
             android:name=".helpers.FetchAddressIntentService"
-            android:exported="false"/>
-        
+            android:exported="false" />
+
         <provider
+            android:name=".data.AdsProvider"
             android:authorities="com.imaginabit.yonodesperdicion.ads.provider"
-            android:name="com.imaginabit.yonodesperdicion.data.AdsProvider"
             android:exported="true"
             android:readPermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE"
-            android:writePermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE"
-            />
+            android:writePermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
 
+        <activity
+            android:name=".activities.FavoritesActivity"
+            android:label="@string/title_activity_favorites"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

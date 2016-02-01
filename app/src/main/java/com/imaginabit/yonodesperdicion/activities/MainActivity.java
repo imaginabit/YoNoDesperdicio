@@ -287,7 +287,6 @@ public class MainActivity extends NavigationBaseActivity
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
             // Check if user triggered a refresh:
             case R.id.menu_refresh:
                 Log.i(TAG, "Refresh menu item selected");
@@ -310,10 +309,8 @@ public class MainActivity extends NavigationBaseActivity
                 getAdsFromWeb();
                 return true;
         }
-
         // User didn't trigger a refresh, let the superclass handle this action
         return super.onOptionsItemSelected(item);
-
     }
 
     @Override
