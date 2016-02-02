@@ -1,7 +1,12 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -21,6 +26,7 @@ import android.widget.Toast;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.Conversation;
@@ -39,23 +45,48 @@ import java.util.List;
 public class AdDetailActivity extends NavigationBaseActivity {
     String TAG = "AdDetailActivity";
     Ad mAd;
+    boolean isFavorite;
 
     SharedPreferences.Editor prefsEdit = PrefsUtils.getSharedPreferencesEditor(context);
+    ContentResolver contentResolver;
+    ContentValues values;
 
+    String[] projection;
+    String selectionClause;
+    String[] selectionArgs;
+    String emptyWhere = "";
+    String[] emptyArgs = {};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ad_content);
+        contentResolver = getContentResolver();
+        values = new ContentValues();
 
         // Retrieve args
         Bundle data = getIntent().getExtras();
         final Ad ad = (Ad) data.getParcelable("ad");
-        mAd = ad;
-        if (ad == null) {
+        isFavorite = false;
 
+        if (ad == null) {
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
         } else {
+            mAd = ad;
+
+            projection = new String[]{AdsContract.FavoritesColumns.FAV_AD_ID};
+            selectionClause = AdsContract.FavoritesColumns.FAV_AD_ID + " = ?";
+            selectionArgs = new String[]{Integer.toString(mAd.getId())};
+
+            Cursor returned = contentResolver.query(AdsContract.URI_TABLE_FAVORITES,projection, selectionClause, selectionArgs, "");
+            Log.d(TAG, "onCreate: returned cursor " + returned);
+            Log.d(TAG, "onCreate: returned cursor " + returned.getCount());
+
+            if (returned.getCount()>0) {
+                isFavorite = true;
+            }
+
+            Log.d(TAG, "onCreate: mAd = " +mAd.getId() );
             // Fix action bar and drawer
             Toolbar toolbar = setSupportedActionBar();
             //toolbar.setTitle(ad.getTitle());
@@ -64,7 +95,6 @@ public class AdDetailActivity extends NavigationBaseActivity {
             VolleySingleton.init(this);
 
             // Content
-
             TextView bodyView = (TextView) findViewById(R.id.ad_body);
             bodyView.setText(ad.getBody());
 
@@ -94,7 +124,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             categoriaText.setText(ad.getCategoria());
 
 
-            Log.d(TAG, "onCreate: "+  ad.getStatusStr() + ad.getStatusColor()  );
+            Log.d(TAG, "onCreate: " + ad.getStatusStr() + ad.getStatusColor());
 
             if ( ad.getStatusStr()=="entregado" ) {
                 TableRow row = (TableRow) findViewById(R.id.row_status);
@@ -124,13 +154,15 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 }
             });
 
-            if ( ad!= null ) {
-                //actualy geting user info in ads api
-                Log.d(TAG, "onCreate: Ad id :" + ad.getId());
 
-                AdUtils.fetchAd(ad.getId(), new AdUtils.FetchAdCallback() {
-                    @Override
-                    public void done(Ad ad, User user, Exception e) {
+            //actualy geting user info in ads api
+            Log.d(TAG, "onCreate: Ad id :" + ad.getId());
+
+            AdUtils.fetchAd(ad.getId(), new AdUtils.FetchAdCallback() {
+                @Override
+                public void done(Ad ad, User user, Exception e) {
+                    Log.d(TAG, "done() called with: " + "ad = [" + ad + "], user = [" + user + "], e = [" + e + "]");
+                    if (ad != null) {
                         mAd = ad;
                         TextView userName = (TextView) findViewById(R.id.user_name);
                         userName.setText(user.getUserName());
@@ -141,10 +173,13 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         userRatting.setRating(user.getRatting());
 
                         TextView userWeight = (TextView) findViewById(R.id.user_weight);
-                        userWeight.setText(Utils.gramsToKgStr( user.getGrams()) );
+                        userWeight.setText(Utils.gramsToKgStr(user.getGrams()));
+                        Log.d(TAG, "done: mad: " + mAd.getId());
+                    } else {
+                        Log.d(TAG, "AdUtils.fetchAd_done return null ad");
                     }
-                });
-            }
+                }
+            });
 
 
 
@@ -262,7 +297,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate( R.menu.ad , menu);
+        getMenuInflater().inflate(R.menu.ad, menu);
         return true;
     }
 
@@ -271,13 +306,60 @@ public class AdDetailActivity extends NavigationBaseActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
         if (id == R.id.action_favorite ) {
-            Toast.makeText(AdDetailActivity.this, "pulsado añadir a favoritos", Toast.LENGTH_SHORT).show();
+            if (mAd != null) {
+                Log.d(TAG, "onOptionsItemSelected: mAd " + mAd.getId());
+                if (!isFavorite){
+                    values.put(AdsContract.FavoritesColumns.FAV_AD_ID, mAd.getId());
+                    Uri returned = contentResolver.insert(AdsContract.URI_TABLE_FAVORITES, values);
+                    Log.d(TAG, "onOptionsItemSelected: Record Id returned is " + returned.toString());
+                    isFavorite = true;
+
+                    Toast.makeText(AdDetailActivity.this, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "onOptionsItemSelected: is favorited and going to remove it ");
+//                    String where = AdsContract.FavoritesColumns.FAV_AD_ID + " = ?";
+
+                    Uri favorited_ad = Uri.parse(AdsContract.URI_TABLE_FAVORITES +"/ad/" + mAd.getId());
+                    Log.d(TAG, "onOptionsItemSelected: favorited ad id uri= " + favorited_ad );
+
+                    int deleteReturned = contentResolver.delete(favorited_ad, emptyWhere, emptyArgs);
+
+                    if (deleteReturned>0) {
+                        Toast.makeText(AdDetailActivity.this, "Eliminado de favoritos", Toast.LENGTH_SHORT).show();
+                        isFavorite = false;
+                    }
+                }
+                invalidateOptionsMenu();
+            }
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu() called with: " + "menu = [" + menu + "]");
 
+        if(isFavorite){
+            menu.getItem(0).setIcon(R.drawable.ic_favorite_white);
+//            add icon on runtime
+            MenuItem mi = menu.add("Favorito");
+//            mi.setIcon(R.drawable.zanahoria);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                mi.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            }
+//            isFavorite = false;
+            }
+        else{
+            menu.getItem(0).setIcon(R.drawable.ic_favorite_border);
+//            isFavorite = true;
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+
+    }
 }

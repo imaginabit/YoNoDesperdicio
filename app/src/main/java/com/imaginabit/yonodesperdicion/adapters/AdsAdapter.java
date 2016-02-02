@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Parcelable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +31,7 @@ import java.util.List;
 public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
 
     private static final String TAG = "AdsAdapter";
-    //private static final String TAG = AdsAdapter.class.getSimpleName();
+    private static FragmentManager sFragmentManager;
 
     private List<Ad> adsList = new ArrayList<Ad>();
     private Context context;
@@ -69,6 +70,13 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
 
         this.context = context;
         this.adsList = adsList;
+    }
+
+    // contructor to use with framents
+    public AdsAdapter(Context context, FragmentManager fragmentManager) {
+        //mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.context = context;
+        sFragmentManager = fragmentManager;
     }
 
     // Create new views (invoked by the layout manager)
@@ -144,6 +152,20 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
             return adsList.size();
         }
         return 0;
+    }
+
+    /**
+     * Set Ads to adapter
+     * @param ads Ad list
+     */
+    public void setData(List<Ad> ads) {
+        adsList.clear();
+
+        if (ads != null) {
+            for (Ad ad : ads) {
+                adsList.add(ad);
+            }
+        }
     }
 
 
