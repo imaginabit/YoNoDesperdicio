@@ -1,11 +1,13 @@
 package com.imaginabit.yonodesperdicion.models;
 
+import android.util.Log;
+
 /**
  * Created by Fernando on 29/11/15.
  * User Model
  */
 public class User {
-
+    private static final String TAG = "User Model";
 
     private int mUserId;
     private String mName;
@@ -14,8 +16,10 @@ public class User {
     private String mZipCode;
     private int mGrams;
     private float mRatting;
+    private String mAvatar;
 
     public User(int userId, String name, String userName, String address, String zipCode, int grams, float ratting) {
+        Log.d(TAG, "User() called with: " + "userId = [" + userId + "], name = [" + name + "], userName = [" + userName + "], address = [" + address + "], zipCode = [" + zipCode + "], grams = [" + grams + "], ratting = [" + ratting + "]");
         mUserId = userId;
         mName = name;
         mUserName = userName;
@@ -24,6 +28,18 @@ public class User {
         mGrams = grams;
         mRatting = ratting;
     }
+
+    public User(int userId, String name, String userName, String address, String zipCode, int grams, float ratting, String avatar) {
+        mUserId = userId;
+        mName = name;
+        mUserName = userName;
+        mAddress = address;
+        mZipCode = zipCode;
+        mGrams = grams;
+        mRatting = ratting;
+        mAvatar = avatar;
+    }
+
 
     public int getUserId() {
         return mUserId;
@@ -81,6 +97,14 @@ public class User {
         mRatting = ratting;
     }
 
+    public String getAvatar() {
+        return mAvatar;
+    }
+
+    public void setAvatar(String avatar) {
+        mAvatar = avatar;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -91,6 +115,7 @@ public class User {
                 ", mZipCode='" + mZipCode + '\'' +
                 ", mGrams=" + mGrams +
                 ", mRatting=" + mRatting +
+                ", mAvatar='" + mAvatar + '\'' +
                 '}';
     }
 }

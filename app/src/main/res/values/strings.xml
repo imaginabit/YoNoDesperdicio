@@ -107,4 +107,7 @@
     <string name="address_found">Encontrada localizacion</string>
     <string name="no_geocoder_available">geocoder no disponible</string>
 
+    <!-- Profile -->
+    <string name="entregados">"Entregados "</string>
+
 </resources>

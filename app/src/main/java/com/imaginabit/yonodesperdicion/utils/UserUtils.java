@@ -85,7 +85,7 @@ public class UserUtils {
 
 
     public static void getUser(final int userId, final Context context, final FetchUserCallback callback){
-
+        Log.d(TAG, "getUser() called with: " + "userId = [" + userId + "], context = [" + context + "], callback = [" + callback + "]");
         // Show Loading dialog
         //UserUtils.pd = ProgressDialog.show(context, "", context.getString(R.string.loading));
 
@@ -93,7 +93,6 @@ public class UserUtils {
             JSONObject jsonRequest = new JSONObject();
 
 //           Mailbox_id puede ser: “inbox”, “sent” o “trash”
-
             RequestQueue queue = VolleySingleton.getRequestQueue();
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
@@ -102,35 +101,59 @@ public class UserUtils {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.i("--->", "authenticate:" + response.toString());
+                            Log.i(TAG, "---> authenticate:" + response.toString());
                             //Utils.dismissProgressDialog(UserUtils.pd);
-
                             mUser = null;
                             Exception error = null;
 
-//                            {
-//                                "user": {
-//                                "id": 44,
-//                                        "username": "fwrnsoan",
-//                                        "zipcode": "35012",
+//                            {"session_user": {
+//                                "id": 43,
+//                                        "username": "fernando",
 //                                        "total_quantity": 0,
-//                                        "rating": null,
+//                                        "rating": 0,
+//                                        "image": "propias/avatar_original.png",
+//                                        "zipcode": "35001",
+//                                        "city": "Las Palmas De Gran Canaria",
+//                                        "province": "Las Palmas",
+//                                        "email": "imaginabit@gmail.com",
+//                                        "auth_token": "ep8Toibgi-F9E5n5Eozf",
 //                                        "created_at": "2015-12-17"
-//                            }
-//                            }
 
-                            if (response.has("user")) {
+                            if (response.has("user") || response.has("session_user")) {
                                 Log.d(TAG, "onResponse: has user ");
                                 JSONObject jsonItems = null;
                                 try {
                                     //Utils.dismissProgressDialog(UserUtils.pd);
-                                    jsonItems = response.getJSONObject("user");
+                                    if (response.has("session_user")){
+                                        jsonItems = response.getJSONObject("session_user");
+                                    }else {
+                                        jsonItems = response.getJSONObject("user");
+                                    }
 
                                     String username = jsonItems.getString("username");
                                     String zip = jsonItems.getString("zipcode");
-                                    mUser = new User(userId,username,username,"",zip,0,0);
-                                    callback.done(mUser, null);
+                                    String city = "";
+                                    int total_quantity = jsonItems.getInt("total_quantity");
 
+                                    float ratting;
+                                    if (jsonItems.getString("rating")!="null"){
+                                        Log.d(TAG, "onResponse: ratting : " + jsonItems.getDouble("rating") );
+                                        ratting = (float)jsonItems.getDouble("rating");
+                                    } else
+                                        ratting = 0;
+
+                                    if (response.has("session_user")){
+                                        Log.d(TAG, "onResponse: yo mismo!");
+                                        city = jsonItems.getString("city");
+                                        String token = jsonItems.getString("auth_token");
+                                        String avatar = jsonItems.getString("image");
+                                        AppSession.getCurrentUser().authToken = token;
+                                        mUser = new User(userId,username,username,city,zip,total_quantity,ratting, avatar);
+                                    } else {
+                                        Log.d(TAG, "onResponse: otro");
+                                        mUser = new User(userId,username,username,city,zip,total_quantity,ratting);
+                                    }
+                                    callback.done(mUser, null);
                                 } catch (JSONException e) {
                                     error = e;
                                     callback.done(mUser, error);
