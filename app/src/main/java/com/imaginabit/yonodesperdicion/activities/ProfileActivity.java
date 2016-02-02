@@ -9,8 +9,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -24,6 +27,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,6 +35,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
@@ -65,10 +70,12 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ProfileActivity extends NavigationBaseActivity {
@@ -103,7 +110,6 @@ public class ProfileActivity extends NavigationBaseActivity {
     String selectedImagePath;
     private Intent pictureActionIntent = null;
     File capturedPhoto;
-
 
 
     @Override
@@ -166,19 +172,19 @@ public class ProfileActivity extends NavigationBaseActivity {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                 Log.d(TAG, "onOffsetChanged() called with: " + "appBarLayout = [" + appBarLayout + "], verticalOffset = [" + verticalOffset + "]");
-                int verticalLimit = (mCollapsingToolbar.getHeight()-212) *-1 ;
-                if (verticalOffset == 0){
+                int verticalLimit = (mCollapsingToolbar.getHeight() - 212) * -1;
+                if (verticalOffset == 0) {
                     Log.d(TAG, "onOffsetChanged: expanded");
                     toolbar.setTitle("");
                     mCollapsingToolbar.setTitle(expandedTitle);
                     avatarView.setVisibility(View.VISIBLE);
-                } else if (!toolbar.getTitle().equals(collapsedTitle)){
+                } else if (!toolbar.getTitle().equals(collapsedTitle)) {
                     Log.d(TAG, "onOffsetChanged: collapsed");
                     toolbar.setTitle(collapsedTitle);
-                } else if (verticalOffset <  verticalLimit ){
+                } else if (verticalOffset < verticalLimit) {
                     toolbar.setTitle(collapsedTitle);
                     avatarView.setVisibility(View.GONE);
-                } else if (verticalOffset > verticalLimit ){
+                } else if (verticalOffset > verticalLimit) {
                     mCollapsingToolbar.setTitle(expandedTitle);
                     avatarView.setVisibility(View.VISIBLE);
                 }
@@ -199,7 +205,7 @@ public class ProfileActivity extends NavigationBaseActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.empty:
 //                Toast.makeText(ProfileActivity.this, "pulsado ", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onOptionsItemSelected: pulsado menu");
@@ -218,14 +224,15 @@ public class ProfileActivity extends NavigationBaseActivity {
                 return true;
             case R.id.edit_location:
                 Log.d(TAG, "onOptionsItemSelected: edit location");
-                return true;                        
-        }            
+                showDialogChangeLocation();
+                return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
 
     private void getAdsFromWeb(final int userId) {
-        User u = new User(userId,"","","","",0,0);
+        User u = new User(userId, "", "", "", "", 0, 0);
         Log.d(TAG, "get Ads From Web");
 
         AdUtils.fetchAdsVolley(u, this, new AdUtils.FetchAdsCallback() {
@@ -255,9 +262,9 @@ public class ProfileActivity extends NavigationBaseActivity {
 
     }
 
-    private void getUserWeb(){
+    private void getUserWeb() {
         Log.d(TAG, "getUserWeb start");
-        int userId = (int)mUser.id;
+        int userId = (int) mUser.id;
         Log.d(TAG, "getUserWeb: UserId " + userId);
 
         UserUtils.getUser(userId, ProfileActivity.this, new UserUtils.FetchUserCallback() {
@@ -290,12 +297,12 @@ public class ProfileActivity extends NavigationBaseActivity {
     }
 
     /**
-     *  http://stackoverflow.com/a/30747281/385437
+     * http://stackoverflow.com/a/30747281/385437
      */
-    public void expandToolbar(){
+    public void expandToolbar() {
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mAppbarLayout.getLayoutParams();
         AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
-        if(behavior!=null) {
+        if (behavior != null) {
             behavior.setTopAndBottomOffset(0);
 
             behavior.onNestedPreScroll(mRootLayout, mAppbarLayout, null, 0, 1, new int[2]);
@@ -304,12 +311,13 @@ public class ProfileActivity extends NavigationBaseActivity {
 
 
     private void startSetAvatarDialog() {
-        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
+        AlertDialog.Builder avatarDialog = new AlertDialog.Builder(this, R.style.yndDialog);
 
-        myAlertDialog.setTitle(getString(R.string.Picture));
-        myAlertDialog.setMessage(getString(R.string.pic_from_where));
+        avatarDialog.setTitle(getString(R.string.Picture));
+        avatarDialog.setMessage(getString(R.string.pic_from_where));
+        avatarDialog.setIcon(R.drawable.ic_face_white);
 
-        myAlertDialog.setPositiveButton(getString(R.string.gallery),
+        avatarDialog.setPositiveButton(getString(R.string.gallery),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent pictureActionIntent = null;
@@ -323,7 +331,7 @@ public class ProfileActivity extends NavigationBaseActivity {
                     }
                 });
 
-        myAlertDialog.setNegativeButton(getString(R.string.camera),
+        avatarDialog.setNegativeButton(getString(R.string.camera),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
 
@@ -346,7 +354,7 @@ public class ProfileActivity extends NavigationBaseActivity {
                         }
                     }
                 });
-        myAlertDialog.show();
+        avatarDialog.show();
     }
 
 
@@ -355,16 +363,16 @@ public class ProfileActivity extends NavigationBaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         bitmap = null;
         selectedImagePath = null;
-        RoundedImageView image= avatarView;
+        RoundedImageView image = avatarView;
 
         if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
             File f = new File(Environment.getExternalStorageDirectory()
                     .toString());
 
-            if(f.exists()) {
-                if (f.canRead() ){
-                    Log.d(TAG, "onActivityResult: file: can read" );
-                }else{
+            if (f.exists()) {
+                if (f.canRead()) {
+                    Log.d(TAG, "onActivityResult: file: can read");
+                } else {
                     int permissionCheck = ContextCompat.checkSelfPermission(ProfileActivity.this,
                             Manifest.permission.READ_EXTERNAL_STORAGE);
                     if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
@@ -380,11 +388,11 @@ public class ProfileActivity extends NavigationBaseActivity {
                     Log.d(TAG, "onActivityResult: is file: " + f.getName());
 
                 }
-                if (f.isDirectory()){
+                if (f.isDirectory()) {
                     Log.d(TAG, "onActivityResult: file: " + f.listFiles().toString());
                 }
 
-            }else {
+            } else {
                 Log.d(TAG, "onActivityResult: file f no existe");
             }
 
@@ -417,8 +425,8 @@ public class ProfileActivity extends NavigationBaseActivity {
         }
     }
 
-    private void setPhoto(File f){
-        RoundedImageView image= avatarView;
+    private void setPhoto(File f) {
+        RoundedImageView image = avatarView;
         for (File temp : f.listFiles()) {
             if (temp.getName().equals("temp.jpg")) {
                 f = temp;
@@ -475,6 +483,7 @@ public class ProfileActivity extends NavigationBaseActivity {
 
     /**
      * resize to 100x100~~ respect aspect ratio
+     *
      * @param bitmap
      * @return
      */
@@ -485,7 +494,7 @@ public class ProfileActivity extends NavigationBaseActivity {
         int outHeight;
         int inWidth = bitmap.getWidth();
         int inHeight = bitmap.getHeight();
-        if(inWidth > inHeight){
+        if (inWidth > inHeight) {
             outWidth = maxSize;
             outHeight = (inHeight * maxSize) / inWidth;
         } else {
@@ -516,7 +525,7 @@ public class ProfileActivity extends NavigationBaseActivity {
                         .put("content", encodedImage);
 
                 JSONObject jsonUser = new JSONObject();
-                jsonUser.put("id", mUser.id );
+                jsonUser.put("id", mUser.id);
                 jsonUser.put("image", jsonImage);
                 Log.d(TAG, "sendAvatarToWeb: jsonuser : " + jsonUser.toString(2));
 
@@ -528,11 +537,11 @@ public class ProfileActivity extends NavigationBaseActivity {
     }
 
 
-    private JsonObjectRequest sendDataRequest(JSONObject jsonRequest){
+    private JsonObjectRequest sendDataRequest(JSONObject jsonRequest) {
         Log.d(TAG, "sendDataRequest() called with: " + "jsonRequest = [" + jsonRequest + "]");
 
         try {
-            Log.d(TAG, "sendDataRequest: "+ jsonRequest.toString(2));
+            Log.d(TAG, "sendDataRequest: " + jsonRequest.toString(2));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -541,20 +550,20 @@ public class ProfileActivity extends NavigationBaseActivity {
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.PUT,
-                Constants.USERS_API_URL+ "/"+ mUser.id,
+                Constants.USERS_API_URL + "/" + mUser.id,
                 jsonRequest,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, "onResponse() called with: " + "response = [" + response + "]");
-
+                        getUserWeb();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
-                        Log.d(TAG, "onError: Hubo algun problema al actualizar el avatar");
+                        Log.d(TAG, "onError: Hubo algun problema al actualizando");
                         String errorMessage = VolleyErrorHelper.getMessage(context, error);
                         String errorDialogMsg = Utils.showErrorsJson(errorMessage, ProfileActivity.this);
                         //Toast.makeText(AdCreateActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
@@ -578,5 +587,93 @@ public class ProfileActivity extends NavigationBaseActivity {
 
         return null;
     }
+
+
+    private void showDialogChangeLocation() {
+
+        // Creating alert Dialog with one Button
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.yndDialog);
+
+        // Setting Dialog Title
+        alertDialog.setTitle(getString(R.string.change_location));
+
+        // Setting Dialog Message
+        alertDialog.setMessage(getString(R.string.enter_postal_code));
+
+        final EditText input = new EditText(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(AppSession.lastLocation.getLatitude(), AppSession.lastLocation.getLongitude(), 1);
+            input.setText(addresses.get(0).getPostalCode());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        input.setLayoutParams(lp);
+        input.setPadding(100, 50, 100, 50);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            input.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        }
+        input.setWidth(100);
+        alertDialog.setView(input);
+
+        // Setting Icon to Dialog
+        alertDialog.setIcon(R.drawable.ic_pin_drop_black);
+
+        alertDialog.setPositiveButton(getString(R.string.accept),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to execute after dialog
+                        Log.d(TAG, "onClick: text: " + input.getText().toString());
+                        sendLocationPostalCode(input.getText().toString());
+
+//                        Toast.makeText(getApplicationContext(),"Password Matched", Toast.LENGTH_SHORT).show();
+//                        Intent myIntent1 = new Intent(context, Show.class);
+//                        startActivityForResult(myIntent1, 0);
+                    }
+                });
+        alertDialog.setNegativeButton(getString(R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        // closed
+
+        // Showing Alert Message
+        alertDialog.show();
+    }
+
+    private void sendLocationPostalCode(String postalCode) {
+        Log.d(TAG, "sendLocationPostalCode() called with: " + "postalCode = [" + postalCode + "]");
+        JSONObject json = null;
+
+        if (postalCode != null) {
+            Log.d(TAG, "sendAvatarToWeb: bitmap existe");
+
+            try {
+                JSONObject jsonUser = new JSONObject();
+                //jsonUser.put("id", mUser.id);
+                jsonUser.put("zipcode", postalCode);
+                Log.d(TAG, "sendLocationPostalCode jsonuser : " + jsonUser.toString(2));
+
+                sendDataRequest(jsonUser);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
+
 
 }
