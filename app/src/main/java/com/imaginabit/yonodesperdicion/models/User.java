@@ -40,6 +40,9 @@ public class User {
         mAvatar = avatar;
     }
 
+    public User(int userId) {
+        mUserId = userId;
+    }
 
     public int getUserId() {
         return mUserId;

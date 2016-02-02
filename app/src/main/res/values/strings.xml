@@ -109,5 +109,9 @@
 
     <!-- Profile -->
     <string name="entregados">"Entregados "</string>
+    <string name="camera">Camara</string>
+    <string name="gallery">Fotos</string>
+    <string name="pic_from_where">¿Desde donde quieres obtener la foto?</string>
+    <string name="Picture">Foto</string>
 
 </resources>
