@@ -52,6 +52,8 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -683,5 +685,19 @@ public class Utils {
 		ViewGroup.LayoutParams params = listView.getLayoutParams();
 		params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
 		listView.setLayoutParams(params);
+	}
+
+	public static boolean isExpired(Date date){
+		Date today = new Date();
+
+		Date adExpirationPlus1 = null;
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.add(Calendar.DAY_OF_MONTH, 1);
+		adExpirationPlus1 = c.getTime();
+
+		if (today.after(adExpirationPlus1)) return true;
+
+		return false;
 	}
 }
