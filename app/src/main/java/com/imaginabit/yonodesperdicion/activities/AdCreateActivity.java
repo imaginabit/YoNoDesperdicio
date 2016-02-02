@@ -59,9 +59,11 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -156,7 +158,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         if (ad != null) {
             isEditing= true;
             getSupportActionBar().setTitle("Editar " + ad.getTitle());
-            btnDeleteAd.setVisibility(View.VISIBLE);
+//            btnDeleteAd.setVisibility(View.VISIBLE);
 
             imageEditable.setImageDrawable(
                     ContextCompat.getDrawable(this, R.drawable.brick));
@@ -169,11 +171,20 @@ public class AdCreateActivity extends NavigationBaseActivity
             adZipCode.setText(Integer.toString(ad.getPostalCode()));
             adDescription.setText(ad.getBody());
 
-            Log.d(TAG, "onCreate: image:"+ ad.getImageUrl());
+            Log.d(TAG, "onCreate: image:" + ad.getImageUrl());
 
             ImageLoader imageLoader; // Get singleton instance
             imageLoader = ImageLoader.getInstance();
             String imageUri = Constants.HOME_URL + ad.getImageUrl();
+
+
+            //Spinner Categorias get data
+            String categoria = ad.getCategoria();
+            List<String> foodCategoryStr = Arrays.asList((getResources().getStringArray(R.array.food_categories)));
+            int catIndex = foodCategoryStr.indexOf(categoria);
+
+            spinner.setSelection(catIndex);
+            Log.d(TAG, "onCreate: cat Index " + catIndex + " categoria  "+ categoria);
 
 
             //me da a mi que ha esto no le esta haciendo ningun caso
@@ -253,45 +264,43 @@ public class AdCreateActivity extends NavigationBaseActivity
         JSONObject jsonAd = null;
         JSONObject jsonImage= null;
         ProvinciasCP.init();
+        int grams;
+        grams = 0;
+        if (Utils.isNotEmptyOrNull(String.valueOf(weight.getText()))) {
+            float f = Float.parseFloat(weight.getText().toString().replaceAll("[^0-9.]", ""));
+            grams = (int) (f * 1000);
+        }
+
+        String provincia = "";
+        String zipCode = adZipCode.getText().toString();
+        if (Utils.isNotEmptyOrNull(zipCode)) {
+            int codigoProvincia = Integer.parseInt(zipCode.substring(0, 2));
+            try {
+                provincia = ProvinciasCP.mProvincias.get(codigoProvincia - 1).mProvincia;
+                Log.d(TAG, "sendAdData: c provincia" + provincia);
+            } catch (Exception e) {
+                Log.d(TAG, "sendAdData: Error al sacar la provincia del codigo postal: " + codigoProvincia);
+            }
+        }
 
         try {
-            int grams = 0;
-            if (Utils.isNotEmptyOrNull( String.valueOf(weight.getText()) )){
-                grams = (int) (Float.parseFloat(String.valueOf(weight.getText())) * 1000);
+            jsonAd = new JSONObject();
+
+            if( Utils.isNotEmpty( title.getText().toString() )) jsonAd.put("title", title.getText());
+            if( Utils.isNotEmpty( adDescription.getText().toString() ) ) jsonAd.put( "body", adDescription.getText() );
+            jsonAd.put( "grams", grams );
+//                if( Utils.isNotEmpty( ad.getStatus() ) jsonAd.put( "status", ad.G ); // cant change status
+            jsonAd.putOpt("status", 1);
+            if( Utils.isNotEmpty( provincia ) ) jsonAd.put( "province", provincia );
+            if( Utils.isNotEmpty( adZipCode.getText().toString() ) ) jsonAd.put( "zipcode", adZipCode.getText() );
+            if( Utils.isNotEmpty( this.foodCategory ) ) jsonAd.put( "food_category", this.foodCategory );
+            if( Utils.isNotEmpty( expiration_date.getText().toString() ) ) jsonAd.put( "pick_up_date", expiration_date.getText() );
+
+            if (isEditing) {
+                jsonAd.put("id",ad.getId());
             }
-
-            String provincia = "";
-            String zipCode = adZipCode.getText().toString();
-            if(Utils.isNotEmptyOrNull( zipCode ) ){
-                int codigoProvincia = Integer.parseInt(zipCode.substring(0, 2));
-                try {
-                    provincia = ProvinciasCP.mProvincias.get(codigoProvincia-1).mProvincia;
-                    Log.d(TAG, "sendAdData: c provincia"+ provincia);
-                }catch (Exception e){
-                    Log.d(TAG, "sendAdData: Error al sacar la provincia del codigo postal: " + codigoProvincia);
-                }
-            }
-
-            //String pickUpDate= sdf.format(expiration_date.getText());
-
-            jsonAd = new JSONObject().put("title", title.getText() )
-                    .put("body", adDescription.getText())
-                    .put("grams", grams )
-                    .put("status", 1)
-                    .put("province", provincia)
-                    .put("zipcode", adZipCode.getText() )
-                    .put("food_category", this.foodCategory )
-                    .put("pick_up_date", expiration_date.getText());
-
-            if (isEditing){
-                //TODO: edit ad
-                // no funciona por ahora
-                //jsonAd.put("id");
-            }
-
 
             if (bitmap != null) {
-
                 //scale image max 400px width
                 float aspectRatio = bitmap.getWidth() /
                         (float) bitmap.getHeight();
@@ -310,62 +319,55 @@ public class AdCreateActivity extends NavigationBaseActivity
                 // "image":{"filename": "original_filename.jpeg","content_type": "image/jpeg","content": "<base64string>"}
 
                 jsonImage = new JSONObject()
-                        .put("filename", "u"+ AppSession.getCurrentUser().id + "image"+ sdf.format(new Date()) )
+                        .put("filename", "u" + AppSession.getCurrentUser().id + "image" + sdf.format(new Date()))
                         .put("content_type", "image/jpeg")
                         .put("content", encodedImage);
 
-                jsonAd.put("image",jsonImage);
+                jsonAd.put("image", jsonImage);
             }
 
             JSONObject jsonRequest = new JSONObject().put("ad", jsonAd);
 
-            Log.d(TAG, " ---- sendAdData: jsonRequest :"+ jsonRequest.toString());
+            Log.d(TAG, " ---- sendAdData: jsonRequest :" + jsonRequest.toString());
 
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.ADS_API_URL,
-                    jsonRequest,
-                    createResponseSuccessListener(), createReqErrorListener() ){
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map headers = new HashMap();
-                    String token = AppSession.getCurrentUser().authToken;
-                    headers.put("Authorization", token);
-                    Log.d(TAG, "getHeaders: authToken " + token);
+            JsonObjectRequest request;
+            if (isEditing)
+                request = sendDataEditAd(jsonRequest);
+            else
+                request = sendDataNewAd(jsonRequest);
 
-                    headers.put("Content-Type", "application/json; charset=utf-8");
-
-
-                    return headers;
-                }
-//
-//                @Override
-//                public String getBodyContentType() {
-//                    //return super.getBodyContentType();
-//                    return "application/json; charset=utf-8";
-//                }
-//
-//                @Override
-//                public byte[] getBody()
-//                {
-//                    String body = "some text";
-//                    try
-//                    {
-//                        return body.getBytes(getParamsEncoding());
-//                    }
-//                    catch (UnsupportedEncodingException uee)
-//                    {
-//                        throw new RuntimeException("Encoding not supported: "
-//                                + getParamsEncoding(), uee);
-//                    }
-//                }
-
-            };
             queue.add(request);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
+    private JsonObjectRequest sendDataNewAd(JSONObject jsonRequest){
+        return sendDataRequest(jsonRequest , Request.Method.POST, Constants.ADS_API_URL );
+    }
+    private JsonObjectRequest sendDataEditAd(JSONObject jsonRequest){
+        return sendDataRequest(jsonRequest , Request.Method.PUT, Constants.ADS_API_URL+ "/"+ ad.getId() );
+    }
 
+    private JsonObjectRequest sendDataRequest(JSONObject jsonRequest, int method, String url){
+
+        JsonObjectRequest request = new JsonObjectRequest( method , url ,
+                jsonRequest,
+                createResponseSuccessListener(), createReqErrorListener()) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map headers = new HashMap();
+                String token = AppSession.getCurrentUser().authToken;
+                headers.put("Authorization", token);
+                Log.d(TAG, "getHeaders: authToken " + token);
+
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
+        return request;
     }
 
 
@@ -383,9 +385,16 @@ public class AdCreateActivity extends NavigationBaseActivity
                     String title = ad.getString("title");
                     String id = ad.getString("id");
 
-                    Toast.makeText(AdCreateActivity.this, "Anuncio creado", Toast.LENGTH_SHORT).show();
+                    if(isEditing) {
+                        Toast.makeText(AdCreateActivity.this, "Anuncio editado", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AdCreateActivity.this,MainActivity.class);
+                        startActivity(intent);
+                    } else
+                        Toast.makeText(AdCreateActivity.this, "Anuncio creado", Toast.LENGTH_SHORT).show();
+
                     Log.d(TAG, "onResponse: title " + title + " " + id);
                     thisAdCreateActivity.finish();
+
                 } catch (JSONException e){
                     e.printStackTrace();
                     //Utils.dismissProgressDialog(pd);
