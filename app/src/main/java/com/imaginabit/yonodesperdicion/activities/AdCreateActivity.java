@@ -177,7 +177,6 @@ public class AdCreateActivity extends NavigationBaseActivity
             imageLoader = ImageLoader.getInstance();
             String imageUri = Constants.HOME_URL + ad.getImageUrl();
 
-
             //Spinner Categorias get data
             String categoria = ad.getCategoria();
             List<String> foodCategoryStr = Arrays.asList((getResources().getStringArray(R.array.food_categories)));
@@ -421,10 +420,10 @@ public class AdCreateActivity extends NavigationBaseActivity
     private void startDialog() {
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
 
-        myAlertDialog.setTitle("Foto");
-        myAlertDialog.setMessage("¿Desde donde quieres obtener la foto?");
+        myAlertDialog.setTitle(getString(R.string.Picture));
+        myAlertDialog.setMessage(getString(R.string.pic_from_where));
 
-        myAlertDialog.setPositiveButton("Fotos",
+        myAlertDialog.setPositiveButton(getString(R.string.gallery),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent pictureActionIntent = null;
@@ -439,7 +438,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                     }
                 });
 
-        myAlertDialog.setNegativeButton("Camara",
+        myAlertDialog.setNegativeButton(getString(R.string.camera),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
 
@@ -459,39 +458,10 @@ public class AdCreateActivity extends NavigationBaseActivity
                             ActivityCompat.requestPermissions(AdCreateActivity.this, new String[]{Manifest.permission.CAMERA},
                                     CAMERA_REQUEST);
                             //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
-
                         }
-
-
-                        // Here, thisActivity is the current activity
-//                        if (ContextCompat.checkSelfPermission(AdCreateActivity.this,
-//                                Manifest.permission.CAMERA)
-//                                != PackageManager.PERMISSION_GRANTED) {
-//
-//                            // Should we show an explanation?
-//                            if (ActivityCompat.shouldShowRequestPermissionRationale(AdCreateActivity.this,
-//                                    Manifest.permission.CAMERA)) {
-//
-//                                // Show an expanation to the user *asynchronously* -- don't block
-//                                // this thread waiting for the user's response! After the user
-//                                // sees the explanation, try again to request the permission.
-//
-//                            } else {
-//
-//                                // No explanation needed, we can request the permission.
-//
-//                                ActivityCompat.requestPermissions(AdCreateActivity.this,
-//                                        new String[]{Manifest.permission.CAMERA},
-//                                        CAMERA_REQUEST);
-//
-//                                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-//                                // app-defined int constant. The callback method gets the
-//                                // result of the request.
-//                            }
-//                        }
-
                     }
                 });
+
         myAlertDialog.show();
     }
 
@@ -532,7 +502,6 @@ public class AdCreateActivity extends NavigationBaseActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
 
         bitmap = null;

@@ -153,6 +153,54 @@ public class UsersHelper {
         }
     }
 
+/*    public static void editUser(
+            final Context context,
+            final int id,
+            final String username,
+            final String zipCode,
+            final JSONObject image,
+            final UserAccountCallback callback
+    ){
+        try {
+            JSONObject jsonUser = new JSONObject().put("id", id);
+            if (Utils.isNotEmptyOrNull(username))
+                jsonUser.put("username", username);
+            if ( image != null )
+                jsonUser.put("image", image);
+            if (Utils.isNotEmptyOrNull(zipCode))
+                jsonUser.put("zipcode", zipCode);
+
+            JSONObject jsonRequest = new JSONObject().put("user", jsonUser);
+
+            // Request queue
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                    Request.Method.PUT,
+                    Constants.USERS_API_URL,
+                    jsonRequest,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jsonResponse) {
+                            //edit User dont return data just 201
+                            callback.onFinished( new UserData() );
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            callback.onError(extractErrorMessage(context, error));
+                        }
+                    }
+            );
+            Log.i("--->", jsonRequest.toString());
+            // Add the queue
+            requestQueue.add(jsonObjectRequest);
+        } catch (Exception e) {
+            callback.onError(e.getMessage());
+        }
+    }*/
+
 
     private static String extractErrorMessage(Context context, VolleyError error) {
         String errorMessage = VolleyErrorHelper.getMessage(context, error);
