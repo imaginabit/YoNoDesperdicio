@@ -3,8 +3,8 @@ package com.imaginabit.yonodesperdicion.activities;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +14,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
@@ -59,6 +60,8 @@ public class ProfileActivity extends NavigationBaseActivity {
     private User mUserWeb;
     private NestedScrollView mainscroll;
     private Toolbar toolbar;
+    AppBarLayout mAppbarLayout;
+    CoordinatorLayout mRootLayout;
 
 
     @Override
@@ -110,6 +113,35 @@ public class ProfileActivity extends NavigationBaseActivity {
 
             getAdsFromWeb((int) mUser.id);
         }
+
+        mAppbarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        mRootLayout = (CoordinatorLayout) findViewById(R.id.main_content);
+        final String collapsedTitle = mUser.username;
+        final String expandedTitle = "";
+        final CollapsingToolbarLayout mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
+        mAppbarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                Log.d(TAG, "onOffsetChanged() called with: " + "appBarLayout = [" + appBarLayout + "], verticalOffset = [" + verticalOffset + "]");
+                int verticalLimit = (mCollapsingToolbar.getHeight()-212) *-1 ;
+                if (verticalOffset == 0){
+                    Log.d(TAG, "onOffsetChanged: expanded");
+                    toolbar.setTitle("");
+                    mCollapsingToolbar.setTitle(expandedTitle);
+                    avatarView.setVisibility(View.VISIBLE);
+                } else if (!toolbar.getTitle().equals(collapsedTitle)){
+                    Log.d(TAG, "onOffsetChanged: collapsed");
+                    toolbar.setTitle(collapsedTitle);
+                } else if (verticalOffset <  verticalLimit ){
+                    toolbar.setTitle(collapsedTitle);
+                    avatarView.setVisibility(View.GONE);
+                } else if (verticalOffset > verticalLimit ){
+                    mCollapsingToolbar.setTitle(expandedTitle);
+                    avatarView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     @Override
@@ -203,13 +235,9 @@ public class ProfileActivity extends NavigationBaseActivity {
 
                 if ( !(imageUri.contains("/propias/")) ) {
                     imageLoader.displayImage(imageUri, avatarView);
-                }else {
-                    avatarView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.brick));
                 }
 
-
                 location.setText(cp + ", " + provincia);
-//                location.setVisibility(View.VISIBLE);
             }
         });
 
@@ -219,17 +247,18 @@ public class ProfileActivity extends NavigationBaseActivity {
      *  http://stackoverflow.com/a/30747281/385437
      */
     public void expandToolbar(){
-        AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.appbar);
-        CoordinatorLayout rootLayout = (CoordinatorLayout) findViewById(R.id.main_content);
-
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appbarLayout.getLayoutParams();
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mAppbarLayout.getLayoutParams();
         AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
         if(behavior!=null) {
             behavior.setTopAndBottomOffset(0);
 
-            behavior.onNestedPreScroll(rootLayout, appbarLayout, null, 0, 1, new int[2]);
+            behavior.onNestedPreScroll(mRootLayout, mAppbarLayout, null, 0, 1, new int[2]);
         }
     }
+
+
+
+
 
 
 }
