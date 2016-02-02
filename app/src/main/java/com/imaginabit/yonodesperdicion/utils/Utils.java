@@ -468,6 +468,11 @@ public class Utils {
     }
 
 
+	/**
+	 * Tranfrom grams to Kgr
+	 * @param grams
+	 * @return String like "2.23 Kg"
+	 */
 	public static String gramsToKgStr(float grams){
 		float kilos = (float) (grams / 1000.0);
 
