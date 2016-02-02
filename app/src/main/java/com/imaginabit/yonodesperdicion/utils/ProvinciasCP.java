@@ -11,6 +11,7 @@ import java.util.ArrayList;
  */
 
 public class ProvinciasCP {
+    private static final String TAG = "ProvinciasCP";
 
 
     public static ArrayList<Provincia> mProvincias = null;
@@ -70,18 +71,23 @@ public class ProvinciasCP {
         ProvinciasCP.mProvincias.add(new Provincia(49,	"Zamora",	"ZA"));
         ProvinciasCP.mProvincias.add(new Provincia(50,	"Zaragoza",	"Z"));
         ProvinciasCP.mProvincias.add(new Provincia(51,	"Ceuta",	"CE"));
-        ProvinciasCP.mProvincias.add(new Provincia(52,	"Melilla",	"ML"));
+        ProvinciasCP.mProvincias.add(new Provincia(52, "Melilla", "ML"));
 
-        Log.d("TAG", "ProvinciasCP: " + ProvinciasCP.mProvincias.size() );
-
+        Log.d(TAG, "ProvinciasCP: " + ProvinciasCP.mProvincias.size() );
     }
 
-//    public static String getName(int i){
-//        Log.d("TAG", "getname provincias size: " + ProvinciasCP.mProvincias.size());
-//        Log.d("TAG", "getname provincias 1 nombre: "+ ProvinciasCP.mProvincias.get(1).mProvincia);
-//        //mProvincias.
-//        return ProvinciasCP.mProvincias.get(i).mProvincia;
-//    }
+    public static String getName(int i){
+        Log.d(TAG, "getname provincias size: " + ProvinciasCP.mProvincias.size());
+        Log.d(TAG, "getname provincias 1 nombre: "+ ProvinciasCP.mProvincias.get(1).mProvincia);
+        //mProvincias.
+        return ProvinciasCP.mProvincias.get(i).mProvincia;
+    }
+
+    public static String getNameFromCP(String  postalCode){
+        int code = Integer.parseInt(postalCode.substring(0, 2));
+        Log.d(TAG, "getNameFromCP: code " + code);
+        return ProvinciasCP.mProvincias.get(code-1).mProvincia;
+    }
 
     public static class Provincia {
         public int mCode;
@@ -92,6 +98,18 @@ public class ProvinciasCP {
             mCode = code;
             mProvincia = provincia;
             mInteriorAlphaCode = interiorAlphaCode;
+        }
+
+        public int getCode() {
+            return mCode;
+        }
+
+        public String getProvincia() {
+            return mProvincia;
+        }
+
+        public String getInteriorAlphaCode() {
+            return mInteriorAlphaCode;
         }
 
     }

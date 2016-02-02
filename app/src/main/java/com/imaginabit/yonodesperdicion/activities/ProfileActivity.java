@@ -1,6 +1,11 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -11,10 +16,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
@@ -22,6 +28,12 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
+import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
+import com.imaginabit.yonodesperdicion.utils.UserUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.imaginabit.yonodesperdicion.views.RoundedImageView;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +48,17 @@ public class ProfileActivity extends NavigationBaseActivity {
     private TextView weight;
     private RatingBar rating;
     private LinearLayout userads;
+    private RoundedImageView avatarView;
+    private Drawable avatar;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
     private List<Ad> mAds;
-
+    private User mUserWeb;
+    private NestedScrollView mainscroll;
+    private Toolbar toolbar;
 
 
     @Override
@@ -50,18 +66,17 @@ public class ProfileActivity extends NavigationBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        Toolbar toolbar = setSupportedActionBar();
+        toolbar = setSupportedActionBar();
         setDrawerLayout(toolbar);
 
         mAds = new ArrayList<>();
 
+        mainscroll = (NestedScrollView) findViewById(R.id.main_scroll);
+
         recyclerView = (RecyclerView) findViewById(R.id.recycler_userads);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
         recyclerView.setNestedScrollingEnabled(false);
-
         userads = (LinearLayout) findViewById(R.id.user_ads);
-
 
         //recyclerView.setHasFixedSize(true);
         // use a linear layout manager
@@ -83,6 +98,7 @@ public class ProfileActivity extends NavigationBaseActivity {
             weight = (TextView) findViewById(R.id.kilos);
             rating = (RatingBar) findViewById(R.id.ad_reputacion);
             userads = (LinearLayout) findViewById(R.id.user_ads);
+            avatarView = (RoundedImageView) findViewById(R.id.avatarpic);
 
             userName.setText(mUser.username);
             location.setText(mUser.city);
@@ -90,6 +106,7 @@ public class ProfileActivity extends NavigationBaseActivity {
             weight.setText("Entregados " + Integer.toString(mUser.totalQuantity) + " Kg");
 
             rating.setRating(mUser.rating);
+            getUserWeb();
 
             getAdsFromWeb((int) mUser.id);
         }
@@ -108,10 +125,24 @@ public class ProfileActivity extends NavigationBaseActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_favorite) {
-            Toast.makeText(ProfileActivity.this, "pulsado ", Toast.LENGTH_SHORT).show();
-            return true;
-        }
+        switch (id){
+            case R.id.empty:
+//                Toast.makeText(ProfileActivity.this, "pulsado ", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onOptionsItemSelected: pulsado menu");
+                mainscroll.fullScroll(ScrollView.FOCUS_UP);
+                expandToolbar();
+                return true;
+            case R.id.edit_avatarpic:
+                Log.d(TAG, "onOptionsItemSelected: edit avatar pic");
+                return true;
+            case R.id.edit_name:
+                Log.d(TAG, "onOptionsItemSelected: edit name");
+                return true;
+            case R.id.edit_location:
+                Log.d(TAG, "onOptionsItemSelected: edit location");
+                return true;                        
+        }            
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -144,6 +175,60 @@ public class ProfileActivity extends NavigationBaseActivity {
             }
         });
 
+    }
+
+    private void getUserWeb(){
+        Log.d(TAG, "getUserWeb start");
+        int userId = (int)mUser.id;
+        Log.d(TAG, "getUserWeb: UserId " + userId);
+
+        UserUtils.getUser(userId, ProfileActivity.this, new UserUtils.FetchUserCallback() {
+            @Override
+            public void done(User user, Exception e) {
+                Log.d(TAG, "getUserWeb UserUtils.getUser->done() called with: " + "user = [" + user + "], e = [" + e + "]");
+                if ( e != null ) e.printStackTrace();
+                mUserWeb = user;
+                String cp = mUserWeb.getZipCode();
+                ProvinciasCP.init();
+                String provincia = ProvinciasCP.getNameFromCP(cp);
+                weight.setText(getString(R.string.entregados) + Utils.gramsToKgStr(mUserWeb.getGrams()));
+                rating.setRating(mUserWeb.getRatting());
+
+
+                //get image from website
+                ImageLoader imageLoader; // Get singleton instance
+                imageLoader = ImageLoader.getInstance();
+                String imageUri = Constants.HOME_URL + mUserWeb.getAvatar();
+                ImageSize targetSize = new ImageSize(200, 200); // result Bitmap will be fit to this size
+
+                if ( !(imageUri.contains("/propias/")) ) {
+                    imageLoader.displayImage(imageUri, avatarView);
+                }else {
+                    avatarView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.brick));
+                }
+
+
+                location.setText(cp + ", " + provincia);
+//                location.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }
+
+    /**
+     *  http://stackoverflow.com/a/30747281/385437
+     */
+    public void expandToolbar(){
+        AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        CoordinatorLayout rootLayout = (CoordinatorLayout) findViewById(R.id.main_content);
+
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appbarLayout.getLayoutParams();
+        AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+        if(behavior!=null) {
+            behavior.setTopAndBottomOffset(0);
+
+            behavior.onNestedPreScroll(rootLayout, appbarLayout, null, 0, 1, new int[2]);
+        }
     }
 
 
