@@ -1,14 +1,30 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -19,12 +35,20 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.User;
@@ -36,8 +60,16 @@ import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProfileActivity extends NavigationBaseActivity {
 
@@ -62,6 +94,16 @@ public class ProfileActivity extends NavigationBaseActivity {
     private Toolbar toolbar;
     AppBarLayout mAppbarLayout;
     CoordinatorLayout mRootLayout;
+
+    //for get image from camera/gallery
+    protected static final int CAMERA_REQUEST = 0;
+    protected static final int GALLERY_PICTURE = 1;
+    protected static final int STORAGE_PERMISSION_RC = 3;
+    Bitmap bitmap;
+    String selectedImagePath;
+    private Intent pictureActionIntent = null;
+    File capturedPhoto;
+
 
 
     @Override
@@ -166,9 +208,13 @@ public class ProfileActivity extends NavigationBaseActivity {
                 return true;
             case R.id.edit_avatarpic:
                 Log.d(TAG, "onOptionsItemSelected: edit avatar pic");
+                startSetAvatarDialog();
+
                 return true;
             case R.id.edit_name:
                 Log.d(TAG, "onOptionsItemSelected: edit name");
+
+
                 return true;
             case R.id.edit_location:
                 Log.d(TAG, "onOptionsItemSelected: edit location");
@@ -218,7 +264,7 @@ public class ProfileActivity extends NavigationBaseActivity {
             @Override
             public void done(User user, Exception e) {
                 Log.d(TAG, "getUserWeb UserUtils.getUser->done() called with: " + "user = [" + user + "], e = [" + e + "]");
-                if ( e != null ) e.printStackTrace();
+                if (e != null) e.printStackTrace();
                 mUserWeb = user;
                 String cp = mUserWeb.getZipCode();
                 ProvinciasCP.init();
@@ -233,7 +279,7 @@ public class ProfileActivity extends NavigationBaseActivity {
                 String imageUri = Constants.HOME_URL + mUserWeb.getAvatar();
                 ImageSize targetSize = new ImageSize(200, 200); // result Bitmap will be fit to this size
 
-                if ( !(imageUri.contains("/propias/")) ) {
+                if (!(imageUri.contains("/propias/"))) {
                     imageLoader.displayImage(imageUri, avatarView);
                 }
 
@@ -257,8 +303,280 @@ public class ProfileActivity extends NavigationBaseActivity {
     }
 
 
+    private void startSetAvatarDialog() {
+        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
+
+        myAlertDialog.setTitle(getString(R.string.Picture));
+        myAlertDialog.setMessage(getString(R.string.pic_from_where));
+
+        myAlertDialog.setPositiveButton(getString(R.string.gallery),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent pictureActionIntent = null;
+
+                        pictureActionIntent = new Intent(
+                                Intent.ACTION_PICK,
+                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(
+                                pictureActionIntent,
+                                GALLERY_PICTURE);
+                    }
+                });
+
+        myAlertDialog.setNegativeButton(getString(R.string.camera),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                        Intent intent = new Intent(
+                                MediaStore.ACTION_IMAGE_CAPTURE);
+                        File f = new File(android.os.Environment
+                                .getExternalStorageDirectory(), "temp.jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                Uri.fromFile(f));
+
+                        int permissionCheck = ContextCompat.checkSelfPermission(ProfileActivity.this,
+                                Manifest.permission.CAMERA);
+
+                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                            startActivityForResult(intent, CAMERA_REQUEST);
+                        } else {
+                            ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.CAMERA},
+                                    CAMERA_REQUEST);
+                            //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+        myAlertDialog.show();
+    }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        bitmap = null;
+        selectedImagePath = null;
+        RoundedImageView image= avatarView;
 
+        if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+            File f = new File(Environment.getExternalStorageDirectory()
+                    .toString());
+
+            if(f.exists()) {
+                if (f.canRead() ){
+                    Log.d(TAG, "onActivityResult: file: can read" );
+                }else{
+                    int permissionCheck = ContextCompat.checkSelfPermission(ProfileActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE);
+                    if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "onActivityResult: tengo permisos para leer external storage");
+                    } else {
+                        ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_RC);
+                        Log.d(TAG, "onActivityResult: no tengo permisos para leer external storage");
+                        return;
+                    }
+                }
+
+                if (f.isFile()) {
+                    Log.d(TAG, "onActivityResult: is file: " + f.getName());
+
+                }
+                if (f.isDirectory()){
+                    Log.d(TAG, "onActivityResult: file: " + f.listFiles().toString());
+                }
+
+            }else {
+                Log.d(TAG, "onActivityResult: file f no existe");
+            }
+
+            setPhoto(f);
+
+        } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                String[] filePath = {MediaStore.Images.Media.DATA};
+                Cursor c = getContentResolver().query(selectedImage, filePath,
+                        null, null, null);
+                c.moveToFirst();
+                int columnIndex = c.getColumnIndex(filePath[0]);
+                selectedImagePath = c.getString(columnIndex);
+                c.close();
+
+                bitmap = BitmapFactory.decodeFile(selectedImagePath); // load
+                // preview image
+                //bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+                bitmap = reziseBitMap(bitmap);
+
+                image.setImageBitmap(bitmap);
+                image.setVisibility(View.VISIBLE);
+
+                sendAvatarToWeb();
+            } else {
+                Toast.makeText(getApplicationContext(), "Cancelado",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void setPhoto(File f){
+        RoundedImageView image= avatarView;
+        for (File temp : f.listFiles()) {
+            if (temp.getName().equals("temp.jpg")) {
+                f = temp;
+                break;
+            }
+        }
+        if (!f.exists()) {
+            Toast.makeText(getBaseContext(),
+                    "Error while capturing image", Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        try {
+            bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+            bitmap = reziseBitMap(bitmap);
+
+            int rotate = 0;
+            try {
+                ExifInterface exif = new ExifInterface(f.getAbsolutePath());
+                int orientation = exif.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL);
+
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        rotate = 270;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        rotate = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        rotate = 90;
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotate);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                    bitmap.getHeight(), matrix, true);
+
+            image.setImageBitmap(bitmap);
+            image.setVisibility(View.VISIBLE);
+            //storeImageTosdCard(bitmap);
+
+            //AND NOW CAN SEND IT TO WEBSITE
+            sendAvatarToWeb();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * resize to 100x100~~ respect aspect ratio
+     * @param bitmap
+     * @return
+     */
+    private Bitmap reziseBitMap(Bitmap bitmap) {
+        Log.d(TAG, "reziseBitMap() called with: " + "bitmap = [" + bitmap + "]");
+        final int maxSize = 100;
+        int outWidth;
+        int outHeight;
+        int inWidth = bitmap.getWidth();
+        int inHeight = bitmap.getHeight();
+        if(inWidth > inHeight){
+            outWidth = maxSize;
+            outHeight = (inHeight * maxSize) / inWidth;
+        } else {
+            outHeight = maxSize;
+            outWidth = (inWidth * maxSize) / inHeight;
+        }
+
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, outWidth, outHeight, false);
+        return resizedBitmap;
+    }
+
+    private void sendAvatarToWeb() {
+        Log.d(TAG, "sendAvatarToWeb: ");
+        JSONObject jsonImage = null;
+
+        if (bitmap != null) {
+            Log.d(TAG, "sendAvatarToWeb: bitmap existe");
+            //Convent Bitmap in jpeg base64
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+            byte[] b = baos.toByteArray();
+            String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+
+            try {
+                jsonImage = new JSONObject()
+                        .put("filename", "u" + AppSession.getCurrentUser().id + "avatar" + Constants.DATE_JSON_SORT_FORMAT.format(new Date()))
+                        .put("content_type", "image/jpeg")
+                        .put("content", encodedImage);
+
+                JSONObject jsonUser = new JSONObject();
+                jsonUser.put("id", mUser.id );
+                jsonUser.put("image", jsonImage);
+                Log.d(TAG, "sendAvatarToWeb: jsonuser : " + jsonUser.toString(2));
+
+                sendDataRequest(jsonUser);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private JsonObjectRequest sendDataRequest(JSONObject jsonRequest){
+        Log.d(TAG, "sendDataRequest() called with: " + "jsonRequest = [" + jsonRequest + "]");
+
+        try {
+            Log.d(TAG, "sendDataRequest: "+ jsonRequest.toString(2));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.PUT,
+                Constants.USERS_API_URL+ "/"+ mUser.id,
+                jsonRequest,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse() called with: " + "response = [" + response + "]");
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                        Log.d(TAG, "onError: Hubo algun problema al actualizar el avatar");
+                        String errorMessage = VolleyErrorHelper.getMessage(context, error);
+                        String errorDialogMsg = Utils.showErrorsJson(errorMessage, ProfileActivity.this);
+                        //Toast.makeText(AdCreateActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Log.d(TAG, "getHeaders() called");
+                Map headers = new HashMap();
+                String token = AppSession.getCurrentUser().authToken;
+                headers.put("Authorization", token);
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
+
+        queue.add(request);
+
+        return null;
+    }
 
 }
