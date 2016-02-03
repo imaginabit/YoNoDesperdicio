@@ -56,9 +56,10 @@
             android:src="@drawable/logo_prosalus_black"
             />
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:src="@drawable/logo_freepress"
+
             />
     </LinearLayout>
 </LinearLayout>
