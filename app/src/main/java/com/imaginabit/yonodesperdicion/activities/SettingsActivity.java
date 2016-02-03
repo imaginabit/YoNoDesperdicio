@@ -19,7 +19,6 @@ public class SettingsActivity extends NavigationBaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-
     }
 
 }
