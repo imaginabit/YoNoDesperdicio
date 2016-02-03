@@ -58,7 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Mesaje / Alimento Entregado"
-                    style="@style/Base.TextAppearance.AppCompat.Body1"
+                    style="@style/Base.TextAppearance.AppCompat.Medium"
                     android:padding="5dp"
                     android:background="@color/green_100"
                     />

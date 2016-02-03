@@ -141,7 +141,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         frameImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDialog();
+                startDialogAddImage();
             }
         });
 
@@ -343,17 +343,21 @@ public class AdCreateActivity extends NavigationBaseActivity
     }
 
     private JsonObjectRequest sendDataNewAd(JSONObject jsonRequest){
+        Log.d(TAG, "sendDataNewAd() called with: " + "jsonRequest = [" + jsonRequest + "]");
         return sendDataRequest(jsonRequest , Request.Method.POST, Constants.ADS_API_URL );
     }
     private JsonObjectRequest sendDataEditAd(JSONObject jsonRequest){
+        Log.d(TAG, "sendDataEditAd() called with: " + "jsonRequest = [" + jsonRequest + "]");
         return sendDataRequest(jsonRequest , Request.Method.PUT, Constants.ADS_API_URL+ "/"+ ad.getId() );
     }
 
     private JsonObjectRequest sendDataRequest(JSONObject jsonRequest, int method, String url){
+        Log.d(TAG, "sendDataRequest() called with: " + "jsonRequest = [" + jsonRequest + "], method = [" + method + "], url = [" + url + "]");
 
         JsonObjectRequest request = new JsonObjectRequest( method , url ,
                 jsonRequest,
-                createResponseSuccessListener(), createReqErrorListener()) {
+                createResponseSuccessListener(), 
+                createReqErrorListener()) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map headers = new HashMap();
@@ -366,11 +370,13 @@ public class AdCreateActivity extends NavigationBaseActivity
                 return headers;
             }
         };
+        Log.d(TAG, "sendDataRequest: request: " + request.toString());
         return request;
     }
 
 
     private Response.Listener<JSONObject> createResponseSuccessListener(){
+        Log.d(TAG, "createResponseSuccessListener: ");
         return new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject response) {
@@ -378,7 +384,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                     VolleyLog.v("Response:%n %s", response.toString());
 
                     //response.getString("title");
-                    Log.d(TAG, "onResponse: " + response.toString());
+                    Log.d(TAG, "createResponseSuccessListener_onResponse: " + response.toString());
 
                     JSONObject ad = response.getJSONObject("ad");
                     String title = ad.getString("title");
@@ -406,6 +412,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "ErrorListener_onErrorResponse() called with: " + "error = [" + error + "]");
                 String errorMessage;
                 String errorDialogMsg;
                 errorMessage = VolleyErrorHelper.getMessage(context, error);
@@ -417,7 +424,7 @@ public class AdCreateActivity extends NavigationBaseActivity
     }
 
 
-    private void startDialog() {
+    private void startDialogAddImage() {
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
 
         myAlertDialog.setTitle(getString(R.string.Picture));
@@ -495,8 +502,6 @@ public class AdCreateActivity extends NavigationBaseActivity
                     Toast.makeText(this, "No permission to read external storage.", Toast.LENGTH_SHORT).show();
                 }
             }
-
-
         }
     }
 
@@ -552,7 +557,6 @@ public class AdCreateActivity extends NavigationBaseActivity
 
         } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
             if (data != null) {
-
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
                 Cursor c = getContentResolver().query(selectedImage, filePath,
@@ -562,14 +566,9 @@ public class AdCreateActivity extends NavigationBaseActivity
                 selectedImagePath = c.getString(columnIndex);
                 c.close();
 
-//                if (selectedImagePath != null) {
-//                    txt_image_path.setText(selectedImagePath);
-//                }
-
                 bitmap = BitmapFactory.decodeFile(selectedImagePath); // load
+                bitmap = reziseBitMap(bitmap);
                 // preview image
-                bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, false);
-
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
 
@@ -578,7 +577,6 @@ public class AdCreateActivity extends NavigationBaseActivity
                         Toast.LENGTH_SHORT).show();
             }
         }
-
     }
 
     private void setPhoto(File f){
@@ -597,34 +595,8 @@ public class AdCreateActivity extends NavigationBaseActivity
 
         try {
             bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-
-            bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
-
-            int rotate = 0;
-            try {
-                ExifInterface exif = new ExifInterface(f.getAbsolutePath());
-                int orientation = exif.getAttributeInt(
-                        ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.ORIENTATION_NORMAL);
-
-                switch (orientation) {
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        rotate = 270;
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        rotate = 180;
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        rotate = 90;
-                        break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotate);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                    bitmap.getHeight(), matrix, true);
+            bitmap = rotateExif(bitmap, f);
+            bitmap = reziseBitMap(bitmap);
 
             image.setImageBitmap(bitmap);
             image.setVisibility(View.VISIBLE);
@@ -632,6 +604,41 @@ public class AdCreateActivity extends NavigationBaseActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * rotate image to macth the exif info
+     * @param bitmap
+     * @return
+     */
+    private Bitmap rotateExif(Bitmap bitmap, File f) {
+
+        int rotate = 0;
+        try {
+            ExifInterface exif = new ExifInterface(f.getAbsolutePath());
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotate = 270;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotate = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotate = 90;
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotate);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
+        return bitmap;
     }
 
     @Override
@@ -649,4 +656,30 @@ public class AdCreateActivity extends NavigationBaseActivity
 
     }
 
+    private Bitmap reziseBitMap(Bitmap bitmap) {
+        Log.d(TAG, "reziseBitMap() called with: " + "bitmap = [" + bitmap + "]");
+        final int maxSize = 400;
+        return Utils.reziseBitMap(bitmap, maxSize);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this ,R.style.yndDialog );
+
+        builder.setMessage(getString(R.string.are_you_sure))
+                .setCancelable(false)
+                .setMessage(getString(R.string.lost_data))
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        AdCreateActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 }

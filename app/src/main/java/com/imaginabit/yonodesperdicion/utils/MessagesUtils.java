@@ -45,6 +45,10 @@ public class MessagesUtils {
 
     public static Activity mCurrentActivity;
 
+    private static final String NEW_MESSAGE = "##Nuevo mensaje";
+    private static final String AD_GET = "##ArticuloRecibido";
+    private static final String AD_SEND = "##ArticuloEnviado";
+
     /**
      * Get list of user conversations and last message of this conversation
      * first get inbox conversation them sentbox conversations
@@ -213,9 +217,7 @@ public class MessagesUtils {
         Conversation conversation;
         final ArrayList<Conversation> allConversations = new ArrayList<>();
         for (int i = 0; i < conversations.size(); i++) {
-
             conversation = conversations.get(i);
-
             try {
                 JSONObject jsonRequest = new JSONObject();
                 RequestQueue queue = VolleySingleton.getRequestQueue();
@@ -256,15 +258,12 @@ public class MessagesUtils {
                                         allConversations.add(finalConversation);
                                         //can u call this for every for iteration?
                                         callback.onFinished(messages, error);
-                                        //
                                         if (finalI == conversations.size()-1 ){
                                             callback.onFinished(messages,error,allConversations);
                                         }
                                     }
                                 }
-
                             }
-
                         },
                         new Response.ErrorListener() {
                             @Override
@@ -561,6 +560,7 @@ public class MessagesUtils {
     }
 
     private static ResultMessages createMessageList(JSONArray jsonItems){
+        Log.d(TAG, "createMessageList() called with: " + "jsonItems = [" + jsonItems + "]");
         List<Message> messages = new ArrayList<>();
         Exception error = null;
         for (int i = 0; i < jsonItems.length(); i++) {
@@ -572,8 +572,13 @@ public class MessagesUtils {
                 error = e;
             }
             try {
-                Message msg = createMessage(jsonItem);
-                messages.add(msg);
+                String body = jsonItem.optString("body", "");
+                Log.d(TAG, "createMessageList: is body msg ## " + body );
+                if ( !body.equals(NEW_MESSAGE) ) {
+                    Log.d(TAG, "createMessageList: message saved ## " + body );
+                    Message msg = createMessage(jsonItem);
+                    messages.add(msg);
+                }
             } catch (Exception e) {
                 error = e;
                 //e1.printStackTrace();
@@ -715,15 +720,15 @@ public class MessagesUtils {
     public static void createConversation(final String title, int sendTo, final MessagesCallback callback){
         Log.d(TAG, "createConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
 
-        final String msg = "##Nuevo mensaje";
-
         JSONObject jsonRequest = new JSONObject();
         JSONObject jsonMessage = new JSONObject();
+
+
 
         RequestQueue queue = VolleySingleton.getRequestQueue();
         try {
             jsonMessage.put("subject",title);
-            jsonMessage.put("body",msg);
+            jsonMessage.put("body", NEW_MESSAGE );
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -773,9 +778,6 @@ public class MessagesUtils {
                             error = e;
                             //e.printStackTrace();
                         }
-                        //boolean Mok = messages.add(new Message(0, msg, ((int) AppSession.getCurrentUser().id), new Date()));
-                        //Log.d(TAG, "onResponse: mok "+ Mok);
-
                         callback.onFinished(messages,error, data);
                     }
 
