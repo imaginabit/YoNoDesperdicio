@@ -217,11 +217,9 @@ public class ProfileActivity extends NavigationBaseActivity {
                 startSetAvatarDialog();
 
                 return true;
-            case R.id.edit_name:
+            /*case R.id.edit_name:
                 Log.d(TAG, "onOptionsItemSelected: edit name");
-
-
-                return true;
+                return true;*/
             case R.id.edit_location:
                 Log.d(TAG, "onOptionsItemSelected: edit location");
                 showDialogChangeLocation();
