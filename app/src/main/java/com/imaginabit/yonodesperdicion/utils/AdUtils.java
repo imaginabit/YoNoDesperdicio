@@ -315,7 +315,7 @@ public class AdUtils {
         return 5000;
     }
 
-    public static void fetchAds(final Activity activity, final FetchAdsCallback callback ){
+    public static void fetchAds(final int page, final Activity activity, final FetchAdsCallback callback ){
         final String TAG= AdUtils.TAG + " fetchAds";
         AsyncTask<Void, Void, Void> fetchAdsTask = new AsyncTask<Void, Void, Void>() {
             JSONObject jObj = null;
@@ -334,7 +334,7 @@ public class AdUtils {
             protected Void doInBackground(Void... params) {
                 String json = null;
                 try {
-                    json = Utils.downloadJsonUrl(Constants.ADS_API_URL);
+                    json = Utils.downloadJsonUrl(Constants.ADS_API_URL + "/?page=" + String.valueOf(page) );
                 } catch (IOException e) {
                     Log.e( TAG , "IOExeption " + e.toString());
                     this.e = e;
