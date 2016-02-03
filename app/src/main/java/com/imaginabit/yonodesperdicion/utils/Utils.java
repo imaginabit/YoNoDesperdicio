@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
@@ -704,5 +705,24 @@ public class Utils {
 		if (today.after(adExpirationPlus1)) return true;
 
 		return false;
+	}
+
+	public static Bitmap reziseBitMap(Bitmap bitmap, int maxSize) {
+		Log.d(TAG, "reziseBitMap() called with: " + "bitmap = [" + bitmap + "]");
+//		final int maxSize = 100;
+		int outWidth;
+		int outHeight;
+		int inWidth = bitmap.getWidth();
+		int inHeight = bitmap.getHeight();
+		if (inWidth > inHeight) {
+			outWidth = maxSize;
+			outHeight = (inHeight * maxSize) / inWidth;
+		} else {
+			outHeight = maxSize;
+			outWidth = (inWidth * maxSize) / inHeight;
+		}
+
+		Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, outWidth, outHeight, false);
+		return resizedBitmap;
 	}
 }

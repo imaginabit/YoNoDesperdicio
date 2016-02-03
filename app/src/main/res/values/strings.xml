@@ -120,4 +120,7 @@
     <string name="change_location">Cambiar localizacion</string>
     <string name="enter_postal_code">Introduce tu codigo postal, si tienes la geolocalizacion activada se escribira el codigo de tu ubicacion actual</string>
 
+    <string name="are_you_sure">¿Estas seguro?</string>
+    <string name="lost_data">Si sales perderas los datos introducidos</string>
+
 </resources>
