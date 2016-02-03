@@ -502,8 +502,6 @@ public class AdCreateActivity extends NavigationBaseActivity
                     Toast.makeText(this, "No permission to read external storage.", Toast.LENGTH_SHORT).show();
                 }
             }
-
-
         }
     }
 
@@ -559,7 +557,6 @@ public class AdCreateActivity extends NavigationBaseActivity
 
         } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
             if (data != null) {
-
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
                 Cursor c = getContentResolver().query(selectedImage, filePath,
@@ -569,14 +566,9 @@ public class AdCreateActivity extends NavigationBaseActivity
                 selectedImagePath = c.getString(columnIndex);
                 c.close();
 
-//                if (selectedImagePath != null) {
-//                    txt_image_path.setText(selectedImagePath);
-//                }
-
                 bitmap = BitmapFactory.decodeFile(selectedImagePath); // load
+                bitmap = reziseBitMap(bitmap);
                 // preview image
-                bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, false);
-
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
 
@@ -585,7 +577,6 @@ public class AdCreateActivity extends NavigationBaseActivity
                         Toast.LENGTH_SHORT).show();
             }
         }
-
     }
 
     private void setPhoto(File f){
@@ -604,34 +595,8 @@ public class AdCreateActivity extends NavigationBaseActivity
 
         try {
             bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-
-            bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
-
-            int rotate = 0;
-            try {
-                ExifInterface exif = new ExifInterface(f.getAbsolutePath());
-                int orientation = exif.getAttributeInt(
-                        ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.ORIENTATION_NORMAL);
-
-                switch (orientation) {
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        rotate = 270;
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        rotate = 180;
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        rotate = 90;
-                        break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotate);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                    bitmap.getHeight(), matrix, true);
+            bitmap = rotateExif(bitmap, f);
+            bitmap = reziseBitMap(bitmap);
 
             image.setImageBitmap(bitmap);
             image.setVisibility(View.VISIBLE);
@@ -639,6 +604,41 @@ public class AdCreateActivity extends NavigationBaseActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * rotate image to macth the exif info
+     * @param bitmap
+     * @return
+     */
+    private Bitmap rotateExif(Bitmap bitmap, File f) {
+
+        int rotate = 0;
+        try {
+            ExifInterface exif = new ExifInterface(f.getAbsolutePath());
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotate = 270;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotate = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotate = 90;
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotate);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
+        return bitmap;
     }
 
     @Override
@@ -654,6 +654,12 @@ public class AdCreateActivity extends NavigationBaseActivity
     public void onNothingSelected(AdapterView<?> parent) {
         Log.d(TAG, "onNothingSelected() called with: " + "parent = [" + parent + "]");
 
+    }
+
+    private Bitmap reziseBitMap(Bitmap bitmap) {
+        Log.d(TAG, "reziseBitMap() called with: " + "bitmap = [" + bitmap + "]");
+        final int maxSize = 400;
+        return Utils.reziseBitMap(bitmap, maxSize);
     }
 
 }
