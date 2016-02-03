@@ -1,18 +1,14 @@
 package com.imaginabit.yonodesperdicion.activities;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.imaginabit.yonodesperdicion.ads.AdsContract;
 import com.imaginabit.yonodesperdicion.R;
 
 /**
@@ -49,9 +45,7 @@ public class EditActivity extends FragmentBaseActivity {
 
         // Args
         Intent intent = getIntent();
-        adId = intent.getStringExtra(AdsContract.AdsColumns.AD_ID);
-        adTitle = intent.getStringExtra(AdsContract.AdsColumns.AD_TITLE);
-        adBody = intent.getStringExtra(AdsContract.AdsColumns.AD_BODY);
+
 
         titleTextView = (TextView) findViewById(R.id.adTitle);
         bodyTextView = (TextView) findViewById(R.id.adBody);
@@ -87,19 +81,7 @@ public class EditActivity extends FragmentBaseActivity {
      * Update current ad with the entered data
      */
     private boolean updateCurrentAd() {
-        String title = titleTextView.getText().toString().trim();
-        String body = bodyTextView.getText().toString().trim();
-
-        ContentValues values = new ContentValues();
-        values.put(AdsContract.AdsColumns.AD_TITLE, title);
-        values.put(AdsContract.AdsColumns.AD_BODY, body);
-
-        Uri uri = AdsContract.Ads.buildAdUri(adId);
-        int recordsUpdated = getContentResolver().update(uri, values, null, null);
-
-        Log.d(TAG, "Rows updated: " + recordsUpdated );
-
-        return (recordsUpdated > 0);
+        return false;
     }
 
     @Override

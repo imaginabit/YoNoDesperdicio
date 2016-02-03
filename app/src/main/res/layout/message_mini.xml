@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <LinearLayout
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:background="@color/grey_200"
+        >
+
+        <com.imaginabit.yonodesperdicion.views.RoundedImageView
+            android:id="@+id/user_avatar"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/food"
+            android:layout_gravity="center"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:clipToPadding="true"
+                >
+
+            <TextView
+                android:id="@+id/chat_title"
+                android:layout_width="0dp"
+                android:layout_weight="0.75"
+                android:layout_height="wrap_content"
+                android:text="Nombre Usuario"
+                android:layout_gravity="top|left"
+                android:gravity="top|left"
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                />
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                android:textSize="12dp"
+                android:textColor="@color/grey_600"
+                android:id="@+id/time_last_message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:layout_gravity="right"
+                android:gravity="top|right"
+                android:text="2h"
+                />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:id="@+id/last_message"
+                    android:layout_width="fill_parent"
+                    android:layout_weight="0.9"
+                    android:layout_height="wrap_content"
+                    android:text="Mesaje / Alimento Entregado"
+                    style="@style/Base.TextAppearance.AppCompat.Body1"
+                    />
+
+                <ImageView
+                    android:id="@+id/ratting_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_stars_black"
+                    android:layout_gravity="right"
+                    android:layout_weight="0.1"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/grey_300"
+        />
+</LinearLayout>

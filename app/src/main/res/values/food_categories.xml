@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string-array name="food_categories">
+    <item>Carne y aves</item>
+    <item>Pescado y marisco</item>
+    <item>Fruta</item>
+    <item>Verduras y hortalizas</item>
+    <item>Charcutería</item>
+    <item>Lácteos</item>
+    <item>Legumbres</item>
+    <item>Bebidas</item>
+    <item>Condimentos</item>
+    <item>Pan y bollería</item>
+    <item>Conservas</item>
+    <item>Platos preparados</item>
+</string-array>
+</resources>

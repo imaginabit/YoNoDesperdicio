@@ -19,19 +19,23 @@
     <string name="edit_ad_title">edit_ad_title</string>
     <string name="search_ad_title">search_ad_title</string>
     <string name="user_name">Nombre de usuario</string>
+
     <string name="title_activity_base">Base</string>
+    <string name="title_activity_settigns">Ajustes</string>
+    <string name="title_activity_intro">Intro</string>
+    <string name="title_activity_maps">Map;</string>
+    <string name="title_activity_messages">Mensajes</string>
+    <string name="title_activity_messages_chat">Chat</string>
+    <string name="title_activity_favorites">Favoritos</string>
 
     <string name="cheese_ipsum">Jarlsberg lancashire edam. Dolcelatte hard cheese brie st. agur blue
     cheese caerphilly bavarian bergkase cheese and biscuits mascarpone. Cheeseburger swiss bavarian
     bergkase cream cheese fromage frais cheesy feet port-salut airedale. St. agur blue cheese rubber
     cheese caerphilly cheddar cheesecake cream cheese manchego lancashire. Roquefort squirty cheese
     the big cheese.</string>
-    <string name="title_activity_settigns">Settigns</string>
-    <string name="title_activity_intro">intro</string>
+
     <string name="save_fav">Guardar como favorito</string>
     <string name="texto_caritas">texto ramdom intetne añadir caras unicode pero no</string>
-
-    <string name="title_activity_maps">Map</string>
 
     <string name="edit_location">Editar ubicación</string>
     <string name="edit_wallpic">Cambiar foto de portada</string>
@@ -53,6 +57,10 @@
 
     <!-- User -->
     <string name="user_auth_message">Validando credenciales, espere...</string>
+    <string name="user_create_message">Creando cuenta, espere...</string>
+
+    <!-- Ad -->
+    <string name="ad_create_message">Creando anuncio, espere...</string>
 
     <!-- Content Description for images -->
     <string name="desc_google_icon">Logo de Google</string>
@@ -76,4 +84,40 @@
 
     <!-- Google Play Services error for Toast -->
     <string name="play_services_error_fmt">Google Play Services Error: %i</string>
+
+    <!-- Volley Error -->
+    <string name="volley_error_timeout">Agotado el tiempo de conexión con el backend.</string>
+    <string name="volley_error_no_internet">No hay conexión a Internet.</string>
+    <string name="volley_error_generic">No se ha podido completar con éxito la petición.</string>
+
+    <string name="chat_input_hint">Escribe aqui tu mensaje</string>
+    <string name="menu_refresh">Actualizar</string>
+    <string name="menu_order_distance">Ordenar por distancia</string>
+    <string name="menu_force_update_gps">Actualizar mi ubicación</string>
+    <string name="menu_delete_all_favorites">Borrar todos</string>
+
+    <string name="delete_all_favorites_message">Esta seguro de querer borrar los favoritos</string>
+
+
+    <!-- Fecth Address Intent Service Strings-->
+    <string name="service_not_available">Servicio no disponible</string>
+    <string name="invalid_lat_long_used">Coordenadas invalidas</string>
+    <string name="invalid_location">Sin localizacion</string>
+    <string name="no_address_found">No se encontro localizacion</string>
+    <string name="address_found">Encontrada localizacion</string>
+    <string name="no_geocoder_available">geocoder no disponible</string>
+
+    <!-- Profile -->
+    <string name="entregados">"Entregados "</string>
+    <string name="camera">Camara</string>
+    <string name="gallery">Fotos</string>
+    <string name="pic_from_where">¿Desde donde quieres obtener la foto?</string>
+    <string name="Picture">Foto</string>
+
+
+    <string name="cancel">Cancelar</string>
+    <string name="ok">Aceptar</string>
+    <string name="change_location">Cambiar localizacion</string>
+    <string name="enter_postal_code">Introduce tu codigo postal, si tienes la geolocalizacion activada se escribira el codigo de tu ubicacion actual</string>
+
 </resources>

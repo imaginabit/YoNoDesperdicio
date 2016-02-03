@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.models.Idea;
 
 import org.json.JSONArray;
@@ -51,8 +52,9 @@ public class IdeaUtils {
                 String json = null;
                 try {
                     json = Utils.downloadJsonUrl(Constants.IDEAS_API_URL);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    this.e = e;
                 }
 
                 // try parse the string to a JSON object
@@ -80,7 +82,7 @@ public class IdeaUtils {
                         if (jsonItems.length() > 0) {
                             ideas = new ArrayList<>();
                             //only the two last ideas no jsonItems.length()
-                            for (int i = 0; i < 2; i++) {
+                            for (int i = 0; i < 3; i++) {
                                 JSONObject jsonItem = null;
                                 try {
                                     jsonItem = jsonItems.getJSONObject(i);
@@ -115,9 +117,9 @@ public class IdeaUtils {
                             }
                         }
                     }
-                } catch (Exception e4) {
+                } catch (Exception e) {
                     //e.printStackTrace();
-                    e = e4;
+                    this.e = e;
 //                Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
                 }
 
@@ -155,7 +157,7 @@ public class IdeaUtils {
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
             try {
-                return Utils.downloadJsonUrl(urls[0]);
+                return AppUtils.downloadJsonUrl(urls[0]);
             } catch (IOException e) {
                 return "Unable to retrieve web page. URL may be invalid.";
             }

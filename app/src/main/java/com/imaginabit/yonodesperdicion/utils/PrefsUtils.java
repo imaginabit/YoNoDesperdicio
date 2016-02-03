@@ -19,14 +19,13 @@ public class PrefsUtils {
 
     // Commit
 
-    public static boolean commit(Context context, String key, String value) {
+    public static boolean commit(Context context, String key, boolean value) {
         SharedPreferences.Editor ed = getSharedPreferencesEditor(context);
-        ed.putString(key, value);
+        ed.putBoolean(key, value);
         return ed.commit();
     }
 
-    public static boolean commit(Context context, String key, boolean value) {
-        SharedPreferences.Editor ed = getSharedPreferencesEditor(context);
+    public static boolean commit(SharedPreferences.Editor ed, String key, boolean value) {
         ed.putBoolean(key, value);
         return ed.commit();
     }
