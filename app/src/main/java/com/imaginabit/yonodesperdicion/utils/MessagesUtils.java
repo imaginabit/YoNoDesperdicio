@@ -572,8 +572,11 @@ public class MessagesUtils {
                 error = e;
             }
             try {
-                Message msg = createMessage(jsonItem);
-                messages.add(msg);
+                String body = jsonItem.optString("body", "");
+                if(body != "##Nuevo mensaje") {
+                    Message msg = createMessage(jsonItem);
+                    messages.add(msg);
+                }
             } catch (Exception e) {
                 error = e;
                 //e1.printStackTrace();
