@@ -141,7 +141,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         frameImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDialog();
+                startDialogAddImage();
             }
         });
 
@@ -424,7 +424,7 @@ public class AdCreateActivity extends NavigationBaseActivity
     }
 
 
-    private void startDialog() {
+    private void startDialogAddImage() {
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
 
         myAlertDialog.setTitle(getString(R.string.Picture));
@@ -662,4 +662,24 @@ public class AdCreateActivity extends NavigationBaseActivity
         return Utils.reziseBitMap(bitmap, maxSize);
     }
 
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this ,R.style.yndDialog );
+
+        builder.setMessage(getString(R.string.are_you_sure))
+                .setCancelable(false)
+                .setMessage(getString(R.string.lost_data))
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        AdCreateActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 }
