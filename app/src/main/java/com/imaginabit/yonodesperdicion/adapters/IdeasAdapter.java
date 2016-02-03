@@ -1,5 +1,8 @@
 package com.imaginabit.yonodesperdicion.adapters;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Idea;
-import com.imaginabit.yonodesperdicion.utils.Constants;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -25,6 +28,8 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
     private static final String TAG = IdeasAdapter.class.getSimpleName();
 
     private List<Idea> ideasList = new ArrayList<>();
+    private Double weightTotal;
+    private Context context;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -50,12 +55,17 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public IdeasAdapter(List<Idea> ideasList) {
+    public IdeasAdapter(List<Idea> ideasList,Context c) {
         this.ideasList = ideasList;
-
-        // Create global configuration and initialize ImageLoader with this config
-
+        this.context = c;
     }
+
+    public IdeasAdapter(List<Idea> ideasList,Context c, Double weight){
+        this.ideasList = ideasList;
+        this.context = c;
+        this.weightTotal = weight;
+    }
+
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -73,33 +83,61 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Idea idea = ideasList.get(position);
+        if( weightTotal != null && position!=0)
+            idea = ideasList.get(position-1);
 
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.title.setText(idea.getTitle());
-        holder.body.setText(idea.getBody() );
-        holder.category.setText(idea.getCategory() );
-        holder.intro.setText(idea.getIntroduction());
+        if (weightTotal != null && position== 0) {
 
-        //get image from website
-        ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
-        String imageUri = Constants.HOME_URL + idea.getImageUrl();
+            holder.cardView.setVisibility(View.VISIBLE);
+            holder.body.setText("Son los kilos de comida que hemos evitado que acaben en la basura");
+            holder.title.setText(weightTotal.toString() + " Kg");
+            holder.image.setVisibility(View.GONE);
+            holder.category.setVisibility(View.GONE);
+            holder.intro.setVisibility(View.GONE);
+        } else {
+            // - get element from your dataset at this position
+            // - replace the contents of the view with that element
 
-        Log.i(TAG, "onBindViewHolder:" + imageUri);
+            holder.title.setText(idea.getTitle());
+            holder.body.setText(idea.getBody());
+            holder.category.setText(idea.getCategory());
+            holder.intro.setText(idea.getIntroduction());
 
-        // imageLoader.displayImage(imageUri, holder.image);
 
-        ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
-        imageLoader.displayImage(imageUri, holder.image );
-        // Load image, decode it to Bitmap and return Bitmap to callback
-//        imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
-//            @Override
-//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-//                // Do whatever you want with Bitmap
+            //get image from website
+            ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
+            String imageUri = Constants.HOME_URL + idea.getImageUrl();
+
+            Log.i(TAG, "onBindViewHolder:" + imageUri);
+
+
+            ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
+            imageLoader.displayImage(imageUri, holder.image);
+
+            final Idea finalIdea = idea;
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = Constants.IDEA_URL + finalIdea.getId();
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(i);
+                }
+            });
+
+            //Log.d(TAG, "onBindViewHolder: position "+ position + " total size "+ ideasList.size());
+
+            //if last item add space
+//            if (ideasList.size()==position+1){
+//                Log.d(TAG, "onBindViewHolder: last position");
+//                holder.cardView.setUseCompatPadding(true);
+////                holder.cardView.setCardBackgroundColor(R.color.accent);
 //            }
-//        });
 
-        //holder.image.setImageResource(R.drawable.food);
+        }
+
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

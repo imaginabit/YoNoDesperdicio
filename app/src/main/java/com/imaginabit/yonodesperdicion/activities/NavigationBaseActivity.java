@@ -11,8 +11,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.imaginabit.yonodesperdicion.App;
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 
 
 public abstract class NavigationBaseActivity extends AppCompatActivity
@@ -24,6 +32,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         // Set the context
         this.context = getApplicationContext();
+        App.appContext = context;
     }
 
     /**
@@ -55,13 +64,39 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Current user data
+        View headerNavView = navigationView.getHeaderView(0);
+        RoundedImageView navUserImage = (RoundedImageView) headerNavView.findViewById(R.id.nav_header_user_image);
+        TextView navUserFullname = (TextView) headerNavView.findViewById(R.id.nav_header_user_fullname);
+
+        // User login panel
+        LinearLayout navHeaderLayout = (LinearLayout) headerNavView.findViewById(R.id.nav_header_layout);
+        UserData user = AppSession.getCurrentUser();
+        if (user == null) {
+            navUserFullname.setText("Inicia sesión");
+        } else {
+            navUserFullname.setText(Utils.isEmptyOrNull(user.fullname) ? user.username : user.fullname);
+        }
+
+        // Access to login panel
+        navHeaderLayout.setClickable(true);
+        navHeaderLayout.setBackgroundResource(R.drawable.selectable_item_background);
+        navHeaderLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+                startActivity(loginPanelIntent);
+            }
+        });
+
         return drawer;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -71,9 +106,9 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -93,23 +128,24 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             startActivity(itntMain);
         }
         else if (id == R.id.nav_perfil) {
-            Intent itntPerfil = new Intent(context, ProfileActivity.class);
-            startActivity(itntPerfil);
+            if (Utils.checkLoginAndRedirect(this)){
+                Intent itntPerfil = new Intent(context, ProfileActivity.class);
+                startActivity(itntPerfil);
+            }
 
         }
         else if (id == R.id.nav_favoritos) {
-            // TODO: quitar pruebas para que haga lo que de verdad tiene que hacer
-            // he puesto ver el detalle del anuncio aqui como prueba
-            Intent itntFav = new Intent(context, AdDetailActivity.class);
+            Intent itntFav = new Intent(context, FavoritesActivity.class);
             startActivity(itntFav);
         }
         else if (id == R.id.nav_mensajes) {
             // TODO: quitar pruebas
             // he puesto ver el formulaciro de crear el anuncio aqui como prueba
-            Intent itntMsgs = new Intent(context, AdCreateActivity.class);
+            Intent itntMsgs = new Intent(context, MessagesActivity.class);
             startActivity(itntMsgs);
 
         }
+
         else if (id == R.id.nav_masinfo) {
             Intent itntInfo = new Intent(context, MoreInfoActivity.class);
             itntInfo.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -120,7 +156,6 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             //cargar ajustes
             Intent itntSettings = new Intent(context, SettingsActivity.class);
             startActivity( itntSettings );
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -131,10 +166,38 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById( R.id.drawer_layout );
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        try {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+    }
+
+    public boolean active = false;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        active = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        active = true;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

@@ -22,7 +22,7 @@ import com.google.android.gms.common.api.Status;
 import com.imaginabit.yonodesperdicion.R;
 
 /**
- *
+ * Google singout , need website part , not activated
  */
 public class GoogleSignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final String TAG = "GoogleSignInActivity";

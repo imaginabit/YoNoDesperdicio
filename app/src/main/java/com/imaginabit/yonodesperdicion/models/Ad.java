@@ -1,5 +1,6 @@
 package com.imaginabit.yonodesperdicion.models;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -7,7 +8,9 @@ import android.util.Log;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
+import java.math.RoundingMode;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +30,23 @@ public class Ad implements Parcelable {
                                 DELIVERED
                               };
 
-    private int id;
+    public static enum Categoria {
+        CARNE_Y_AVES,
+        PESCADO_Y_MARISCO,
+        FRUTA,
+        VERDURAS_Y_HORTALIZAS,
+        CHARCUTERÍA,
+        LÁCTEOS,
+        LEGUMBRES,
+        BEBIDAS,
+        ONDIMENTOS,
+        PAN_Y_BOLLERÍA,
+        CONSERVAS,
+        PLATOS_PREPARADOS
+    };
+
+
+    private int _id;
     private String title;
     private String body;
     private String imageUrl;
@@ -38,6 +57,9 @@ public class Ad implements Parcelable {
     private int userId;
     private String userName;
     private boolean favorite;
+    private Location location;
+    private int lastDistance;
+    private String categoria;
 
     // Constructors
 
@@ -113,7 +135,7 @@ public class Ad implements Parcelable {
                 String userName
              ) throws ParseException {
         // Set the properties
-        this.id = id;
+        this._id = id;
         this.title = title;
         this.body = body;
         this.imageUrl = imageUrl;
@@ -160,6 +182,22 @@ public class Ad implements Parcelable {
         this.userName = userName;
         this.favorite = false;
     }
+    public Ad(
+            String title,
+            String body
+    ) {
+        // Set properties
+        this.title = title;
+        this.body = body;
+        this.imageUrl = "";
+        this.weightGrams = 0;
+        this.expiration = null;
+        this.postalCode = 0;
+        this.status = Status.AVAILABLE;
+        this.userId = 0;
+        this.userName = "";
+        this.favorite = false;
+    }
 
     public String getTitle() {
         return title;
@@ -188,9 +226,20 @@ public class Ad implements Parcelable {
     public int getWeightGrams() {
         return weightGrams;
     }
+
     public String getWeightKgStr(){
-        float kilos = (weightGrams / 1000);
-        return (kilos + " kg");
+        float kilos = (float) (weightGrams / 1000.0);
+
+        DecimalFormat df = new DecimalFormat("0.0#");
+        df.setRoundingMode(RoundingMode.HALF_DOWN);
+
+        String txt =  " Kg";
+        String strKilos = df.format(kilos);
+        txt = strKilos + txt;
+
+//        Log.d(TAG, "getWeightKgStr: "+mTitle + " :" + Integer.toString(mWeightGrams) + " " + kilos + " "+ txt );
+
+        return txt;
     }
 
     public void setWeightGrams(int weightGrams) {
@@ -205,6 +254,10 @@ public class Ad implements Parcelable {
 
     public String getExpirationDateLong() {
         return getExpirationDate("hasta el ");
+    }
+
+    public String getExpirationDate() {
+        return getExpirationDate("");
     }
 
     public String getExpirationDate(String prefix) {
@@ -279,10 +332,30 @@ public class Ad implements Parcelable {
 
             case BOOKED:
                 return R.color.ad_reservado;
-
-            default:
-                return R.color.white;
         }
+
+        return R.color.white;
+    }
+
+
+    public int getStatusImage(){
+        int r;
+        String t;
+        switch (status){
+            case AVAILABLE:
+                r = R.drawable.circle_available;
+                t= "disponible";
+                break;
+            case BOOKED:
+                r = R.drawable.circle_booked;
+                t = "reservado";
+                break;
+            default:
+                t = "otro";
+                r = R.color.white;
+        }
+        Log.d(TAG, "getStatusImage: "+ t + " " +r );
+        return r;
     }
 
 
@@ -315,65 +388,37 @@ public class Ad implements Parcelable {
     }
 
     public int getId() {
-        return id;
+        return _id;
     }
     public void setId(int id) {
-        this.id = id;
+        this._id = id;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+
+    public Location getLocation() {
+        return location;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
-        dest.writeString(this.title);
-        dest.writeString(this.body);
-        dest.writeString(this.imageUrl);
-        dest.writeInt(this.weightGrams);
-        dest.writeLong(expiration != null ? expiration.getTime() : -1);
-        dest.writeInt(this.postalCode);
-        dest.writeInt(this.status == null ? -1 : this.status.ordinal());
-        dest.writeInt(this.userId);
-        dest.writeByte(favorite ? (byte) 1 : (byte) 0);
-        dest.writeString(this.userName);
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
-    protected Ad(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-        this.body = in.readString();
-        this.imageUrl = in.readString();
-        this.weightGrams = in.readInt();
-
-        long tmpExpiration = in.readLong();
-        this.expiration = (tmpExpiration == -1) ? null : new Date(tmpExpiration);
-
-        this.postalCode = in.readInt();
-
-        int tmpStatus = in.readInt();
-        this.status = (tmpStatus == -1) ? null : Status.values()[tmpStatus];
-
-        this.userId = in.readInt();
-        this.favorite = in.readByte() != 0;
-        this.userName = in.readString();
+    public int getLastDistance() {
+        return lastDistance;
     }
 
-    public static final Creator<Ad> CREATOR = new Creator<Ad>() {
-        public Ad createFromParcel(Parcel source) {
-            return new Ad(source);
-        }
-        public Ad[] newArray(int size) {
-            return new Ad[size];
-        }
-    };
+    public void setLastDistance(int lastDistance) {
+        this.lastDistance = lastDistance;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
 
     @Override
     public String toString() {
         return "Ad{" +
-                "id=" + id +
+                "_id=" + _id +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
@@ -384,13 +429,66 @@ public class Ad implements Parcelable {
                 ", userId=" + userId +
                 ", userName='" + userName + '\'' +
                 ", favorite=" + favorite +
-                ", weightKgStr='" + getWeightKgStr() + '\'' +
-                ", expirationDateLong='" + getExpirationDateLong() + '\'' +
-                ", expirationDateRelative='" + getExpirationDateRelative() + '\'' +
-                ", statusInt=" + getStatusInt() +
-                ", statusStr='" + getStatusStr() + '\'' +
-                ", statusColor=" + getStatusColor() +
-                ", scribeContents=" + describeContents() +
+                ", location=" + location +
+                ", lastDistance=" + lastDistance +
+                ", categoria=" + categoria +
                 '}';
     }
+
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this._id);
+        dest.writeString(this.title);
+        dest.writeString(this.body);
+        dest.writeString(this.imageUrl);
+        dest.writeInt(this.weightGrams);
+        dest.writeLong(expiration != null ? expiration.getTime() : -1);
+        dest.writeInt(this.postalCode);
+        dest.writeInt(this.status == null ? -1 : this.status.ordinal());
+        dest.writeInt(this.userId);
+        dest.writeString(this.userName);
+        dest.writeByte(favorite ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.location, 0);
+        dest.writeInt(this.lastDistance);
+        dest.writeString(this.categoria);
+    }
+
+    protected Ad(Parcel in) {
+        this._id = in.readInt();
+        this.title = in.readString();
+        this.body = in.readString();
+        this.imageUrl = in.readString();
+        this.weightGrams = in.readInt();
+        long tmpExpiration = in.readLong();
+        this.expiration = tmpExpiration == -1 ? null : new Date(tmpExpiration);
+        this.postalCode = in.readInt();
+        int tmpStatus = in.readInt();
+        this.status = tmpStatus == -1 ? null : Status.values()[tmpStatus];
+        this.userId = in.readInt();
+        this.userName = in.readString();
+        this.favorite = in.readByte() != 0;
+        this.location = in.readParcelable(Location.class.getClassLoader());
+        this.lastDistance = in.readInt();
+        this.categoria = in.readString();
+    }
+
+    public static final Creator<Ad> CREATOR = new Creator<Ad>() {
+        public Ad createFromParcel(Parcel source) {
+            return new Ad(source);
+        }
+
+        public Ad[] newArray(int size) {
+            return new Ad[size];
+        }
+    };
 }

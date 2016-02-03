@@ -9,40 +9,70 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+import com.imaginabit.yonodesperdicion.App;
+import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.activities.LoginPanelActivity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+
 
 /**
- * @author Antonio de Sousa Barroso
+ * General Util Funtions for the app
  */
 public class Utils {
 	private static final String TAG = "Utils";
 	public static ConnectivityManager connectivityManager = null;
+    private static String sZip;
 
 	/**
 	 * Dismiss the progress dialog passed
 	 */
 	public static void dismissProgressDialog(ProgressDialog pd) {
+		Log.v(TAG, "dismissProgressDialog() called with: " + "pd = [" + pd + "]");
+
 		if (pd != null && pd.isShowing()) {
 			pd.dismiss();
 		}
@@ -334,4 +364,345 @@ public class Utils {
 	}
 
 
+	/**
+	 * Get the location of a place based in the zipcode
+	 * @param zip zip code
+	 * @return Address form android.location.Address
+     * @author Fernando
+	 *
+	 * example json from googleapis
+	 * http://maps.googleapis.com/maps/api/geocode/json?components=postal_code:35011&region=es
+	 *
+	 *
+	 */
+	public static Address getGPSfromZip(Context context,int zip){
+        final Geocoder geocoder = new Geocoder( context );
+		try {
+			List<Address> addresses = geocoder.getFromLocationName( "Spain " + Integer.toString(zip), 1);
+
+//			String listString = "getGPSfromZip: addresses: ";
+//			for (Address a : addresses)
+//			{
+//				listString += "\n~~~~~" + a ;
+//			}
+//			listString += "\n ---------------------------------------------------- \n ";
+//			Log.d(TAG, listString );
+
+			if (addresses != null && !addresses.isEmpty()) {
+				Address address = addresses.get(0);
+				// Use the address as needed
+				String message = String.format("Latitude: %f, Longitude: %f",
+						address.getLatitude(), address.getLongitude());
+//				Toast.makeText(context , message, Toast.LENGTH_LONG).show();
+				Log.d(TAG, "getGPSfromZip: " + message);
+				return address;
+			} else {
+				// Display appropriate message when Geocoder services are not available
+//				Toast.makeText(context, "Unable to geocode zipcode", Toast.LENGTH_SHORT).show();
+				Log.d(TAG, "getGPSfromZip: Unable to geocode zipcode");
+				return null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			// handle exception
+		}
+		return null;
+	}
+
+
+	public static void fetchWeightTotal(final FetchWeightTotalCallback callback ){
+		String TAG = "Utils fetchWeightTotal";
+
+		final AsyncTask<Void, Void, Void> fecthWeightTotalTask = new AsyncTask<Void, Void, Void>() {
+			JSONObject jObj = null;
+			public Double wTotal = null;
+			private Exception e = null;
+            String TAG = "Utils fetchWeightTotalTask";
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				String json = null;
+				try {
+					json = Utils.downloadJsonUrl(Constants.WEIGHT_TOTAL_KG_URL);
+				} catch (IOException e) {
+					e.printStackTrace();
+					this.e = e;
+				}
+
+                try {
+					jObj = new JSONObject(json);
+				} catch (JSONException e) {
+					Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+				} catch (Throwable t) {
+					Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
+				}
+
+
+				try {
+                    wTotal = jObj.optDouble("total_kg", 0.0);
+                    Log.d(TAG, "Weight Total " + wTotal.toString()  );
+
+				} catch (Exception e) {
+					this.e = e;
+                    Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				if (e == null) {
+					callback.done(wTotal, null);
+				} else {
+					callback.done(null, e);
+				}
+			}
+		};
+		TasksUtils.execute(fecthWeightTotalTask);
+	}
+
+    public interface FetchWeightTotalCallback {
+        public void done(Double weight_total, Exception e);
+    }
+
+
+	/**
+	 * Tranfrom grams to Kgr
+	 * @param grams
+	 * @return String like "2.23 Kg"
+	 */
+	public static String gramsToKgStr(float grams){
+		float kilos = (float) (grams / 1000.0);
+
+		DecimalFormat df = new DecimalFormat("0.0#");
+		df.setRoundingMode(RoundingMode.HALF_DOWN);
+
+		String txt =  " Kg";
+		String strKilos = df.format(kilos);
+		txt = strKilos + txt;
+
+		return txt;
+	}
+
+	public static boolean checkLoginAndRedirect(final Activity activity){
+        Context context = activity.getApplicationContext();
+		//Log.d(TAG, "checkLoginAndRedirect: current user "+ AppSession.getCurrentUser().username);
+
+        if ( AppSession.getCurrentUser() == null ) {
+            Log.d(TAG, "checkLoginAndRedirect: go to login activity");
+            Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			//TODO da problemas con 2.3.3
+			context.startActivity(loginPanelIntent);
+//            activity.startActivity(loginPanelIntent);
+            return false;
+        } else {
+            return true;
+        }
+    }
+	public static boolean checkLoginAndRedirect(){
+		Log.d(TAG, "checkLoginAndRedirect() called");
+
+		if ( AppSession.getCurrentUser() == null ) {
+			Log.d(TAG, "checkLoginAndRedirect: go to login activity");
+			Intent loginPanelIntent = new Intent(App.appContext, LoginPanelActivity.class);
+			//loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			loginPanelIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			App.appContext.startActivity(loginPanelIntent);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+
+
+	/*
+	Android > 6.0
+	"Note: if you app targets M and above and declares as using the CAMERA permission which is not granted,
+	 then atempting to use this action will result in a SecurityException."
+	 The workaround would be check is the app has camera permission included in the manifest,
+	 if it's , request camera permission before launching intent.
+	http://stackoverflow.com/a/32856112/385437
+	 */
+	public static boolean hasPermissionInManifest(Context context, String permissionName) {
+		final String packageName = context.getPackageName();
+		try {
+			final PackageInfo packageInfo = context.getPackageManager()
+					.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
+			Log.d(TAG, "hasPermissionInManifest: permisions "+ packageInfo);
+			Log.d(TAG, "hasPermissionInManifest: permisions "+ PackageManager.GET_PERMISSIONS );
+			final String[] declaredPermisisons = packageInfo.requestedPermissions;
+			if (declaredPermisisons != null && declaredPermisisons.length > 0) {
+				for (String p : declaredPermisisons) {
+					if (p.equals(permissionName)) {
+						return true;
+					}
+				}
+			}
+		} catch (PackageManager.NameNotFoundException e) {
+
+		}
+		return false;
+	}
+
+	/**
+	 * Show errors in readable format
+	 * @param errorMessage
+	 * @return
+	 */
+	public static String showErrorsJson(String errorMessage ){
+		Log.d(TAG, "showErrorsJson() called with: " + "errorMessage = [" + errorMessage + "]");
+
+		String errorDialogMsg="";
+		Boolean simpleMessage= false;
+		if (!(errorMessage.contains("{") &&  errorMessage.contains("}"))){
+			return errorMessage;
+		}
+
+		try {
+			JSONObject errorJSON = new JSONObject(errorMessage.substring(errorMessage.indexOf("{"), errorMessage.lastIndexOf("}") + 1));;
+			try {
+				String errorStr = errorJSON.getString("errors");;
+				Log.d(TAG, "showErrorsJson: errorStr : " + errorStr);
+				simpleMessage=true;
+				errorDialogMsg=errorStr;
+
+				//TODO: check session at app created
+				if (AppSession.getCurrentUser() == null) {
+					AppSession.release();
+					AppSession.release();
+					//Utils.checkLoginAndRedirect(activity);
+					checkLoginAndRedirect();
+				}
+			}catch (Exception e){
+				try {
+					if (errorJSON.has("error")) {
+						errorDialogMsg = errorJSON.optString("error", "");
+					}
+				}catch (Exception e1 ) {
+					simpleMessage = false;
+					Log.d(TAG, "showErrorsJson: error getStrig ERROR");
+					e1.printStackTrace();
+				}
+				Log.d(TAG, "showErrorsJson: error getStrig errors");
+				e.printStackTrace();
+			}
+
+			try {
+				JSONObject err = errorJSON.getJSONObject("errors");
+				Log.d(TAG, "showErrorsJson: err\n" + err.toString(2));
+				errorDialogMsg="";
+				simpleMessage=false;
+			} catch (Exception e){
+//				e.printStackTrace();
+				Log.d(TAG, "showErrorsJson: error: 'errors' is not a jsonobject , just a string");
+			}
+
+			if (errorJSON.has("errors") && !simpleMessage){
+				Log.d(TAG, "showErrorsJson: errorJSON.has(\"errors\")");
+
+				JSONObject err = errorJSON.getJSONObject("errors");
+
+				Iterator<?> errores = err.keys();
+				while(errores.hasNext() ){
+					String key = (String)errores.next();
+					Log.d(TAG, "showErrorsJson: iterando errores, error "+ key );
+					switch (key){
+						case "title":
+							errorDialogMsg += "Título: ";
+							break;
+						case "body":
+							errorDialogMsg += "Descripción: ";
+							break;
+						case "password":
+							errorDialogMsg += "Clave: ";
+							break;
+					}
+
+					if( err.get(key) instanceof String ) {
+						String value = (String) err.get(key);
+						errorDialogMsg += value.toString();
+						errorDialogMsg += ".\n";
+					} else if(err.get(key) instanceof JSONArray){
+						errorDialogMsg += ((JSONArray) err.get(key)).join(", ").replace("\"","").trim();
+						errorDialogMsg += ".\n";
+						//Iterator<?> tipo = err.getJSONObject(key).keys();
+//                            while(tipo.hasNext()){
+//                                String key2 = (String)tipo.next();
+//                                json.getJSONObject(key).getJSONArray(key2).toString();
+//                            }
+					}
+					errorDialogMsg += "\n";				}
+
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return errorDialogMsg;
+	}
+
+
+	/*
+	show dialgo with errors from json
+	 */
+	public static String showErrorsJson(String errorMessage, Activity activity){
+		Log.d(TAG, "showErrorsJson() called with: " + "errorMessage = [" + errorMessage + "], activity = [" + activity.getLocalClassName() + "]");
+
+		String errorDialogMsg = showErrorsJson(errorMessage);
+
+		//show dialog with error
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.yndDialog);
+		builder.setTitle("Errores")
+				.setMessage(errorDialogMsg)
+				.setCancelable(false)
+				.setPositiveButton("OK", null);
+		AlertDialog alert = builder.create();
+		alert.show();
+
+		return errorDialogMsg;
+	}
+
+	/**
+	 * Set listview hegith based on children for fix nestedscroll problems
+	 * @param listView
+	 */
+	public static void setListViewHeightBasedOnChildren(ListView listView) {
+		ListAdapter listAdapter = listView.getAdapter();
+		if (listAdapter == null) {
+			// pre-condition
+			return;
+		}
+
+		int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+		for (int i = 0; i < listAdapter.getCount(); i++) {
+			View listItem = listAdapter.getView(i, null, listView);
+			if (listItem instanceof ViewGroup) {
+				listItem.setLayoutParams(new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT));
+			}
+			listItem.measure(0, 0);
+			totalHeight += listItem.getMeasuredHeight();
+		}
+
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+		listView.setLayoutParams(params);
+	}
+
+	public static boolean isExpired(Date date){
+		Date today = new Date();
+
+		Date adExpirationPlus1 = null;
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.add(Calendar.DAY_OF_MONTH, 1);
+		adExpirationPlus1 = c.getTime();
+
+		if (today.after(adExpirationPlus1)) return true;
+
+		return false;
+	}
 }

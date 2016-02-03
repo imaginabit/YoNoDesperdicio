@@ -1,24 +1,241 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
+import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
+import com.imaginabit.yonodesperdicion.models.Ad;
+import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
+import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
-public class AdCreateActivity extends NavigationBaseActivity {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+public class AdCreateActivity extends NavigationBaseActivity
+        implements AdapterView.OnItemSelectedListener {
+
+    private static final String TAG = "AdCreateActivity";
+    ImageView image;
+    ImageView imageEditable;
+    EditText title;
+    EditText weight;
+    EditText expiration_date;
+    EditText adDescription;
+    EditText adZipCode;
+    Ad ad;
+    String foodCategory;
+
+    protected static final int CAMERA_REQUEST = 0;
+    protected static final int GALLERY_PICTURE = 1;
+    protected static final int STORAGE_PERMISSION_RC = 3;
+    Bitmap bitmap;
+    String selectedImagePath;
+    private Intent pictureActionIntent = null;
+    private AdCreateCallback mCallback;
+    ProgressDialog pd;
+    Activity thisAdCreateActivity;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    File capturedPhoto;
+
+    private boolean isEditing= false;
+
+    public interface AdCreateCallback {
+        public void onFinished();
+        public void onError(String errorMessage);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.ad_edit);
         setSupportedActionBar(R.drawable.ic_arrow_back_black);
+
+        context = getApplicationContext();
+
+        image =  (ImageView) findViewById(R.id.ad_image);
+        image.setVisibility(View.INVISIBLE);
+
+        imageEditable =  (ImageView) findViewById(R.id.ad_image_editable);
+        imageEditable.setVisibility(View.INVISIBLE);
+
+        title = (EditText) findViewById( R.id.title);
+        weight = (EditText) findViewById( R.id.weight);
+        expiration_date = (EditText) findViewById( R.id.expiration_date);
+        adDescription = (EditText) findViewById(R.id.ad_description);
+        adZipCode = (EditText) findViewById(R.id.postal_code);
+
+        Spinner spinner = (Spinner) findViewById(R.id.input_categoria);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.food_categories, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
+
+
+        Button btnDeleteAd = (Button) findViewById(R.id.delete_ad);
+        btnDeleteAd.setVisibility(View.GONE);
+
+        FrameLayout frameImage = (FrameLayout) findViewById(R.id.frame_image);
+        frameImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDialog();
+            }
+        });
+
+        VolleySingleton.init(this);
+
+        thisAdCreateActivity = this;
+
+        // Retrieve args
+        Bundle data = getIntent().getExtras();
+        if (data != null) {
+            Log.d(TAG, "onCreate: data " + data.toString());
+            ad = (Ad) data.getParcelable("ad");
+        }
+        if (ad != null) {
+            isEditing= true;
+            getSupportActionBar().setTitle("Editar " + ad.getTitle());
+//            btnDeleteAd.setVisibility(View.VISIBLE);
+
+            imageEditable.setImageDrawable(
+                    ContextCompat.getDrawable(this, R.drawable.brick));
+            imageEditable.setVisibility(View.VISIBLE);
+
+            //rellenar campos
+            title.setText(ad.getTitle());
+            weight.setText(ad.getWeightKgStr());
+            expiration_date.setText( ad.getExpirationDate() );
+            adZipCode.setText(Integer.toString(ad.getPostalCode()));
+            adDescription.setText(ad.getBody());
+
+            Log.d(TAG, "onCreate: image:" + ad.getImageUrl());
+
+            ImageLoader imageLoader; // Get singleton instance
+            imageLoader = ImageLoader.getInstance();
+            String imageUri = Constants.HOME_URL + ad.getImageUrl();
+
+            //Spinner Categorias get data
+            String categoria = ad.getCategoria();
+            List<String> foodCategoryStr = Arrays.asList((getResources().getStringArray(R.array.food_categories)));
+            int catIndex = foodCategoryStr.indexOf(categoria);
+
+            spinner.setSelection(catIndex);
+            Log.d(TAG, "onCreate: cat Index " + catIndex + " categoria  "+ categoria);
+
+
+            //me da a mi que ha esto no le esta haciendo ningun caso
+            ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
+            try {
+                imageLoader.displayImage(imageUri, imageEditable );
+                //imageEditable.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            } catch ( Exception e){
+                e.printStackTrace();
+                //imageEditable.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.brick));
+            }
+
+
+            //TODO: borrar anuncio
+        }
+
+        // show calendar widget to select date
+        expiration_date.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    new DatePickerDialog(AdCreateActivity.this, date, myCalendar
+                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                }
+            }
+        });
+    }
+
+    Calendar myCalendar = Calendar.getInstance();
+    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+            myCalendar.set(Calendar.YEAR, year);
+            myCalendar.set(Calendar.MONTH, monthOfYear);
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateLabel();
+        }
+    };
+
+    private void updateLabel() {
+
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat);// , Locale.ENGLISH
+
+        expiration_date.setText(sdf.format(myCalendar.getTime()));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.ad_edit , menu);
+        getMenuInflater().inflate(R.menu.ad_edit, menu);
         return true;
     }
 
@@ -29,7 +246,8 @@ public class AdCreateActivity extends NavigationBaseActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_done) {
-            Toast.makeText(AdCreateActivity.this, "guardar", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(AdCreateActivity.this, "guardar", Toast.LENGTH_SHORT).show();
+            sendAdData();
             return true;
         }
         if (id == android.R.id.home ) {
@@ -38,4 +256,397 @@ public class AdCreateActivity extends NavigationBaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void sendAdData() {
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+
+        JSONObject jsonAd = null;
+        JSONObject jsonImage= null;
+        ProvinciasCP.init();
+        int grams;
+        grams = 0;
+        if (Utils.isNotEmptyOrNull(String.valueOf(weight.getText()))) {
+            float f = Float.parseFloat(weight.getText().toString().replaceAll("[^0-9.]", ""));
+            grams = (int) (f * 1000);
+        }
+
+        String provincia = "";
+        String zipCode = adZipCode.getText().toString();
+        if (Utils.isNotEmptyOrNull(zipCode)) {
+            int codigoProvincia = Integer.parseInt(zipCode.substring(0, 2));
+            try {
+                provincia = ProvinciasCP.mProvincias.get(codigoProvincia - 1).mProvincia;
+                Log.d(TAG, "sendAdData: c provincia" + provincia);
+            } catch (Exception e) {
+                Log.d(TAG, "sendAdData: Error al sacar la provincia del codigo postal: " + codigoProvincia);
+            }
+        }
+
+        try {
+            jsonAd = new JSONObject();
+
+            if( Utils.isNotEmpty( title.getText().toString() )) jsonAd.put("title", title.getText());
+            if( Utils.isNotEmpty( adDescription.getText().toString() ) ) jsonAd.put( "body", adDescription.getText() );
+            jsonAd.put( "grams", grams );
+//                if( Utils.isNotEmpty( ad.getStatus() ) jsonAd.put( "status", ad.G ); // cant change status
+            jsonAd.putOpt("status", 1);
+            if( Utils.isNotEmpty( provincia ) ) jsonAd.put( "province", provincia );
+            if( Utils.isNotEmpty( adZipCode.getText().toString() ) ) jsonAd.put( "zipcode", adZipCode.getText() );
+            if( Utils.isNotEmpty( this.foodCategory ) ) jsonAd.put( "food_category", this.foodCategory );
+            if( Utils.isNotEmpty( expiration_date.getText().toString() ) ) jsonAd.put( "pick_up_date", expiration_date.getText() );
+
+            if (isEditing) {
+                jsonAd.put("id",ad.getId());
+            }
+
+            if (bitmap != null) {
+                //scale image max 400px width
+                float aspectRatio = bitmap.getWidth() /
+                        (float) bitmap.getHeight();
+                int width = 400;
+                int height = Math.round(width / aspectRatio);
+                bitmap = Bitmap.createScaledBitmap(
+                        bitmap, width, height, false);
+
+                //Convent Bitmap in jpeg base64
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+                byte[] b = baos.toByteArray();
+                String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+
+                //json image format
+                // "image":{"filename": "original_filename.jpeg","content_type": "image/jpeg","content": "<base64string>"}
+
+                jsonImage = new JSONObject()
+                        .put("filename", "u" + AppSession.getCurrentUser().id + "image" + sdf.format(new Date()))
+                        .put("content_type", "image/jpeg")
+                        .put("content", encodedImage);
+
+                jsonAd.put("image", jsonImage);
+            }
+
+            JSONObject jsonRequest = new JSONObject().put("ad", jsonAd);
+
+            Log.d(TAG, " ---- sendAdData: jsonRequest :" + jsonRequest.toString());
+
+            JsonObjectRequest request;
+            if (isEditing)
+                request = sendDataEditAd(jsonRequest);
+            else
+                request = sendDataNewAd(jsonRequest);
+
+            queue.add(request);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JsonObjectRequest sendDataNewAd(JSONObject jsonRequest){
+        return sendDataRequest(jsonRequest , Request.Method.POST, Constants.ADS_API_URL );
+    }
+    private JsonObjectRequest sendDataEditAd(JSONObject jsonRequest){
+        return sendDataRequest(jsonRequest , Request.Method.PUT, Constants.ADS_API_URL+ "/"+ ad.getId() );
+    }
+
+    private JsonObjectRequest sendDataRequest(JSONObject jsonRequest, int method, String url){
+
+        JsonObjectRequest request = new JsonObjectRequest( method , url ,
+                jsonRequest,
+                createResponseSuccessListener(), createReqErrorListener()) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map headers = new HashMap();
+                String token = AppSession.getCurrentUser().authToken;
+                headers.put("Authorization", token);
+                Log.d(TAG, "getHeaders: authToken " + token);
+
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
+        return request;
+    }
+
+
+    private Response.Listener<JSONObject> createResponseSuccessListener(){
+        return new Response.Listener<JSONObject>(){
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    VolleyLog.v("Response:%n %s", response.toString());
+
+                    //response.getString("title");
+                    Log.d(TAG, "onResponse: " + response.toString());
+
+                    JSONObject ad = response.getJSONObject("ad");
+                    String title = ad.getString("title");
+                    String id = ad.getString("id");
+
+                    if(isEditing) {
+                        Toast.makeText(AdCreateActivity.this, "Anuncio editado", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AdCreateActivity.this,MainActivity.class);
+                        startActivity(intent);
+                    } else
+                        Toast.makeText(AdCreateActivity.this, "Anuncio creado", Toast.LENGTH_SHORT).show();
+
+                    Log.d(TAG, "onResponse: title " + title + " " + id);
+                    thisAdCreateActivity.finish();
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                    //Utils.dismissProgressDialog(pd);
+                }
+            }
+        };
+    }
+
+    private Response.ErrorListener createReqErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String errorMessage;
+                String errorDialogMsg;
+                errorMessage = VolleyErrorHelper.getMessage(context, error);
+                errorDialogMsg = Utils.showErrorsJson(errorMessage, AdCreateActivity.this);
+                //Toast.makeText(AdCreateActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+            }
+        };
+    }
+
+
+    private void startDialog() {
+        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
+
+        myAlertDialog.setTitle(getString(R.string.Picture));
+        myAlertDialog.setMessage(getString(R.string.pic_from_where));
+
+        myAlertDialog.setPositiveButton(getString(R.string.gallery),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent pictureActionIntent = null;
+
+                        pictureActionIntent = new Intent(
+                                Intent.ACTION_PICK,
+                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(
+                                pictureActionIntent,
+                                GALLERY_PICTURE);
+
+                    }
+                });
+
+        myAlertDialog.setNegativeButton(getString(R.string.camera),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                        Intent intent = new Intent(
+                                MediaStore.ACTION_IMAGE_CAPTURE);
+                        File f = new File(android.os.Environment
+                                .getExternalStorageDirectory(), "temp.jpg");
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                Uri.fromFile(f));
+
+                        int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
+                                Manifest.permission.CAMERA);
+
+                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                            startActivityForResult(intent, CAMERA_REQUEST);
+                        } else {
+                            ActivityCompat.requestPermissions(AdCreateActivity.this, new String[]{Manifest.permission.CAMERA},
+                                    CAMERA_REQUEST);
+                            //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        myAlertDialog.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(
+                            MediaStore.ACTION_IMAGE_CAPTURE);
+                    File f = new File(android.os.Environment
+                            .getExternalStorageDirectory(), "temp.jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                            Uri.fromFile(f));
+                    startActivityForResult(intent, CAMERA_REQUEST);
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case STORAGE_PERMISSION_RC:{
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    File f = new File(Environment.getExternalStorageDirectory()
+                            .toString());
+                    setPhoto(f);
+                } else {
+                    Toast.makeText(this, "No permission to read external storage.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        bitmap = null;
+        selectedImagePath = null;
+
+        if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+//            Toast.makeText(this, "Image saved to:\n" +
+//                    data.getExtras().get("data"), Toast.LENGTH_LONG).show();
+
+
+            File f = new File(Environment.getExternalStorageDirectory()
+                    .toString());
+
+            Log.d(TAG, "onActivityResult: file: " + f.toString());
+            if(f.exists()) {
+                Log.d(TAG, "onActivityResult: Existe!");
+                if (f.canRead() ){
+                    Log.d(TAG, "onActivityResult: file: can read" );
+                }else{
+                    int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE);
+
+                    if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+//                        Toast.makeText(AdCreateActivity.this, "Puedo leer ", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onActivityResult: tengo permisos para leer external storage");
+                        //startActivityForResult(intent, CAMERA_REQUEST);
+                    } else {
+                        ActivityCompat.requestPermissions(AdCreateActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_RC);
+                        //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onActivityResult: no tengo permisos para leer external storage");
+                        return;
+                    }
+                }
+
+                if (f.isFile()) {
+                    Log.d(TAG, "onActivityResult: is file: " + f.getName());
+
+                }
+                if (f.isDirectory()){
+                    Log.d(TAG, "onActivityResult: file: " + f.listFiles().toString());
+                }
+                
+            }else {
+                Log.d(TAG, "onActivityResult: file f no existe");
+            }
+
+            setPhoto(f);
+
+        } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
+            if (data != null) {
+
+                Uri selectedImage = data.getData();
+                String[] filePath = {MediaStore.Images.Media.DATA};
+                Cursor c = getContentResolver().query(selectedImage, filePath,
+                        null, null, null);
+                c.moveToFirst();
+                int columnIndex = c.getColumnIndex(filePath[0]);
+                selectedImagePath = c.getString(columnIndex);
+                c.close();
+
+//                if (selectedImagePath != null) {
+//                    txt_image_path.setText(selectedImagePath);
+//                }
+
+                bitmap = BitmapFactory.decodeFile(selectedImagePath); // load
+                // preview image
+                bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, false);
+
+                image.setImageBitmap(bitmap);
+                image.setVisibility(View.VISIBLE);
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Cancelado",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    private void setPhoto(File f){
+        for (File temp : f.listFiles()) {
+            if (temp.getName().equals("temp.jpg")) {
+                f = temp;
+                break;
+            }
+        }
+        if (!f.exists()) {
+            Toast.makeText(getBaseContext(),
+                    "Error while capturing image", Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        try {
+            bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+
+            bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
+
+            int rotate = 0;
+            try {
+                ExifInterface exif = new ExifInterface(f.getAbsolutePath());
+                int orientation = exif.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL);
+
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        rotate = 270;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        rotate = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        rotate = 90;
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotate);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                    bitmap.getHeight(), matrix, true);
+
+            image.setImageBitmap(bitmap);
+            image.setVisibility(View.VISIBLE);
+            //storeImageTosdCard(bitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "onItemSelected() called with: " + "parent = [" + parent + "], view = [" + view + "], position = [" + position + "], id = [" + id + "]");
+
+        Resources res = getResources();
+        String[] categories = res.getStringArray(R.array.food_categories);
+        this.foodCategory = categories[position];
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Log.d(TAG, "onNothingSelected() called with: " + "parent = [" + parent + "]");
+
+    }
+
 }
