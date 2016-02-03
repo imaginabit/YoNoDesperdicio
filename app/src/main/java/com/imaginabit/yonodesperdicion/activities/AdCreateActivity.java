@@ -343,17 +343,21 @@ public class AdCreateActivity extends NavigationBaseActivity
     }
 
     private JsonObjectRequest sendDataNewAd(JSONObject jsonRequest){
+        Log.d(TAG, "sendDataNewAd() called with: " + "jsonRequest = [" + jsonRequest + "]");
         return sendDataRequest(jsonRequest , Request.Method.POST, Constants.ADS_API_URL );
     }
     private JsonObjectRequest sendDataEditAd(JSONObject jsonRequest){
+        Log.d(TAG, "sendDataEditAd() called with: " + "jsonRequest = [" + jsonRequest + "]");
         return sendDataRequest(jsonRequest , Request.Method.PUT, Constants.ADS_API_URL+ "/"+ ad.getId() );
     }
 
     private JsonObjectRequest sendDataRequest(JSONObject jsonRequest, int method, String url){
+        Log.d(TAG, "sendDataRequest() called with: " + "jsonRequest = [" + jsonRequest + "], method = [" + method + "], url = [" + url + "]");
 
         JsonObjectRequest request = new JsonObjectRequest( method , url ,
                 jsonRequest,
-                createResponseSuccessListener(), createReqErrorListener()) {
+                createResponseSuccessListener(), 
+                createReqErrorListener()) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map headers = new HashMap();
@@ -366,11 +370,13 @@ public class AdCreateActivity extends NavigationBaseActivity
                 return headers;
             }
         };
+        Log.d(TAG, "sendDataRequest: request: " + request.toString());
         return request;
     }
 
 
     private Response.Listener<JSONObject> createResponseSuccessListener(){
+        Log.d(TAG, "createResponseSuccessListener: ");
         return new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject response) {
@@ -378,7 +384,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                     VolleyLog.v("Response:%n %s", response.toString());
 
                     //response.getString("title");
-                    Log.d(TAG, "onResponse: " + response.toString());
+                    Log.d(TAG, "createResponseSuccessListener_onResponse: " + response.toString());
 
                     JSONObject ad = response.getJSONObject("ad");
                     String title = ad.getString("title");
@@ -406,6 +412,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "ErrorListener_onErrorResponse() called with: " + "error = [" + error + "]");
                 String errorMessage;
                 String errorDialogMsg;
                 errorMessage = VolleyErrorHelper.getMessage(context, error);
