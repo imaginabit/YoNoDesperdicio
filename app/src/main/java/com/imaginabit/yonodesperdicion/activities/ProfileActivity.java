@@ -488,20 +488,7 @@ public class ProfileActivity extends NavigationBaseActivity {
     private Bitmap reziseBitMap(Bitmap bitmap) {
         Log.d(TAG, "reziseBitMap() called with: " + "bitmap = [" + bitmap + "]");
         final int maxSize = 100;
-        int outWidth;
-        int outHeight;
-        int inWidth = bitmap.getWidth();
-        int inHeight = bitmap.getHeight();
-        if (inWidth > inHeight) {
-            outWidth = maxSize;
-            outHeight = (inHeight * maxSize) / inWidth;
-        } else {
-            outHeight = maxSize;
-            outWidth = (inWidth * maxSize) / inHeight;
-        }
-
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, outWidth, outHeight, false);
-        return resizedBitmap;
+        return Utils.reziseBitMap(bitmap, maxSize);
     }
 
     private void sendAvatarToWeb() {
@@ -588,7 +575,7 @@ public class ProfileActivity extends NavigationBaseActivity {
 
 
     private void showDialogChangeLocation() {
-
+        Log.d(TAG, "showDialogChangeLocation() called");
         // Creating alert Dialog with one Button
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.yndDialog);
 
