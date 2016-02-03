@@ -36,6 +36,7 @@ import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
+import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
@@ -57,7 +58,7 @@ import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends NavigationBaseActivity
-        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
     private final String TAG = getClass().getSimpleName();
 
     private RecyclerView recyclerView;
@@ -72,6 +73,8 @@ public class MainActivity extends NavigationBaseActivity
     private AddressResultReceiver mResultReceiver;
     private boolean mAddressRequested;
     private String mAddressOutput;
+    private int mPreLast;
+    private int mSrcollY;
 
 
     @Override
@@ -95,7 +98,6 @@ public class MainActivity extends NavigationBaseActivity
         setDrawerLayout(toolbar);
 
         final Activity mainActivity = this;
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -154,16 +156,26 @@ public class MainActivity extends NavigationBaseActivity
         adapter = new AdsAdapter(context, mAds);
         recyclerView.setAdapter(adapter);
 
+
+        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener((LinearLayoutManager)layoutManager) {
+            @Override
+            public void onLoadMore(int current_page, int current_scroll) {
+                mSrcollY = current_scroll;
+                Log.d(TAG, "onLoadMore: mSrcoll nau: " + mSrcollY);
+                Log.d(TAG, "onLoadMore() called with: " + "current_page = [" + current_page + "]");
+                loadMoreData(current_page);
+            }
+        });
         //Get Ads
         getAdsFromWeb();
-
 
         /*
          * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
          * performs a swipe-to-refresh gesture.
          */
         mSwipeRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
+                new SwipeRefreshLayout.OnRefreshListener()
+                {
                     @Override
                     public void onRefresh() {
                         Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
@@ -175,10 +187,40 @@ public class MainActivity extends NavigationBaseActivity
                 }
         );
 
-
         //Get Last Location
         // Create an instance of GoogleAPIClient.
         checkGoogleApiClient();
+    }
+
+    private void loadMoreData(int current_page) {
+        AdUtils.fetchAds(current_page, this, new AdUtils.FetchAdsCallback() {
+            @Override
+            public void done(List<Ad> ads, Exception e) {
+                if (e == null) {
+                    if (ads != null) {
+                        Log.d(TAG, "loadMoreData_done() called with: " + "ads = [" + ads + "], e = [" + e + "]");
+                        mAds.addAll(ads);
+                        adapter = new AdsAdapter(context, mAds);
+                        recyclerView.setAdapter(adapter);
+
+                        Log.d(TAG, "done: mScrollY " + mSrcollY);
+                        Log.d(TAG, "done: current scroll " + recyclerView.getScrollY());
+
+                        recyclerView.scrollTo(recyclerView.getScrollX(), mSrcollY);
+                        recyclerView.scrollTo(recyclerView.getScrollX(), 100);
+
+                        Log.d(TAG, "done: current scroll after scrollto " + recyclerView.getScrollY());
+//                        ((AdsAdapter)adapter).setData(mAds);
+//                        adapter.notifyDataSetChanged();
+                        Log.d(TAG, "Anuncios general : " + mAds.size());
+                    }
+                } else {
+                    Log.e(TAG, "error al obtener los Anuncios");
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     private void initializeData() {
@@ -242,7 +284,7 @@ public class MainActivity extends NavigationBaseActivity
         final Handler handler = new Handler();
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            AdUtils.fetchAds(this, new AdUtils.FetchAdsCallback() {
+            AdUtils.fetchAds(1,this, new AdUtils.FetchAdsCallback() {
                 @Override
                 public void done(List<Ad> ads, Exception e) {
                     if (e == null) {
@@ -543,5 +585,6 @@ public class MainActivity extends NavigationBaseActivity
 
 //        adapter.notifyDataSetChanged();
     }
+
 
 }
