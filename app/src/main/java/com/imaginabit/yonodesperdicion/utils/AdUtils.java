@@ -230,11 +230,14 @@ public class AdUtils {
         zipcode = jsondata.optString("zipcode", "");
         categoria = jsondata.optString("food_category", "");
 
+        Log.d(TAG, "createAd: pick_up_date: " + pick_up_date);
+
         try {
             //status 3 => producto entregado
             if ( Utils.isNotEmptyOrNull(title)
                     && status != 3
-                    && (pick_up_date==null || !Utils.isExpired(Constants.DATE_JSON_SORT_FORMAT.parse(pick_up_date) ) )
+                    && ( pick_up_date=="null" ||
+                                !Utils.isExpired(Constants.DATE_JSON_SORT_FORMAT.parse(pick_up_date) ) )
                     ) {
                 //Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName)
                 ad = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
@@ -252,14 +255,12 @@ public class AdUtils {
         }
     }
 
-
     public static Location calculateLocation(Ad ad){
         Log.d(TAG, "calculateLocation() called with: " + "ad = [" + ad.getTitle() + "]");
         Location adLocation = new Location(ad.getTitle());
         Address adAddress = Utils.getGPSfromZip( App.appContext , ad.getPostalCode());
 
         if (adAddress!= null ) {
-
             //TODO: need user postal code to get location from postal code zip
             //Address userAddress = Utils.getGPSfromZip(context, Integer.parseInt( UserData.prefsFetch(context).zipCode ) );
 
@@ -267,22 +268,14 @@ public class AdUtils {
             String countryCode = adAddress.getCountryName();
             Log.d(TAG, "calculateLocation: COUNTRY CODE " + countryCode );
 
-
             try {
                 adLocation.setLatitude(adAddress.getLatitude());
                 adLocation.setLongitude(adAddress.getLongitude());
 
                 return adLocation;
-
             } catch (Exception e){
                 e.printStackTrace();
             }
-
-
-
-
-
-
         } else {
             Log.d(TAG, "calculateLocation: No se pudo determinar la localizacion");
         }
