@@ -136,14 +136,23 @@ public class ProfileActivity extends NavigationBaseActivity {
         adapter = new AdsAdapter(context, mAds);
         recyclerView.setAdapter(adapter);
 
-        // Back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         if (AppSession.getCurrentUser() != null) {
             VolleySingleton.init(context);
-
             mUser = AppSession.getCurrentUser();
+        } else {
+            //if send an user id show that user
+            Bundle data = getIntent().getExtras();
+            if (data != null) {
+                Log.d(TAG, "onCreate: data " + data.toString());
+                Ad ad = (Ad) data.getParcelable("ad");
+                mUser = new UserData( (long)ad.getUserId(),"","",ad.getUserName(),ad.getUserName(),"","","",ad.getProvince(),String.valueOf(ad.getPostalCode()),0,0);
+                getUserWeb();
+            }
+            // show Back button in toolbar
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
+        if (mUser!= null){
             userName = (TextView) findViewById(R.id.user_name);
             location = (TextView) findViewById(R.id.location);
             weight = (TextView) findViewById(R.id.kilos);
@@ -655,10 +664,4 @@ public class ProfileActivity extends NavigationBaseActivity {
             }
         }
     }
-
-
-
-
-
-
 }
