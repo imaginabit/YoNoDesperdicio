@@ -1,75 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:id="@+id/scroll"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.SettingsActivity"
     tools:showIn="@layout/activity_settigns">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        />
-    <LinearLayout
-        android:id="@+id/options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:visibility="gone"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Opciones"
-            style="@style/Base.TextAppearance.AppCompat.Title"
-            android:paddingBottom="30dp"
-            />
-    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
         android:orientation="vertical"
-        style="@style/AdCard"
-        >
+        android:paddingTop="0dp">
+
+
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Acerca de"
-            style="@style/Base.TextAppearance.AppCompat.Title"
-            android:textColor="@color/primary"
-            android:paddingBottom="30dp"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Prosalus es una organización no gubernamental de cooperación al desarrollo (ONGD) cuya misión es promover el respeto, protección y garantía de los derechos humanos a la alimentación, a la salud y al agua y saneamiento. Una de las líneas de trabajo de Prosalus está relacionada con el reconocimiento del derecho a la alimentación y un aspecto importante es la disminución del desperdicio de alimentos. Siguiendo la filosofía colaborativa, ponemos en marcha esta red que facilita el intercambio y la reducción del desperdicio. Esta iniciativa cuenta con el apoyo de Territorios Solidarios de BBVA y con la colaboración del Centro de Innovación en Tecnología para el Desarrollo Humano (itdUPM)."
-            style="@style/Base.TextAppearance.AppCompat.Body1"
-            />
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/logo_prosalus_color"
-            android:padding="30dp"
-            />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                  android:text="Diseño sitio web: Estudio Blg
-Desarrollo weby API: Punto Abierto
-Diseño y desarrollo de la APP: Freepress S. Coop."
-                  style="@style/Base.TextAppearance.AppCompat.Body1"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
 
-            />
+        <LinearLayout
+            android:id="@+id/options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="30dp"
+                android:text="Opciones" />
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/AdCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="30dp"
+                android:text="Acerca de"
+                android:textColor="@color/primary" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_prosalus" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="30dp"
+                android:src="@drawable/logo_prosalus_color" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/credits2"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
-</LinearLayout>
+</ScrollView>
