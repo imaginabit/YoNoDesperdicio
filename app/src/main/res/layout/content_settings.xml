@@ -54,7 +54,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Prosalus es una organización no gubernamental de cooperación al desarrollo (ONGD) cuya misión es promover el respeto, protección y garantía de los derechos humanos a la alimentación, a la salud y al agua y saneamiento. Una de las líneas de trabajo de Prosalus está relacionada con el reconocimiento del derecho a la alimentación y un aspecto importante es la disminución del desperdicio de alimentos. Siguiendo la filosofía colaborativa, ponemos en marcha esta red que facilita el intercambio y la reducción del desperdicio. Esta iniciativa cuenta con el apoyo de Territorios Solidarios de BBVA y con la colaboración del Centro de Innovación en Tecnología para el Desarrollo Humano (itdUPM)."
+            android:text="@string/about_prosalus"
             style="@style/Base.TextAppearance.AppCompat.Body1"
             />
         <ImageView
@@ -64,9 +64,7 @@
             android:padding="30dp"
             />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                  android:text="Diseño sitio web: Estudio Blg
-Desarrollo weby API: Punto Abierto
-Diseño y desarrollo de la APP: Freepress S. Coop."
+                  android:text="@string/credits2"
                   style="@style/Base.TextAppearance.AppCompat.Body1"
 
             />
