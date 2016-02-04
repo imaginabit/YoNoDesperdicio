@@ -16,9 +16,7 @@ public class SettingsActivity extends NavigationBaseActivity {
         setDrawerLayout(toolbar);
 
         // Back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 }
