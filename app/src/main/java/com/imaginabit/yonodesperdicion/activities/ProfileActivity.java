@@ -136,14 +136,23 @@ public class ProfileActivity extends NavigationBaseActivity {
         adapter = new AdsAdapter(context, mAds);
         recyclerView.setAdapter(adapter);
 
-        // Back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         if (AppSession.getCurrentUser() != null) {
             VolleySingleton.init(context);
-
             mUser = AppSession.getCurrentUser();
+        } else {
+            //if send an user id show that user
+            Bundle data = getIntent().getExtras();
+            if (data != null) {
+                Log.d(TAG, "onCreate: data " + data.toString());
+                Ad ad = (Ad) data.getParcelable("ad");
+                mUser = new UserData( (long)ad.getUserId(),"","",ad.getUserName(),ad.getUserName(),"","","",ad.getProvince(),String.valueOf(ad.getPostalCode()),0,0);
+                getUserWeb();
+            }
+            // show Back button in toolbar
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
+        if (mUser!= null){
             userName = (TextView) findViewById(R.id.user_name);
             location = (TextView) findViewById(R.id.location);
             weight = (TextView) findViewById(R.id.kilos);
@@ -592,10 +601,13 @@ public class ProfileActivity extends NavigationBaseActivity {
 
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        //set zip code from location data
         try {
-            List<Address> addresses = geocoder.getFromLocation(AppSession.lastLocation.getLatitude(), AppSession.lastLocation.getLongitude(), 1);
-            input.setText(addresses.get(0).getPostalCode());
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            if (AppSession.lastLocation!=null) {
+                List<Address> addresses = geocoder.getFromLocation(AppSession.lastLocation.getLatitude(), AppSession.lastLocation.getLongitude(), 1);
+                input.setText(addresses.get(0).getPostalCode());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -641,12 +653,11 @@ public class ProfileActivity extends NavigationBaseActivity {
         JSONObject json = null;
 
         if (postalCode != null) {
-            Log.d(TAG, "sendAvatarToWeb: bitmap existe");
-
             try {
                 JSONObject jsonUser = new JSONObject();
                 //jsonUser.put("id", mUser.id);
                 jsonUser.put("zipcode", postalCode);
+                AppSession.getCurrentUser().zipCode = postalCode;
                 Log.d(TAG, "sendLocationPostalCode jsonuser : " + jsonUser.toString(2));
 
                 sendDataRequest(jsonUser);
@@ -655,10 +666,4 @@ public class ProfileActivity extends NavigationBaseActivity {
             }
         }
     }
-
-
-
-
-
-
 }

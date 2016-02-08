@@ -38,7 +38,6 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     /**
      * Fix the supported action bar (polymorphic)
      */
-
     public Toolbar setSupportedActionBar() {
         return setSupportedActionBar(0);
     }

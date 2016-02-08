@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 
 import java.math.RoundingMode;
 import java.text.DateFormat;
@@ -415,6 +416,10 @@ public class Ad implements Parcelable {
         return categoria;
     }
 
+    public String getProvince(){
+        return ProvinciasCP.getNameFromCP(String.valueOf(this.postalCode));
+    }
+
     @Override
     public String toString() {
         return "Ad{" +
@@ -491,4 +496,5 @@ public class Ad implements Parcelable {
             return new Ad[size];
         }
     };
+
 }

@@ -44,9 +44,24 @@ public class FetchAddressIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
+        mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
+
+        // Check if receiver was properly registered.
+        if (mReceiver == null) {
+            Log.wtf(TAG, "No receiver received. There is nowhere to send the results.");
+            return;
+        }
+
         String errorMessage = "";
-        Location location = intent.getParcelableExtra(
-                Constants.LOCATION_DATA_EXTRA);
+        Location location = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
+        // Make sure that the location data was really sent over through an extra. If it wasn't,
+        // send an error error message and return.
+        if (location == null) {
+            errorMessage = getString(R.string.no_location_data_provided);
+            Log.wtf(TAG, errorMessage);
+            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
+            return;
+        }
 
         List<Address> addresses = null;
 
@@ -89,18 +104,25 @@ public class FetchAddressIntentService extends IntentService {
                 addressFragments.add(address.getAddressLine(i));
             }
             Log.i(TAG, getString(R.string.address_found));
-            deliverResultToReceiver(Constants.SUCCESS_RESULT,
-                    TextUtils.join(System.getProperty("line.separator"),
-                            addressFragments));
+
+            Log.d(TAG, "onHandleIntent: addressFragments " + addressFragments.toString());
+            //String msg = TextUtils.join(System.getProperty("line.separator"),addressFragments);
+            String msg = TextUtils.join("",addressFragments);
+            Log.d(TAG, "onHandleIntent: addressFragments msg "+ msg );
+            deliverResultToReceiver(Constants.SUCCESS_RESULT, msg);
+
         }
-
-
     }
 
     private void deliverResultToReceiver(int resultCode, String message) {
         try {
             Bundle bundle = new Bundle();
             bundle.putString(Constants.RESULT_DATA_KEY, message);
+            Log.d(TAG, "deliverResultToReceiver: message : " + message);
+            Log.d(TAG, "deliverResultToReceiver: bundle : " + bundle.toString());
+            if (bundle!=null){
+                Log.d(TAG, "deliverResultToReceiver: bundle not null");
+            }
             mReceiver.send(resultCode, bundle);
         }catch (Exception e){
             e.printStackTrace();
