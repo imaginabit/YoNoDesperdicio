@@ -1,6 +1,8 @@
 <resources>
+
     <string name="app_name">Yo No Desperdicio</string>
-    <string name="web_url">http://beta.yonodesperdicio.com/</string>
+    <string name="web_url">http://yonodesperdicio.com/</string>
+    <string name="google_app_id">238334887877</string>
 
     <string name="navigation_drawer_open">Abrir menu lateral</string>
     <string name="navigation_drawer_close">Cerrar menu lateral</string>
@@ -106,6 +108,8 @@
     <string name="no_address_found">No se encontro localizacion</string>
     <string name="address_found">Encontrada localizacion</string>
     <string name="no_geocoder_available">geocoder no disponible</string>
+    <string name="no_location_data_provided">No hay datos de localizacion</string>
+
 
     <!-- Profile -->
     <string name="entregados">"Entregados "</string>
@@ -121,7 +125,7 @@
     <string name="enter_postal_code">Introduce tu codigo postal, si tienes la geolocalizacion activada se escribira el codigo de tu ubicacion actual</string>
 
     <string name="are_you_sure">¿Estas seguro?</string>
-    <string name="lost_data">Si sales perderas los datos introducidos</string>
+    <string name="lost_data">Si sales perderas los cambios</string>
     <string name="about_prosalus">Prosalus es una organización no gubernamental de cooperación al
         desarrollo (ONGD) cuya misión es promover el respeto, protección y garantía de los derechos
         humanos a la alimentación, a la salud y al agua y saneamiento. Una de las líneas de trabajo
@@ -134,5 +138,7 @@
     <string name="credits2">Diseño sitio web: Estudio Blg\nDesarrollo web y API: Punto
         Abierto\nDiseño y desarrollo de la APP: Freepress S. Coop.
     </string>
+
+
 
 </resources>
