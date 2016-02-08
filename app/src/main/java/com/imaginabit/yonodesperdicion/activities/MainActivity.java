@@ -6,7 +6,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -70,12 +72,14 @@ public class MainActivity extends NavigationBaseActivity
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private GoogleApiClient mGoogleApiClient;
 
-    private AddressResultReceiver mResultReceiver;
+//    private AddressResultReceiver mResultReceiver;
+    private AddressResultReceiver mResultReceiver = new AddressResultReceiver(new Handler());
     private boolean mAddressRequested;
     private String mAddressOutput;
     private int mPreLast;
     private int mSrcollY;
 
+    protected static final int LOCATION_REQUEST = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +161,7 @@ public class MainActivity extends NavigationBaseActivity
         recyclerView.setAdapter(adapter);
 
 
-        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener((LinearLayoutManager)layoutManager) {
+        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
             @Override
             public void onLoadMore(int current_page, int current_scroll) {
                 mSrcollY = current_scroll;
@@ -458,6 +462,7 @@ public class MainActivity extends NavigationBaseActivity
      */
     protected void startIntentService() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
+
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, AppSession.lastLocation);
         startService(intent);
@@ -482,26 +487,64 @@ public class MainActivity extends NavigationBaseActivity
         }
 
         if (!mGoogleApiClient.isConnected()) {
+
+            try {
+                //if dont get de connection anyway them set location by ZIPCODE
+                if ((AppSession.getCurrentUser() != null) && (AppSession.getCurrentUser().zipCode != null)){
+                    Address address = Utils.getGPSfromZip(context, Integer.parseInt(AppSession.getCurrentUser().zipCode));
+                    AppSession.lastLocation = new Location("");
+                    AppSession.lastLocation.setLatitude(address.getLatitude());
+                    AppSession.lastLocation.setLongitude(address.getLongitude());
+                }
+            }catch (Exception e ){
+                e.printStackTrace();
+            }
+
             mGoogleApiClient.connect();
         } else {
             //google me obliga a poner esto
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicaicon del telefono");
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_REQUEST);
+
+                return;
+            } else {
+                AppSession.lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            }
+        }
+
+
+
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permisions, int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
                 return;
             }
-            AppSession.lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
 
     private void fetchAddressButtonHandler(View view) {
+        String[] permis = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        ActivityCompat.requestPermissions(this,permis, 1);
+
+
+
+
         checkGoogleApiClient();
 
         // Only start the service to fetch the address if GoogleApiClient is
@@ -522,7 +565,6 @@ public class MainActivity extends NavigationBaseActivity
                 checkGoogleApiClient();
             }
         }
-
 
         // If GoogleApiClient isn't connected, process the user's request by
         // setting mAddressRequested to true. Later, when GoogleApiClient connects,
