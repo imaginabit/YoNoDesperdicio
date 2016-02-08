@@ -601,10 +601,13 @@ public class ProfileActivity extends NavigationBaseActivity {
 
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        //set zip code from location data
         try {
-            List<Address> addresses = geocoder.getFromLocation(AppSession.lastLocation.getLatitude(), AppSession.lastLocation.getLongitude(), 1);
-            input.setText(addresses.get(0).getPostalCode());
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            if (AppSession.lastLocation!=null) {
+                List<Address> addresses = geocoder.getFromLocation(AppSession.lastLocation.getLatitude(), AppSession.lastLocation.getLongitude(), 1);
+                input.setText(addresses.get(0).getPostalCode());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -650,12 +653,11 @@ public class ProfileActivity extends NavigationBaseActivity {
         JSONObject json = null;
 
         if (postalCode != null) {
-            Log.d(TAG, "sendAvatarToWeb: bitmap existe");
-
             try {
                 JSONObject jsonUser = new JSONObject();
                 //jsonUser.put("id", mUser.id);
                 jsonUser.put("zipcode", postalCode);
+                AppSession.getCurrentUser().zipCode = postalCode;
                 Log.d(TAG, "sendLocationPostalCode jsonuser : " + jsonUser.toString(2));
 
                 sendDataRequest(jsonUser);
