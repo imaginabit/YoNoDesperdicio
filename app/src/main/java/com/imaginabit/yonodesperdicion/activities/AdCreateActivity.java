@@ -344,7 +344,7 @@ public class AdCreateActivity extends NavigationBaseActivity
 
     private JsonObjectRequest sendDataNewAd(JSONObject jsonRequest){
         Log.d(TAG, "sendDataNewAd() called with: " + "jsonRequest = [" + jsonRequest + "]");
-        return sendDataRequest(jsonRequest , Request.Method.POST, Constants.ADS_API_URL );
+        return sendDataRequest(jsonRequest, Request.Method.POST, Constants.ADS_API_URL);
     }
     private JsonObjectRequest sendDataEditAd(JSONObject jsonRequest){
         Log.d(TAG, "sendDataEditAd() called with: " + "jsonRequest = [" + jsonRequest + "]");
@@ -435,12 +435,23 @@ public class AdCreateActivity extends NavigationBaseActivity
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent pictureActionIntent = null;
 
-                        pictureActionIntent = new Intent(
+                        //permision check android 6
+                        int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
+                                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                            pictureActionIntent = new Intent(
                                 Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(
-                                pictureActionIntent,
-                                GALLERY_PICTURE);
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(pictureActionIntent, GALLERY_PICTURE);
+                        } else {
+                            ActivityCompat.requestPermissions(AdCreateActivity.this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    GALLERY_PICTURE);
+                            //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
+                            //call the dialog again
+                            startDialogAddImage();
+                        }
 
                     }
                 });
@@ -456,6 +467,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                         intent.putExtra(MediaStore.EXTRA_OUTPUT,
                                 Uri.fromFile(f));
 
+                        //permision check android 6
                         int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
                                 Manifest.permission.CAMERA);
 
@@ -494,7 +506,8 @@ public class AdCreateActivity extends NavigationBaseActivity
                 return;
             }
             case STORAGE_PERMISSION_RC:{
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     File f = new File(Environment.getExternalStorageDirectory()
                             .toString());
                     setPhoto(f);
