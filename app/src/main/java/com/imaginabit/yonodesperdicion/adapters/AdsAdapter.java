@@ -110,12 +110,17 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.ViewHolder> {
         holder.weight.setText(ad.getWeightKgStr());
         holder.expiration.setText(ad.getExpirationDateLong());
 
-        if (ad.getLastDistance()>0) {
-            String distance = Integer.toString(ad.getLastDistance());
+        int intDistance = ad.getLastDistance();
+        Log.d(TAG, "onBindViewHolder: calculateDistance ad.getlastdistance: " + intDistance);
+
+        if ( intDistance>-1 ) {
+            String distance = Integer.toString(intDistance);
             holder.distance.setText( distance + "Km " );
 //            holder.title.setText( + );
         } else {
-            holder.distance.setText("Sin Determinar");
+            Log.d(TAG, "onBindViewHolder: distance sin determinar");
+            //Disntance undertermined Sin Determinar
+            holder.distance.setText("");
         }
 
 

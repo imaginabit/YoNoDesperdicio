@@ -202,7 +202,11 @@ public class AdUtils {
     }
 
     private static Ad createAd(JSONObject jsondata){
-        Log.d(TAG, "createAd() called with: " + "jsondata = [" + jsondata + "]");
+        try {
+            Log.d(TAG, "createAd() called with: " + "jsondata = [" + jsondata.toString(2) + "]");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         Ad ad;
 
@@ -293,11 +297,12 @@ public class AdUtils {
 
         if (AppSession.lastLocation != null && ad.getLocation()!=null) {
             userLocation = AppSession.lastLocation;
-            Log.d(TAG, "onBindViewHolder:" + ad.getTitle() + " lat:" + userLocation.getLatitude() + " lng: " + userLocation.getLongitude());
+            Log.d(TAG, "calculateDistance: " + ad.getTitle() + " lat:" + userLocation.getLatitude() + " lng: " + userLocation.getLongitude());
 
             float d = (ad.getLocation().distanceTo(userLocation))/1000;//kilometers
             int distance = Math.round(d);
             ad.setLastDistance(distance);
+            Log.d(TAG, "calculateDistance: New distance: " + distance);
             return distance;
         } else {
             if (AppSession.lastLocation == null) {
@@ -312,7 +317,7 @@ public class AdUtils {
 //                    userLocation.setLatitude(userAddress.getLatitude());
 //                    userLocation.setLongitude(userAddress.getLongitude());
         }
-        return 5000;
+        return -1;
     }
 
     public static void fetchAds(final int page, final Activity activity, final FetchAdsCallback callback ){
