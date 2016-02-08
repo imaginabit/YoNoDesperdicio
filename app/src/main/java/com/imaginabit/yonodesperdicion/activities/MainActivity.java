@@ -168,7 +168,7 @@ public class MainActivity extends NavigationBaseActivity
         });
         //Get Ads
         getAdsFromWeb();
-        initializeData();
+        //initializeData();
 
         /*
          * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
@@ -184,7 +184,7 @@ public class MainActivity extends NavigationBaseActivity
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
                         getAdsFromWeb();
-                        initializeData();
+//                        initializeData();
                     }
                 }
         );
@@ -386,7 +386,8 @@ public class MainActivity extends NavigationBaseActivity
 
     @Override
     public void onStart() {
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
+        checkGoogleApiClient();
         super.onStart();
     }
 
@@ -511,13 +512,14 @@ public class MainActivity extends NavigationBaseActivity
         } else {
             if(!mGoogleApiClient.isConnected()) {
                 Log.d(TAG, "gps fetchAddressButtonHandler: not connected!");
-                mGoogleApiClient.connect();
+                checkGoogleApiClient();
+//                mGoogleApiClient.connect();
             }
             if (AppSession.lastLocation== null) {
                 Log.d(TAG, "gps fetchAddressButtonHandler: null lastLocation");
                 mGoogleApiClient.disconnect();
-                mGoogleApiClient.connect();
-
+//                mGoogleApiClient.connect();
+                checkGoogleApiClient();
             }
         }
 
