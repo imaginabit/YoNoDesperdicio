@@ -120,6 +120,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, image);
 
+
             TextView categoriaText = (TextView) findViewById(R.id.ad_category);
             categoriaText.setText(ad.getCategoria());
 

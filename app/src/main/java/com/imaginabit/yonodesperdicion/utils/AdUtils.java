@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.model.LatLng;
+import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.SearchForLocationTask;
@@ -537,6 +538,62 @@ public class AdUtils {
             }
         };
         TasksUtils.execute(fetchAdTask);
+    }
+
+    public static void fetchCategories(final categoriesCallback callback){
+
+        AppSession.requestQueue = VolleySingleton.getRequestQueue();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
+                Constants.CATEGORIES_URL,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d(TAG, "onResponse() called with: " + "response = [" + response.toString(2) + "]");
+                        } catch (JSONException e) {
+                            Log.d(TAG, "onResponse: error");
+                        }
+                        List<String> categories = new ArrayList<>();
+
+                        if (response.has("categories")) {
+                            JSONArray jsonItems = new JSONArray();
+                            try {
+                                jsonItems = response.getJSONArray("categories");
+                                Log.d(TAG,"User has categories " + jsonItems.length());
+                                if (jsonItems.length() > 0) {
+                                    Log.d(TAG, "onResponse: items "+ jsonItems.toString());
+
+                                    for (int i = 0; i < jsonItems.length(); i++) {
+                                        String item = jsonItems.getString(i);
+                                        Log.d(TAG, "onResponse: "+ item);
+                                        categories.add(item.toString());
+
+                                    }
+                                    callback.done(categories);
+                                }
+                            } catch (JSONException e) {
+                                callback.error(e);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                        String errorMessage = VolleyErrorHelper.getMessage(App.appContext, error);
+//                        String errorDialogMsg = Utils.showErrorsJson(errorMessage, App.appContext);
+                    }
+                }
+        );
+        AppSession.requestQueue.add(request);
+    }
+
+
+    public interface categoriesCallback {
+        public void done(List<String> categories);
+        public void error(Exception e);
     }
 
 }
