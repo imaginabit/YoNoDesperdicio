@@ -7,11 +7,10 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.StatusDark">
+    <!--<style name="AppTheme.NoActionBar.StatusDark">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">#40000000</item>
-
-    </style>
+    </style>-->
 
 
     <!-- Create User -->
