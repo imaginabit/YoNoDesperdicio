@@ -90,7 +90,9 @@
         <activity
             android:name=".activities.AdCreateActivity"
             android:label="Nuevo Anuncio"
-            android:parentActivityName=".activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar.StatusDark"
+            />
         <activity android:name=".activities.MoreInfoActivity"
             android:label="Mas Información"
             android:parentActivityName=".activities.MainActivity" />
