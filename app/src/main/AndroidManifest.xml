@@ -28,7 +28,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme"
+        >
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -46,7 +47,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -70,7 +71,7 @@
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settigns"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -91,7 +92,6 @@
             android:name=".activities.AdCreateActivity"
             android:label="Nuevo Anuncio"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar.StatusDark"
             />
         <activity android:name=".activities.MoreInfoActivity"
             android:label="Mas Información"
@@ -120,7 +120,7 @@
             android:name=".activities.MessagesChatActivity"
             android:label="@string/title_activity_messages_chat"
             android:parentActivityName=".activities.MessagesActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MessagesActivity" />
@@ -141,7 +141,7 @@
             android:name=".activities.FavoritesActivity"
             android:label="@string/title_activity_favorites"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
