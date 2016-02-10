@@ -48,6 +48,7 @@ import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
+import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -80,6 +81,7 @@ public class AdCreateActivity extends NavigationBaseActivity
     EditText adZipCode;
     Ad ad;
     String foodCategory;
+    String[] mCategories;
 
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_PICTURE = 1;
@@ -122,16 +124,45 @@ public class AdCreateActivity extends NavigationBaseActivity
         adDescription = (EditText) findViewById(R.id.ad_description);
         adZipCode = (EditText) findViewById(R.id.postal_code);
 
-        Spinner spinner = (Spinner) findViewById(R.id.input_categoria);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.food_categories, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+        VolleySingleton.init(this);
+        thisAdCreateActivity = this;
 
+        final Spinner spinner = (Spinner) findViewById(R.id.input_categoria);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+
+        AdUtils.fetchCategories(new AdUtils.categoriesCallback() {
+            @Override
+            public void done(List<String> categories) {
+                Log.d(TAG, "done: categories" + categories.toString());
+                mCategories = new String[categories.size()];
+                mCategories = categories.toArray(mCategories);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(thisAdCreateActivity, android.R.layout.simple_spinner_item, mCategories);
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Apply the adapter to the spinner
+                spinner.setAdapter(adapter);
+                spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) thisAdCreateActivity);
+
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+
+                Resources res = getResources();
+                mCategories = new String[res.getStringArray(R.array.food_categories).length];
+                mCategories = res.getStringArray(R.array.food_categories);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(thisAdCreateActivity, android.R.layout.simple_spinner_item, mCategories);
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Apply the adapter to the spinner
+                spinner.setAdapter(adapter);
+                spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) thisAdCreateActivity);
+
+            }
+        });
 
 
         Button btnDeleteAd = (Button) findViewById(R.id.delete_ad);
@@ -145,9 +176,7 @@ public class AdCreateActivity extends NavigationBaseActivity
             }
         });
 
-        VolleySingleton.init(this);
 
-        thisAdCreateActivity = this;
 
         // Retrieve args
         Bundle data = getIntent().getExtras();
@@ -657,10 +686,7 @@ public class AdCreateActivity extends NavigationBaseActivity
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.d(TAG, "onItemSelected() called with: " + "parent = [" + parent + "], view = [" + view + "], position = [" + position + "], id = [" + id + "]");
-
-        Resources res = getResources();
-        String[] categories = res.getStringArray(R.array.food_categories);
-        this.foodCategory = categories[position];
+        this.foodCategory = mCategories[position];
     }
 
     @Override
