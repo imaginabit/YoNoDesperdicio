@@ -417,6 +417,7 @@ public class Ad implements Parcelable {
     }
 
     public String getProvince(){
+        Log.d(TAG, "getProvince: from "+ this.postalCode);
         return ProvinciasCP.getNameFromCP(String.valueOf(this.postalCode));
     }
 

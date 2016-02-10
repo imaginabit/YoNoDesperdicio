@@ -32,10 +32,12 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.SearchForLocationTask;
 import com.imaginabit.yonodesperdicion.activities.LoginPanelActivity;
 
 import org.json.JSONArray;
@@ -400,6 +402,9 @@ public class Utils {
 			} else {
 				// Display appropriate message when Geocoder services are not available
 //				Toast.makeText(context, "Unable to geocode zipcode", Toast.LENGTH_SHORT).show();
+
+				//TODO: inplementar http://stackoverflow.com/a/19014774/385437
+
 				Log.d(TAG, "getGPSfromZip: Unable to geocode zipcode");
 				return null;
 			}
@@ -408,6 +413,10 @@ public class Utils {
 			// handle exception
 		}
 		return null;
+	}
+
+	public static void getGPSfromZipGmaps(String zip, SearchForLocationTask.SearchForLocationTaskEventListener listener){
+		new SearchForLocationTask(App.appContext,listener).execute( zip );
 	}
 
 
@@ -725,4 +734,35 @@ public class Utils {
 		Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, outWidth, outHeight, false);
 		return resizedBitmap;
 	}
+
+
+	/**
+	 * When geocoder dont work (older phones or ones w/o google play)
+	 * we can check location with google maps
+	 * http://stackoverflow.com/a/19014774/385437
+	 * @param jsonObject
+	 * @return
+	 */
+	public static LatLng getLatLngFromGoogleJson(JSONObject jsonObject) {
+
+
+		double lon = 0d;
+		double lat = 0d;
+
+		try {
+			lon = ((JSONArray)jsonObject.get("results")).getJSONObject(0)
+					.getJSONObject("geometry").getJSONObject("location")
+					.getDouble("lng");
+
+			lat = ((JSONArray)jsonObject.get("results")).getJSONObject(0)
+					.getJSONObject("geometry").getJSONObject("location")
+					.getDouble("lat");
+		} catch (JSONException e) {
+			if(Log.isLoggable(TAG, Log.ERROR))Log.e(TAG, "Error parsing google response", e);
+		}
+
+		return new LatLng(lat, lon);
+	}
+
 }
+

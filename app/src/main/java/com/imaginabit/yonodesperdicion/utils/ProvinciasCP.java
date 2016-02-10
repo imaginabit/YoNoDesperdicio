@@ -86,6 +86,7 @@ public class ProvinciasCP {
     public static String getNameFromCP(String  postalCode){
         int code = Integer.parseInt(postalCode.substring(0, 2));
         Log.d(TAG, "getNameFromCP: code " + code);
+        Log.d(TAG, "getNameFromCP: mprovincias size " + ProvinciasCP.mProvincias.size());
         return ProvinciasCP.mProvincias.get(code-1).mProvincia;
     }
 

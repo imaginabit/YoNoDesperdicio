@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -42,6 +43,7 @@ import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
+import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -87,11 +89,13 @@ public class MainActivity extends NavigationBaseActivity
         setContentView(R.layout.activity_main);
         App.appContext = context;//for make getGPSfromZip works
 
+        VolleySingleton.init(this);
+        ProvinciasCP.init();
+
 
         // Put on session
         UserData user = UserData.prefsFetch(this);
         if (user != null) {
-            VolleySingleton.init(this);
             AppSession.setCurrentUser(user);
             AppSession.checkAuthCredentials(this);
         }
@@ -319,10 +323,16 @@ public class MainActivity extends NavigationBaseActivity
                             mAds = ads;
                             adapter = new AdsAdapter(context, mAds);
                             recyclerView.setAdapter(adapter);
-                            removeExpiredAds();
+                            //removeExpiredAds();
 
                             adapter.notifyDataSetChanged();
                             Log.d(TAG, "Anuncios general : " + mAds.size());
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }, 1000);
                         }
                     } else {
                         Log.e(TAG, "error al obtener los Anuncios");
@@ -364,6 +374,7 @@ public class MainActivity extends NavigationBaseActivity
                 // Start the refresh background task.
                 // This method calls setRefreshing(false) when it's finished.
                 getAdsFromWeb();
+//                adapter.notifyDataSetChanged();
 
                 return true;
 
@@ -489,13 +500,29 @@ public class MainActivity extends NavigationBaseActivity
         if (!mGoogleApiClient.isConnected()) {
 
             try {
-                //if dont get de connection anyway them set location by ZIPCODE
-                if ((AppSession.getCurrentUser() != null) && (AppSession.getCurrentUser().zipCode != null)){
-                    Address address = Utils.getGPSfromZip(context, Integer.parseInt(AppSession.getCurrentUser().zipCode));
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    //if dont get conection get location from phone
+                    LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    double longitude = location.getLongitude();
+                    double latitude = location.getLatitude();
+
                     AppSession.lastLocation = new Location("");
-                    AppSession.lastLocation.setLatitude(address.getLatitude());
-                    AppSession.lastLocation.setLongitude(address.getLongitude());
+                    AppSession.lastLocation.setLatitude(latitude);
+                    AppSession.lastLocation.setLongitude(longitude);
+                } else {
+                    //if dont get de connection anyway them set location by ZIPCODE
+                    if ((AppSession.getCurrentUser() != null) && (AppSession.getCurrentUser().zipCode != null)){
+                        Address address = Utils.getGPSfromZip(context, Integer.parseInt(AppSession.getCurrentUser().zipCode));
+                        AppSession.lastLocation = new Location("");
+                        AppSession.lastLocation.setLatitude(address.getLatitude());
+                        AppSession.lastLocation.setLongitude(address.getLongitude());
+                    }
                 }
+
+
             }catch (Exception e ){
                 e.printStackTrace();
             }
@@ -505,7 +532,8 @@ public class MainActivity extends NavigationBaseActivity
             //google me obliga a poner esto
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicaicon del telefono");
+
+                Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicacion del telefono");
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},
                         LOCATION_REQUEST);
 
