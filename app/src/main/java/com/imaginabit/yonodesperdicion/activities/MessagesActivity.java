@@ -2,6 +2,9 @@ package com.imaginabit.yonodesperdicion.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,17 +13,19 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.AppSession;
-import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.adapters.ConversationsAdapter;
+import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
+import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 public class MessagesActivity extends NavigationBaseActivity {
@@ -30,6 +35,8 @@ public class MessagesActivity extends NavigationBaseActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<Conversation> mConversationList;
+    private ContentResolver mContentResolver;
+    private ContentValues mContentValues;
 
     //private List<Ad> mAds;
     @Override
@@ -54,6 +61,8 @@ public class MessagesActivity extends NavigationBaseActivity {
         recyclerView.setLayoutManager(layoutManager);
         adapter = new ConversationsAdapter(context, mConversationList);
         recyclerView.setAdapter(adapter);
+
+        mContentResolver = getContentResolver();
 
         VolleySingleton.init(this);
         getMessages();
@@ -101,57 +110,6 @@ public class MessagesActivity extends NavigationBaseActivity {
             public void onFinished(final List<Conversation> conversations, Exception e,ProgressDialog pd) {
                 Log.v(TAG, "onFinished: finishesd");
                 if (conversations != null) {
-
-                    /*
-                     this is a nonsese.....
-                    if(mConversationList!=null) {
-                        Log.d(TAG, "onFinished: CONVERSATION NOT NULL");
-                        Utils.dismissProgressDialog(pd);
-                        //copy oy mConversations w/o messages
-                        List<Conversation> mconversationsLight = new ArrayList<Conversation>();
-                        for (int i=0;i<mConversationList.size();i++){
-                            Conversation c = mConversationList.get(i);
-                            if (c!=null) {
-                                c.setMessages(null);
-                                mconversationsLight.add(i, c);
-                            }
-                        }
-                        //compare conversation form api with loaded in app
-                        if (mconversationsLight == conversations) {
-                            Log.d(TAG, "onFinished: no hay cambios");
-                        } else {
-                            Log.d(TAG, "onFinished: Cambios");
-                            Log.d(TAG, "onFinished: mConversationList size:" + mconversationsLight.size() );
-                            Log.d(TAG, "onFinished: conversations: size" + conversations.size() );
-//                            Log.d(TAG, "onFinished: mConversationList:" + mConversationList.get(0).toString()  );
-//                            Log.d(TAG, "onFinished: conversations:" + conversations.get(0).toString()  );
-                            Log.d(TAG, "onFinished: mConversationList:" + mconversationsLight.get(mConversationList.size()-1).toString()  );
-                            Log.d(TAG, "onFinished: conversations:" + conversations.get(conversations.size()-1).toString()  );
-
-                            Log.d(TAG, "onFinished: compare "+ (conversations.get(1) == mconversationsLight.get(1)) );
-                            Log.d(TAG, "onFinished: compare "+ conversations.get(1).toString() );
-                            Log.d(TAG, "onFinished: compare "+ mconversationsLight.get(1).toString() );
-
-                            if ((mconversationsLight.containsAll(conversations)) &&
-                                    (mconversationsLight.size() == conversations.size())){
-                                //TODO: si son iguales ??
-                                // no hace falta cargar los mensajes pero esto da igual no? ya los ha cargado
-                                //genial no recuerdo por que estaba prubando todo este rollo ya
-                                Log.d(TAG, "onFinished: TRUE");
-                            }
-
-                            Log.d(TAG, "onFinished: containsAll" + mconversationsLight.equals(conversations));
-                            mconversationsLight.removeAll(conversations);
-//                            Log.d(TAG, "onFinished: mConversationList size after:" + mconversationsLight.size());
-//                            Log.d(TAG, "onFinished: mConversationList string:" + mconversationsLight.toString() );
-
-                            //Log.d(TAG, "onFinished: conversations:" + conversations.toString());
-                        }
-                    } else {
-                        Log.d(TAG, "onFinished: CONVERSATION NULL --------------------");
-                    }
-                    */
-
                     mConversationList = conversations;
                     sortByDate(mConversationList);
 
@@ -162,8 +120,25 @@ public class MessagesActivity extends NavigationBaseActivity {
                     Log.v(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
 
 
-                    Date d = new Date();
-                    Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
+//                    Date d = new Date();
+//                    Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
+
+                    for (int i = 0; i < conversations.size(); i++) {
+
+                        Conversation c = conversations.get(i);
+                        //save conversation in database
+                        mContentValues.put( AdsContract.ConversationsColumns.CONVERSATION_ID, c.getId() );
+                        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, c.getOtherUserId());
+//                        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_STATUS, "");
+                        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, );
+                        Uri returned = mContentResolver.insert(AdsContract.URI_TABLE_FAVORITES, mContentValues);
+
+                    }
+
+
+                    Log.d(TAG, "onOptionsItemSelected: Record Id returned is " + returned.toString());
+
+
 
                     //get messages from all conversations
                     //TAKE too much time to load

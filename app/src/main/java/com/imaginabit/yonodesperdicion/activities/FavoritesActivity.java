@@ -3,7 +3,6 @@ package com.imaginabit.yonodesperdicion.activities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -82,7 +81,6 @@ public class FavoritesActivity extends NavigationBaseActivity{
 
         //Get ads id from database
 
-        ContentValues values= new ContentValues();
         contentResolver = getContentResolver();
 
         String[] projection = new String[]{BaseColumns._ID, AdsContract.FavoritesColumns.FAV_AD_ID};
