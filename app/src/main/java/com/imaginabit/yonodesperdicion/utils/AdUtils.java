@@ -306,9 +306,12 @@ public class AdUtils {
     public static int calculateDistance(final Ad ad){
         Log.d(TAG, "calculateDistance() called with: " + "ad = [" + ad.getTitle() + "]");
         Location userLocation;
-        if (AppSession.getCurrentUser()!=null) {
+        try {
             Log.d(TAG, "calculateDistance: location: " + AppSession.lastLocation.getLatitude() + ", " + AppSession.lastLocation.getLongitude());
             Log.d(TAG, "calculateDistance: location: " + AppSession.lastLocation.toString());
+        } catch (Exception e ){
+            Log.d(TAG, "calculateDistance: no hay lastlocation");
+            e.printStackTrace();
         }
 
         if (AppSession.lastLocation != null  && ad.getLocation()!=null) {

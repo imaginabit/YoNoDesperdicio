@@ -503,6 +503,19 @@ public class MainActivity extends NavigationBaseActivity
 
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    //ask for permission
+                    Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicacion del telefono");
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},
+                            LOCATION_REQUEST);
+                    //if dont get de connection anyway them set location by ZIPCODE
+                    if ((AppSession.getCurrentUser() != null) && (AppSession.getCurrentUser().zipCode != null)){
+                        Address address = Utils.getGPSfromZip(context, Integer.parseInt(AppSession.getCurrentUser().zipCode));
+                        AppSession.lastLocation = new Location("");
+                        AppSession.lastLocation.setLatitude(address.getLatitude());
+                        AppSession.lastLocation.setLongitude(address.getLongitude());
+                    }
+                } else {
+
                     //if dont get conection get location from phone
                     LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -512,14 +525,6 @@ public class MainActivity extends NavigationBaseActivity
                     AppSession.lastLocation = new Location("");
                     AppSession.lastLocation.setLatitude(latitude);
                     AppSession.lastLocation.setLongitude(longitude);
-                } else {
-                    //if dont get de connection anyway them set location by ZIPCODE
-                    if ((AppSession.getCurrentUser() != null) && (AppSession.getCurrentUser().zipCode != null)){
-                        Address address = Utils.getGPSfromZip(context, Integer.parseInt(AppSession.getCurrentUser().zipCode));
-                        AppSession.lastLocation = new Location("");
-                        AppSession.lastLocation.setLatitude(address.getLatitude());
-                        AppSession.lastLocation.setLongitude(address.getLongitude());
-                    }
                 }
 
 
@@ -627,8 +632,9 @@ public class MainActivity extends NavigationBaseActivity
 
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-//                showToast(getString(R.string.address_found));
-                showToast(mAddressOutput);
+                showToast(getString(R.string.address_found));
+//                showToast(mAddressOutput);
+                Log.d(TAG, "onReceiveResult: "+ getString(R.string.address_found) +" "+ mAddressOutput);
             }
 
         }
