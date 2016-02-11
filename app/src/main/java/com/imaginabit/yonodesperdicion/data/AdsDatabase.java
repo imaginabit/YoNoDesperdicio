@@ -60,9 +60,10 @@ public class AdsDatabase extends SQLiteOpenHelper {
         //crear tabla conversaciones
         db.execSQL("CREATE TABLE " + Tables.CONVERSATIONS + " ("
                         + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + AdsContract.ConversationsColumns.CONVERSATION_WEB_ID + " INTEGER,"
                         + AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " INTEGER NOT NULL,"
                         + AdsContract.ConversationsColumns.CONVERSATION_USER + " INTEGER NOT NULL,"
-                        + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER NOT NULL,"
+                        + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER "
                         + ")"
         );
 
@@ -96,9 +97,10 @@ public class AdsDatabase extends SQLiteOpenHelper {
         if (version == 2 ){
             db.execSQL("CREATE TABLE " + Tables.CONVERSATIONS + " ("
                             + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                            + AdsContract.ConversationsColumns.CONVERSATION_WEB_ID + " INTEGER,"
                             + AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " INTEGER NOT NULL,"
                             + AdsContract.ConversationsColumns.CONVERSATION_USER + " INTEGER NOT NULL,"
-                            + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER NOT NULL,"
+                            + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER "
                             + ")"
             );
             version = 3;
