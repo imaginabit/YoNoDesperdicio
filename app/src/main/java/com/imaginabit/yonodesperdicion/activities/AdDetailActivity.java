@@ -233,6 +233,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             Log.d(TAG, "clickMessage: converId "+ converId );
 
+            //this if take old method conversation id saved in preferencies
             if(converId == 0) {
                 Log.d(TAG, "clickMessage: convertId = 0");
                 //create a new conversation, new message for this ad and go to it
@@ -271,22 +272,53 @@ public class AdDetailActivity extends NavigationBaseActivity {
                     }
                 });
                 */
-                valuesConversation = new ContentValues();
-                Conversation conversation = new Conversation(0,ad.getTitle());
 
-                //save conversation in database
-//                valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_ID, conversation.getId());
-                valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_USER, ad.getUserId());
-                valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, ad.getId());
-                Uri returned = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, valuesConversation);
-                Log.d(TAG, "clickMessage: Record Id returned is " + returned.toString());
+                //vars for intent
+                Conversation conversation;
+                Uri conversationUri;
 
+                //search if this ad is in conversations table
+//                projection = new String[]{AdsContract.ConversationsColumns.CONVERSATION_ID};
+                projection = new String[]{};
+                selectionClause = AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " = ?";
+                selectionArgs = new String[]{Integer.toString(mAd.getId())};
+                Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+                //if is in database take the existing conversation
+                if (returnConversation.moveToFirst()) {
+                    int paso=0;
+                    do {
+                        int id = returnConversation.getInt(0);
+                        int webId = returnConversation.getInt(1);
+                        int adId = returnConversation.getInt(2);
+                        int userId = returnConversation.getInt(3);
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1) );
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2) );
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3) );
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
+
+                        conversation = new Conversation(id,ad.getTitle());
+                        paso++;
+                        Log.d(TAG, "clickMessage: paso "+paso);
+                        conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
+                    } while (returnConversation.moveToNext());
+                } else {
+                    //db create new record in conversation table
+                    valuesConversation = new ContentValues();
+                    conversation = new Conversation(0, ad.getTitle());
+                    //save conversation in database
+                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_USER, ad.getUserId());
+                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, ad.getId());
+                    conversationUri = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, valuesConversation);
+                    Log.d(TAG, "clickMessage: Record Id returned is " + conversationUri.toString());
+                }
 
                 //prefsEdit.putInt(converForAd, conversation.getId());
                 //prefsEdit.commit();
 
                 Intent intent = new Intent(context, MessagesChatActivity.class);
-                intent.putExtra("conversationId", conversation.getId());
+//                intent.putExtra("conversationId", conversation.getId());
+                intent.putExtra("conversationUri", conversationUri);
+                intent.putExtra("adName", ad.getTitle());
                 intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
                 AppSession.currentConversation = conversation;
                 context.startActivity(intent);

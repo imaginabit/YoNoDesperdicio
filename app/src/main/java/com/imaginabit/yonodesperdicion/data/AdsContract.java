@@ -113,8 +113,8 @@ public final class AdsContract {
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + CONTENT_AUTHORITY + ".conversations";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd." + CONTENT_AUTHORITY + ".conversations";
 
-        public static Uri buildConversationUri(String favId){
-            return CONTENT_URI.buildUpon().appendEncodedPath(favId).build();
+        public static Uri buildConversationUri(String ConversationId){
+            return CONTENT_URI.buildUpon().appendEncodedPath(ConversationId).build();
         }
 
         public static String getConversationId(Uri uri){

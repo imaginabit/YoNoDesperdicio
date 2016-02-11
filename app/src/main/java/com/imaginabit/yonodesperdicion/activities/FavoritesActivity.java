@@ -82,9 +82,7 @@ public class FavoritesActivity extends NavigationBaseActivity{
         //Get ads id from database
 
         contentResolver = getContentResolver();
-
         String[] projection = new String[]{BaseColumns._ID, AdsContract.FavoritesColumns.FAV_AD_ID};
-
         Cursor cursor = contentResolver.query(AdsContract.URI_TABLE_FAVORITES, projection, null, null, null);
         if (cursor.moveToFirst()) {
             do {
