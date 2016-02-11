@@ -158,11 +158,11 @@ public class AdsProvider extends ContentProvider {
             case FAVORITES:
                 // get all favorites
                 recordId = db.insertOrThrow(AdsDatabase.Tables.FAVORITES, null, values);
-                return AdsContract.Ads.buildAdUri(String.valueOf(recordId));
+                return AdsContract.Favorites.buildFavoriteUri(String.valueOf(recordId));
             case CONVERSATIONS:
                 // get all
                 recordId = db.insertOrThrow(AdsDatabase.Tables.CONVERSATIONS, null, values);
-                return AdsContract.Ads.buildAdUri(String.valueOf(recordId));
+                return AdsContract.Conversations.buildConversationUri(String.valueOf(recordId));
             default:
                 throw new IllegalArgumentException("Unkown Uri");
         }

@@ -14,16 +14,13 @@ import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
-import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.adapters.ConversationsAdapter;
 import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
-import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -125,20 +122,17 @@ public class MessagesActivity extends NavigationBaseActivity {
 
                     for (int i = 0; i < conversations.size(); i++) {
 
+                        //buscar en la base de datos y crear si no se encuentra
+
                         Conversation c = conversations.get(i);
                         //save conversation in database
-                        mContentValues.put( AdsContract.ConversationsColumns.CONVERSATION_ID, c.getId() );
+                        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_ID, c.getId() );
                         mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, c.getOtherUserId());
 //                        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_STATUS, "");
-                        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, );
+                        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, "" );
                         Uri returned = mContentResolver.insert(AdsContract.URI_TABLE_FAVORITES, mContentValues);
 
                     }
-
-
-                    Log.d(TAG, "onOptionsItemSelected: Record Id returned is " + returned.toString());
-
-
 
                     //get messages from all conversations
                     //TAKE too much time to load

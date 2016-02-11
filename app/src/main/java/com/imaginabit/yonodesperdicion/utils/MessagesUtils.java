@@ -723,8 +723,6 @@ public class MessagesUtils {
         JSONObject jsonRequest = new JSONObject();
         JSONObject jsonMessage = new JSONObject();
 
-
-
         RequestQueue queue = VolleySingleton.getRequestQueue();
         try {
             jsonMessage.put("subject",title);
@@ -801,9 +799,19 @@ public class MessagesUtils {
         Log.d(TAG, "createConversation: request to string " + jsonRequest.toString() );
 
         queue.add(request);
-
-
     }
+
+//    public static void createFakeConversation(final String title, int sendTo, final MessagesCallback callback){
+//        Log.d(TAG, "createFakeConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
+//
+//        Exception error = null;
+//        ArrayList data = new ArrayList();
+//        List<Message> messages = new ArrayList<>();
+//
+//        Conversation c = new Conversation(0,title);
+//        data.add(c);
+//
+//    }
 
 
 }

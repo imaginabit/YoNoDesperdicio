@@ -100,6 +100,7 @@ public final class AdsContract {
 
     public interface ConversationsColumns{
         String CONVERSATION_ID = "_id";
+        String CONVERSATION_WEB_ID = "web_id";
         String CONVERSATION_AD_ID = "ad_id";
         String CONVERSATION_USER = "user_id";
         String CONVERSATION_STATUS = "status_id";

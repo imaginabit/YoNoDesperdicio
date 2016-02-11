@@ -165,15 +165,18 @@ public class MainActivity extends NavigationBaseActivity
         recyclerView.setAdapter(adapter);
 
 
-        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
+        final EndlessRecyclerOnScrollListener scrollListener = new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
             @Override
             public void onLoadMore(int current_page, int current_scroll) {
+                Log.d(TAG, "onLoadMore() called with: " + "current_page = [" + current_page + "], current_scroll = [" + current_scroll + "]");
                 mSrcollY = current_scroll;
                 Log.d(TAG, "onLoadMore: mSrcoll nau: " + mSrcollY);
-                Log.d(TAG, "onLoadMore() called with: " + "current_page = [" + current_page + "]");
-                loadMoreData(current_page);
+                //page 1 is the same as page 0
+                loadMoreData(current_page+1);
             }
-        });
+        };
+
+        recyclerView.addOnScrollListener(scrollListener);
         //Get Ads
         getAdsFromWeb();
         //initializeData();
@@ -192,6 +195,7 @@ public class MainActivity extends NavigationBaseActivity
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
                         getAdsFromWeb();
+                        scrollListener.setCurrent_page(1);
 //                        initializeData();
                     }
                 }
@@ -203,6 +207,7 @@ public class MainActivity extends NavigationBaseActivity
     }
 
     private void loadMoreData(final int current_page) {
+        Log.d(TAG, "loadMoreData() called with: " + "current_page = [" + current_page + "]");
         AdUtils.fetchAds(current_page, this, new AdUtils.FetchAdsCallback() {
             @Override
             public void done(List<Ad> ads, Exception e) {
@@ -210,8 +215,9 @@ public class MainActivity extends NavigationBaseActivity
                     if (ads != null) {
                         Log.d(TAG, "loadMoreData_done() called with: " + "ads = [" + ads + "], e = [" + e + "]");
                         mAds.addAll(ads);
-                        adapter = new AdsAdapter(context, mAds);
-                        recyclerView.setAdapter(adapter);
+                        //adapter = new AdsAdapter(context, mAds);
+                        //recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
 
                         Log.d(TAG, "done: mScrollY " + mSrcollY);
                         Log.d(TAG, "done: current scroll " + recyclerView.getScrollY());
@@ -219,14 +225,14 @@ public class MainActivity extends NavigationBaseActivity
 //                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 //                            recyclerView.setScrollY(mSrcollY);
 //                        }
-                        recyclerView.scrollToPosition((current_page*10)+1);
-                        recyclerView.scrollTo(recyclerView.getScrollX(), mSrcollY);
-                        recyclerView.scrollTo(recyclerView.getScrollX(), 100);
+                        //recyclerView.scrollToPosition((current_page*10)+1);
+//                        recyclerView.scrollTo(recyclerView.getScrollX(), mSrcollY);
+                        //recyclerView.scrollToPosition(mSrcollY);
 
-                        Log.d(TAG, "done: current scroll after scrollto " + recyclerView.getScrollY());
+                        Log.d(TAG, "done: LoadMore current scroll after scrollto " + recyclerView.getScrollY());
 //                        ((AdsAdapter)adapter).setData(mAds);
 //                        adapter.notifyDataSetChanged();
-                        Log.d(TAG, "Anuncios general : " + mAds.size());
+                        Log.d(TAG, "LoadMore Anuncios general : " + mAds.size());
                     }
                 } else {
                     Log.e(TAG, "error al obtener los Anuncios");
@@ -319,6 +325,7 @@ public class MainActivity extends NavigationBaseActivity
                     if (e == null) {
                         Log.v(TAG, "---Ads get!");
                         mSwipeRefreshLayout.setRefreshing(false);
+
                         if (ads != null) {
                             mAds = ads;
                             adapter = new AdsAdapter(context, mAds);
