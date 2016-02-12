@@ -40,6 +40,7 @@ import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.SearchForLocationTask;
 import com.imaginabit.yonodesperdicion.activities.LoginPanelActivity;
 
+import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +59,7 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -763,6 +765,26 @@ public class Utils {
 
 		return new LatLng(lat, lon);
 	}
+
+	//use with 'org.hamcrest:hamcrest-all:1.3'
+	//for filter collections lists
+	public static <T> List<T> filter(Matcher<?> matcher, Iterable<T> iterable) {
+		if (iterable == null)
+			return new LinkedList<T>();
+		else{
+			List<T> collected = new LinkedList<T>();
+			Iterator<T> iterator = iterable.iterator();
+			if (iterator == null)
+				return collected;
+			while (iterator.hasNext()) {
+				T item = iterator.next();
+				if (matcher.matches(item))
+					collected.add(item);
+			}
+			return collected;
+		}
+	}
+
 
 }
 

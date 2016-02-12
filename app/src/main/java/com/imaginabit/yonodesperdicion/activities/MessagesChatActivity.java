@@ -157,6 +157,17 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                         Log.d(TAG, "pushedSendMessageButton_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
                         //Add the new message
                         mMessages.addAll(messages);
+
+                        //get other user id
+                        for (Message m :
+                                messages) {
+                            if (m.getSender_id()!= AppSession.getCurrentUser().id){
+                                userId = m.getSender_id();
+                                updateOtherUserInDb(mConversation,userId);
+                                break;
+                            }
+                        }
+
                         chatInput.setText("");
                         pushed = false;
                         updateScreen();
@@ -304,6 +315,20 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             mMessages = new ArrayList<Message>();
             Log.d(TAG, "onCreate: Conversation messages null" );
         }
+    }
+
+    private Integer updateOtherUserInDb(Conversation conversation, Integer otherUser){
+        Log.d(TAG, "updateInDb() called with: " + "conversation = [" + conversation + "]");
+        ContentValues contentValues = new ContentValues();
+        String where = "";
+        String[] args = {};
+
+        Uri uri = AdsContract.Conversations.buildConversationUri(String.valueOf( conversation.getDbId() ));
+
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, otherUser );
+
+        Integer count = mContentResolver.update(uri, contentValues, where, args);
+        return count;
     }
 
 }

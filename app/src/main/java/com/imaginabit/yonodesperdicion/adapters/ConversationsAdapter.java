@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.MessagesChatActivity;
+import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
 
@@ -95,8 +97,13 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         holder.messageBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //buscar esta conversacion en la base de datos?
+                Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
+
                 Intent intent = new Intent(context, MessagesChatActivity.class);
                 intent.putExtra("conversationId", conversation.getId());
+                intent.putExtra("conversationUri", conversationUri);
                 intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
                 AppSession.currentConversation = conversation;
                 context.startActivity(intent);
