@@ -158,16 +158,6 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                         //Add the new message
                         mMessages.addAll(messages);
 
-                        //get other user id
-                        for (Message m :
-                                messages) {
-                            if (m.getSender_id()!= AppSession.getCurrentUser().id){
-                                userId = m.getSender_id();
-                                updateOtherUserInDb(mConversation,userId);
-                                break;
-                            }
-                        }
-
                         chatInput.setText("");
                         pushed = false;
                         updateScreen();
@@ -264,9 +254,23 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             public void onFinished(List<Message> messages, Exception e, ArrayList data) {
                 Log.d(TAG, "getMessages_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
 //                Toast.makeText(MessagesChatActivity.this, "Mensajes recibidos", Toast.LENGTH_SHORT).show();
-                if (data.size()>0) {
+                if (data.size() > 0) {
                     mConversation = (Conversation) data.get(0);
                     mMessages = (ArrayList<Message>) mConversation.getMessages();
+
+                    //get other user id
+                    for (Message m :
+                            messages) {
+                        Log.d(TAG, "getUserWeb onFinished: recorriendo mensajes ");
+                        Log.d(TAG, "getUserWeb onFinished: message : " + m.toString() );
+                        if (m.getSender_id()!= AppSession.getCurrentUser().id){
+                            userId = m.getSender_id();
+                            Log.d(TAG, "onFinished: getUserWeb get user from message " + userId );
+                            updateOtherUserInDb(mConversation,userId);
+                            break;
+                        }
+                    }
+
                 } else {
                     Log.d(TAG, "onFinished: Data menor o igual 0");
                 }
@@ -318,7 +322,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     }
 
     private Integer updateOtherUserInDb(Conversation conversation, Integer otherUser){
-        Log.d(TAG, "updateInDb() called with: " + "conversation = [" + conversation + "]");
+        Log.d(TAG, "getUserWeb updateInDb() called with: " + "conversation = [" + conversation + "]");
         ContentValues contentValues = new ContentValues();
         String where = "";
         String[] args = {};
@@ -330,5 +334,6 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         Integer count = mContentResolver.update(uri, contentValues, where, args);
         return count;
     }
+
 
 }

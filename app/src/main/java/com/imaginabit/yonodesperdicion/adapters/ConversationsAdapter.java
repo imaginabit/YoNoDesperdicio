@@ -14,11 +14,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.MessagesChatActivity;
 import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
+import com.imaginabit.yonodesperdicion.models.User;
+import com.imaginabit.yonodesperdicion.utils.UserUtils;
+import com.imaginabit.yonodesperdicion.views.RoundedImageView;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +45,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         private ImageView rattingStatus;
         private TextView lastMessage;
         private LinearLayout messageBox;
+        private RoundedImageView avatar;
+
+        private User user;
 
         public ViewHolder(View view) {
             super(view);
@@ -52,6 +61,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
             rattingStatus = (ImageView) view.findViewById(R.id.ratting_status);
             lastMessage = (TextView) view.findViewById(R.id.last_message);
             messageBox = (LinearLayout) view.findViewById(R.id.message);
+            avatar = (RoundedImageView) view.findViewById(R.id.user_avatar);
 
         }
     }
@@ -71,7 +81,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     }
 
     @Override
-    public void onBindViewHolder(ConversationsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final ConversationsAdapter.ViewHolder holder, int position) {
         Log.v(TAG, "onBindViewHolder: ");
         final Conversation conversation = mConversationList.get(position);
 
@@ -91,7 +101,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
 
         long now = System.currentTimeMillis();
         String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime(), now, DateUtils.HOUR_IN_MILLIS);
-        holder.updatedAt.setText( d );
+        holder.updatedAt.setText(d);
 
         // CardView click listener
         holder.messageBox.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +119,43 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
                 context.startActivity(intent);
             }
         });
+
+        //get image from website
+        final ImageLoader imageLoader; // Get singleton instance
+        imageLoader = ImageLoader.getInstance();
+
+        if (holder.user == null) {
+            UserUtils.getUser(conversation.getOtherUserId(), context, new UserUtils.FetchUserCallback() {
+                @Override
+                public void done(User user, Exception e) {
+                    Log.d(TAG, "getUserWeb UserUtils.getUser->done() called with: " + "user = [" + user + "], e = [" + e + "]");
+                    if (e != null) e.printStackTrace();
+
+                    holder.user = user;
+                    //holder.subject.setText(user.getUserName() + " | " +conversation.getSubject());
+                    holder.lastMessage.setText(user.getUserName());
+
+                    if (user.getAvatar() != null) {
+                        String imageUri = Constants.HOME_URL + user.getAvatar();
+                        ImageSize targetSize = new ImageSize(200, 200); // result Bitmap will be fit to this size
+                        Log.d(TAG, "getUserWeb done: imageuri " + imageUri);
+
+                        if (!(imageUri.contains("/propias/"))) {
+                            Log.d(TAG, "getUserWeb done: load avatar");
+                            imageLoader.displayImage(imageUri, holder.avatar);
+                        }
+                    }
+                }
+            });
+        } else {
+            holder.lastMessage.setText(holder.user.getUserName());
+            if (holder.user.getAvatar() != null) {
+                String imageUri = Constants.HOME_URL + holder.user.getAvatar();
+                imageLoader.displayImage(imageUri, holder.avatar);
+            }
+
+        }
+
     }
 
     @Override

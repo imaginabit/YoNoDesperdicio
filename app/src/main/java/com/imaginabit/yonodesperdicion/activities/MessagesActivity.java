@@ -293,14 +293,13 @@ public class MessagesActivity extends NavigationBaseActivity {
         String where = "";
         String[] args = {};
 
-        Uri uri = AdsContract.Conversations.buildConversationUri(String.valueOf( conversation.getDbId() ));
+        Uri uri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
 
         mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
 
         Integer count = mContentResolver.update(uri, mContentValues, where, args);
         return count;
     }
-
 
 
 }

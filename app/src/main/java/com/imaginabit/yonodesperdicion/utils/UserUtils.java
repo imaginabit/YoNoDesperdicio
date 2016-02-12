@@ -142,16 +142,17 @@ public class UserUtils {
                                     } else
                                         ratting = 0;
 
+                                    String avatar = jsonItems.getString("image");
+
                                     if (response.has("session_user")){
                                         Log.d(TAG, "onResponse: yo mismo!");
                                         city = jsonItems.getString("city");
                                         String token = jsonItems.getString("auth_token");
-                                        String avatar = jsonItems.getString("image");
                                         AppSession.getCurrentUser().authToken = token;
                                         mUser = new User(userId,username,username,city,zip,total_quantity,ratting, avatar);
                                     } else {
                                         Log.d(TAG, "onResponse: otro");
-                                        mUser = new User(userId,username,username,city,zip,total_quantity,ratting);
+                                        mUser = new User(userId,username,username,city,zip,total_quantity,ratting,avatar);
                                     }
                                     callback.done(mUser, null);
                                 } catch (JSONException e) {
