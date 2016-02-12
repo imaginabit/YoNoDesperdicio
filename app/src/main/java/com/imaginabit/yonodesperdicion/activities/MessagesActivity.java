@@ -70,7 +70,7 @@ public class MessagesActivity extends NavigationBaseActivity {
         VolleySingleton.init(this);
         getConversationAppData();
         getConversationsFromApi();
-        //checkMessages();
+        checkMessages();
     }
 
     /**
@@ -148,10 +148,12 @@ public class MessagesActivity extends NavigationBaseActivity {
                         try {
                             //load data from database
                             Conversation dbC = mapDbConversations.get(c.getId());
-                            Log.d(TAG, "onFinished: coversation database " + dbC.toString() );
+                            Log.d(TAG, "onFinished: coversation database " + dbC.toString());
                             //get data from database
                             c.setDbId(dbC.getDbId());
                             c.setOtherUserId(dbC.getOtherUserId());
+                            String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
+                            c.setSubject(title);
                             mConversationList.set(i,c);
 
                         } catch (Exception e2 ){
@@ -251,6 +253,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                 int adId = returnConversation.getInt(2);
                 int userId = returnConversation.getInt(3);
                 String title = returnConversation.getString(5);
+
                 Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
                 Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
                 Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
@@ -260,10 +263,13 @@ public class MessagesActivity extends NavigationBaseActivity {
                 Log.d(TAG, "clickMessage: paso " + paso);
                 Conversation conversation;
 
+                title = id +" "+ title + " wid"+ webId;
+
                 conversation = new Conversation(webId, title);
                 conversation.setDbId(id);
                 conversation.setOtherUserId(userId);
                 mConversationList.add(conversation);
+                Log.d(TAG, "getConversationAppData: conversation " +  conversation.toString());
                 updateAdapter();
                 //Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
             } while (returnConversation.moveToNext());
@@ -274,12 +280,10 @@ public class MessagesActivity extends NavigationBaseActivity {
     private Integer saveInDb(Conversation conversation){
         Log.d(TAG, "saveInDb() called with: " + "conversation = [" + conversation + "]");
         mContentValues = new ContentValues();
-
         mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_WEB_ID, conversation.getId());
-        if (conversation.getOtherUserId()!=0) {
-            mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
-        }
+        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
         mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, "");
+
         Uri returned = mContentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, mContentValues);
         String returnedId = returned.getLastPathSegment();
 
