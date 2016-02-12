@@ -104,6 +104,7 @@ public final class AdsContract {
         String CONVERSATION_AD_ID = "ad_id";
         String CONVERSATION_USER = "user_id";
         String CONVERSATION_STATUS = "status_id";
+        String CONVERSATION_TITLE = "title";
     }
 
     public static class Conversations implements ConversationsColumns, BaseColumns{

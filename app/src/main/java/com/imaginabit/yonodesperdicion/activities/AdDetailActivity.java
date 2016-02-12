@@ -291,13 +291,18 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         int webId = returnConversation.getInt(1);
                         int adId = returnConversation.getInt(2);
                         int userId = returnConversation.getInt(3);
+                        String title = returnConversation.getString(5);
                         Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1) );
                         Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2) );
                         Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3) );
                         Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_TITLE 5: " + returnConversation.getString(5));
 
-                        conversation = new Conversation(id,ad.getTitle());
                         paso++;
+                        if (paso > 1) title = title + " "+ paso;
+
+                        conversation = new Conversation(id, title);
+
                         Log.d(TAG, "clickMessage: paso "+paso);
                         conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
                     } while (returnConversation.moveToNext());
@@ -308,6 +313,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
                     //save conversation in database
                     valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_USER, ad.getUserId());
                     valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, ad.getId());
+                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, ad.getTitle());
                     conversationUri = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, valuesConversation);
                     Log.d(TAG, "clickMessage: Record Id returned is " + conversationUri.toString());
                 }

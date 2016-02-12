@@ -63,7 +63,8 @@ public class AdsDatabase extends SQLiteOpenHelper {
                         + AdsContract.ConversationsColumns.CONVERSATION_WEB_ID + " INTEGER,"
                         + AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " INTEGER NOT NULL,"
                         + AdsContract.ConversationsColumns.CONVERSATION_USER + " INTEGER NOT NULL,"
-                        + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER "
+                        + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER, "
+                        + AdsContract.ConversationsColumns.CONVERSATION_TITLE + " TEXT "
                         + ")"
         );
 
@@ -100,7 +101,8 @@ public class AdsDatabase extends SQLiteOpenHelper {
                             + AdsContract.ConversationsColumns.CONVERSATION_WEB_ID + " INTEGER,"
                             + AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " INTEGER NOT NULL,"
                             + AdsContract.ConversationsColumns.CONVERSATION_USER + " INTEGER NOT NULL,"
-                            + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER "
+                            + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER, "
+                            + AdsContract.ConversationsColumns.CONVERSATION_TITLE + " TEXT "
                             + ")"
             );
             version = 3;
