@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -60,12 +62,17 @@ public class MessagesActivity extends NavigationBaseActivity {
         recyclerView.setAdapter(adapter);
 
         mContentResolver = getContentResolver();
+        mConversationList = new ArrayList<Conversation>();
 
         VolleySingleton.init(this);
-        getMessages();
-        checkMessages();
+        getConversationAppData();
+        //getConversationsFromApi();
+        //checkMessages();
     }
 
+    /**
+     * Check for conversation info every 2 minutes
+     */
     private void checkMessages(){
         new Handler().postDelayed(new RunnableCheckActive(this) {
             @Override
@@ -74,7 +81,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                 MessagesActivity a = (MessagesActivity) mActivity;
                 if ( a.isActive() ){
                     Log.d(TAG, "run: active!");
-                    getMessages();
+                    getConversationsFromApi();
 
                 }
                 checkMessages();
@@ -96,7 +103,14 @@ public class MessagesActivity extends NavigationBaseActivity {
         }
     }
 
-    private void getMessages(){
+    private void updateAdapter(){
+        adapter = new ConversationsAdapter(context, mConversationList);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        Log.v(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
+    }
+
+    private void getConversationsFromApi(){
         MessagesUtils.getConversations(MessagesActivity.this, new MessagesUtils.ConversationsCallback() {
             @Override
             public void onFinished(List<Conversation> conversation, Exception e) {
@@ -109,13 +123,8 @@ public class MessagesActivity extends NavigationBaseActivity {
                 if (conversations != null) {
                     mConversationList = conversations;
                     sortByDate(mConversationList);
-
-                    adapter = new ConversationsAdapter(context, mConversationList);
-                    recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
                     Log.v(TAG, "Conversacionesl : " + conversations.size());
-                    Log.v(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
-
+                    updateAdapter();
 
 //                    Date d = new Date();
 //                    Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
@@ -178,7 +187,7 @@ public class MessagesActivity extends NavigationBaseActivity {
 
 //    Esto solo se puede hacer si obtengo primero todos los mensajes
 //    private int getOtherUser(Conversation conversation){
-//        List<Message> messages = conversation.getMessages();
+//        List<Message> messages = conversation.getConversationsFromApi();
 //        for (int j = 0; j < messages.size(); j++) {
 //            int userid = messages.get(j).getSender_id();
 //            if (userid != AppSession.getCurrentUser().id){
@@ -199,6 +208,37 @@ public class MessagesActivity extends NavigationBaseActivity {
         });
 
         adapter.notifyDataSetChanged();
+    }
+
+    private void getConversationAppData(){
+        String[] projection = new String[]{};
+        String selectionClause = "";
+        String[] selectionArgs = new String[]{};
+        ContentResolver contentResolver = getContentResolver();
+        Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+        //if is in database take the existing conversation
+        if (returnConversation.moveToFirst()) {
+            int paso = 0;
+            do {
+                int id = returnConversation.getInt(0);
+                int webId = returnConversation.getInt(1);
+                int adId = returnConversation.getInt(2);
+                int userId = returnConversation.getInt(3);
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
+
+                paso++;
+                Log.d(TAG, "clickMessage: paso " + paso);
+
+                Conversation conversation = new Conversation(id, Integer.toString(paso) + "name" );
+                mConversationList.add(conversation);
+                updateAdapter();
+                //Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
+            } while (returnConversation.moveToNext());
+        }
+
     }
 
 
