@@ -300,7 +300,6 @@ public class ProfileActivity extends NavigationBaseActivity {
                 location.setText(cp + ", " + provincia);
             }
         });
-
     }
 
     /**

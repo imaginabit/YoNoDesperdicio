@@ -42,9 +42,13 @@ public final class AdsContract {
     private static final String PATH_FAVORITES = "favorites";
     public static final Uri URI_TABLE_FAVORITES = Uri.parse(BASE_CONTENT_URI.toString() + "/" + PATH_FAVORITES );
 
+    private static final String PATH_CONVERSATIONS = "conversations";
+    public static final Uri URI_TABLE_CONVERSATIONS = Uri.parse(BASE_CONTENT_URI.toString() + "/" + PATH_CONVERSATIONS );
+
     public static final String[] TOP_LEVEL_PATHS = {
             PATH_ADS,
-            PATH_FAVORITES
+            PATH_FAVORITES,
+            PATH_CONVERSATIONS
     };
 
     public static class Ads implements AdsColumns, BaseColumns{
@@ -91,5 +95,34 @@ public final class AdsContract {
             return uri.getPathSegments().get(2);
         }
     }
+
+    /// Conversations
+
+    public interface ConversationsColumns{
+        String CONVERSATION_ID = "_id";
+        String CONVERSATION_WEB_ID = "web_id";
+        String CONVERSATION_AD_ID = "ad_id";
+        String CONVERSATION_USER = "user_id";
+        String CONVERSATION_STATUS = "status_id";
+        String CONVERSATION_TITLE = "title";
+    }
+
+    public static class Conversations implements ConversationsColumns, BaseColumns{
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendEncodedPath(PATH_CONVERSATIONS).build();
+
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + CONTENT_AUTHORITY + ".conversations";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd." + CONTENT_AUTHORITY + ".conversations";
+
+        public static Uri buildConversationUri(String ConversationId){
+            return CONTENT_URI.buildUpon().appendEncodedPath(ConversationId).build();
+        }
+
+        public static String getConversationId(Uri uri){
+            return uri.getPathSegments().get(1);
+        }
+    }
+
+
 }
 
