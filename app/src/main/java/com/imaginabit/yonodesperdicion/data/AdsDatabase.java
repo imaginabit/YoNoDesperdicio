@@ -13,7 +13,7 @@ import android.provider.BaseColumns;
 public class AdsDatabase extends SQLiteOpenHelper {
     private static final String TAG = AdsDatabase.class.getSimpleName();
     private static final String DATABASE_NAME = "yonodesperdicio.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private final Context mContext;
 
     interface Tables{
@@ -58,10 +58,15 @@ public class AdsDatabase extends SQLiteOpenHelper {
         );
 
         //crear tabla conversaciones
-        /*db.execSQL("CREATE TABLE " + Tables.CONVERSATIONS + " ("
-                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + ")"
-        );*/
+        db.execSQL("CREATE TABLE " + Tables.CONVERSATIONS + " ("
+                        + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + AdsContract.ConversationsColumns.CONVERSATION_WEB_ID + " INTEGER,"
+                        + AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " INTEGER NOT NULL,"
+                        + AdsContract.ConversationsColumns.CONVERSATION_USER + " INTEGER NOT NULL,"
+                        + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER, "
+                        + AdsContract.ConversationsColumns.CONVERSATION_TITLE + " TEXT "
+                        + ")"
+        );
 
         //crear tabla mensajes
 //        db.execSQL("CREATE TABLE " + Tables.MESSAGES + " ("
@@ -90,10 +95,23 @@ public class AdsDatabase extends SQLiteOpenHelper {
             );
             version = 2;
         }
+        if (version == 2 ){
+            db.execSQL("CREATE TABLE " + Tables.CONVERSATIONS + " ("
+                            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                            + AdsContract.ConversationsColumns.CONVERSATION_WEB_ID + " INTEGER,"
+                            + AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " INTEGER NOT NULL,"
+                            + AdsContract.ConversationsColumns.CONVERSATION_USER + " INTEGER NOT NULL,"
+                            + AdsContract.ConversationsColumns.CONVERSATION_STATUS + " INTEGER, "
+                            + AdsContract.ConversationsColumns.CONVERSATION_TITLE + " TEXT "
+                            + ")"
+            );
+            version = 3;
+        }
 
         if (version != DATABASE_VERSION){
             db.execSQL("DROP TABLE IF EXISTS " + Tables.ADS );
             db.execSQL("DROP TABLE IF EXISTS " + Tables.FAVORITES );
+            db.execSQL("DROP TABLE IF EXISTS " + Tables.CONVERSATIONS );
             onCreate(db);
         }
 
