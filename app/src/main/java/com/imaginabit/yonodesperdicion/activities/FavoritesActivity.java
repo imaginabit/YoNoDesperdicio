@@ -97,6 +97,9 @@ public class FavoritesActivity extends NavigationBaseActivity{
 
         //Get Ads info
         Log.d(TAG, "onCreate: adIds "+ adIds.toString());
+        if(adIds.size()<1){
+            Toast.makeText(FavoritesActivity.this, "Añade favoritos pulsando el corazón que aparece arriba a la derecha en cada anuncio", Toast.LENGTH_SHORT).show();
+        }
 
         getAdsFromWeb(adIds);
 
