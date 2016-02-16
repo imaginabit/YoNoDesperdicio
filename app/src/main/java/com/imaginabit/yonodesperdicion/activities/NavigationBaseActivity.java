@@ -2,13 +2,16 @@ package com.imaginabit.yonodesperdicion.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,10 +25,14 @@ import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 
+import java.io.File;
+
 
 public abstract class NavigationBaseActivity extends AppCompatActivity
                                              implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "NavigationBaseActivity";
     public static Context context;
+    private RoundedImageView navUserImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +73,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
         // Current user data
         View headerNavView = navigationView.getHeaderView(0);
-        RoundedImageView navUserImage = (RoundedImageView) headerNavView.findViewById(R.id.nav_header_user_image);
+        navUserImage = (RoundedImageView) headerNavView.findViewById(R.id.nav_header_user_image);
         TextView navUserFullname = (TextView) headerNavView.findViewById(R.id.nav_header_user_fullname);
 
         // User login panel
@@ -88,6 +95,8 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
                 startActivity(loginPanelIntent);
             }
         });
+
+        setAvatarFromLocal();
 
         return drawer;
     }
@@ -192,11 +201,29 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        super.onResume();
+        if (navUserImage.getDrawable().equals(ContextCompat.getDrawable(context, R.drawable.brick_avatar))){
+            //if avatar is set to brickavatar them load avatar form disk
+            Log.d(TAG, "setAvatarFromLocal: Drawables equals");
+            setAvatarFromLocal();
+        } else {
+            Log.d(TAG, "setAvatarFromLocal: drawables not equal");
+        }
         active = true;
+        super.onResume();
     }
 
     public boolean isActive() {
         return active;
+    }
+
+    public void setAvatarFromLocal(){
+        String path = context.getFilesDir() + "/avatar.jpg";
+        File file = new File(path);
+
+        if(file.exists()) {
+            navUserImage.setImageDrawable(Drawable.createFromPath(path));
+        }else{
+            navUserImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.brick_avatar));
+        }
     }
 }

@@ -17,6 +17,7 @@ public class Conversation {
     private int mThreadId;
     public boolean loaded= false;
     private int mOtherUserId;
+    private int dbId;
 
     private List<Message> mMessages;
 
@@ -119,17 +120,27 @@ public class Conversation {
         mOtherUserId = otherUserId;
     }
 
+    public int getDbId() {
+        return dbId;
+    }
+
+    public void setDbId(int dbId) {
+        this.dbId = dbId;
+    }
+
     @Override
     public String toString() {
         return "Conversation{" +
-                "mId=" + mId +
-                ", mSubject='" + mSubject + '\'' +
-                ", mCreatedAt=" + mCreatedAt +
-                ", mUpdatedAt=" + mUpdatedAt +
-                ", mThreadId=" + mThreadId +
-                ", loaded=" + loaded +
-                ", mOtherUserId=" + mOtherUserId +
-                ", mMessages=" + mMessages +
+                "mId=" + mId + "\n" +
+                ", mSubject='" + mSubject + '\'' + "\n" +
+                ", mCreatedAt=" + mCreatedAt +"\n" +
+                ", mUpdatedAt=" + mUpdatedAt +"\n" +
+                ", mThreadId=" + mThreadId +"\n" +
+                ", loaded=" + loaded +"\n" +
+                ", mOtherUserId=" + mOtherUserId +"\n" +
+                ", dbId=" + dbId +"\n" +
+                ", mMessages=" + mMessages +"\n" +
                 '}';
     }
+
 }

@@ -683,7 +683,7 @@ public class MessagesUtils {
                         Log.v(TAG, "reply_onErrorResponse() called with: " + "error = [" + error + "]");
                         //TODO: on android 2.3.3 app crashed here :(
                         String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
-                        String errorDialogMsg = Utils.showErrorsJson(errorMessage, (Activity) MessagesUtils.context);
+                        //String errorDialogMsg = Utils.showErrorsJson(errorMessage, (Activity) MessagesUtils.context);
 
                         Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
                         callback.onError(errorMessage);
@@ -717,17 +717,18 @@ public class MessagesUtils {
      * @param sendTo user
      * @param callback callback with message created response
      */
-    public static void createConversation(final String title, int sendTo, final MessagesCallback callback){
+    public static void createConversation(final String title, int sendTo,String body, final MessagesCallback callback){
         Log.d(TAG, "createConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
 
         JSONObject jsonRequest = new JSONObject();
         JSONObject jsonMessage = new JSONObject();
 
-
-
         RequestQueue queue = VolleySingleton.getRequestQueue();
         try {
             jsonMessage.put("subject",title);
+            if (Utils.isNotEmptyOrNull(body))
+                jsonMessage.put("body", body );
+            else
             jsonMessage.put("body", NEW_MESSAGE );
         } catch (JSONException e) {
             e.printStackTrace();
@@ -801,9 +802,19 @@ public class MessagesUtils {
         Log.d(TAG, "createConversation: request to string " + jsonRequest.toString() );
 
         queue.add(request);
-
-
     }
+
+//    public static void createFakeConversation(final String title, int sendTo, final MessagesCallback callback){
+//        Log.d(TAG, "createFakeConversation() called with: " + "title = [" + title + "], sendTo = [" + sendTo + "], callback = [" + callback + "]");
+//
+//        Exception error = null;
+//        ArrayList data = new ArrayList();
+//        List<Message> messages = new ArrayList<>();
+//
+//        Conversation c = new Conversation(0,title);
+//        data.add(c);
+//
+//    }
 
 
 }

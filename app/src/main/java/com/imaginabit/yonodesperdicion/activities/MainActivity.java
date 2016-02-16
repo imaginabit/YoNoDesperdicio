@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -42,6 +43,7 @@ import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
+import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -87,11 +89,29 @@ public class MainActivity extends NavigationBaseActivity
         setContentView(R.layout.activity_main);
         App.appContext = context;//for make getGPSfromZip works
 
+        //init Singleton instances
+        VolleySingleton.init(this);
+        ProvinciasCP.init();
+        // Initialize Universal Image Loader
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .showImageForEmptyUri(R.drawable.zanahoria) // resource or drawable
+                .showImageOnFail(R.drawable.aubergine) // resource or drawable
+                .build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+                .defaultDisplayImageOptions(defaultOptions)
+                .threadPoolSize(4)
+                .memoryCache(new WeakMemoryCache())
+                .imageDownloader(new BaseImageDownloader(context, 10 * 1000, 30 * 1000))
+                .build();
+        ImageLoader.getInstance().init(config);
+
 
         // Put on session
         UserData user = UserData.prefsFetch(this);
         if (user != null) {
-            VolleySingleton.init(this);
             AppSession.setCurrentUser(user);
             AppSession.checkAuthCredentials(this);
         }
@@ -128,21 +148,7 @@ public class MainActivity extends NavigationBaseActivity
                     .introduceMyself();
         }
 
-        // Initialize Universal Image Loader
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisc(true)
-                .resetViewBeforeLoading(true)
-                .showImageForEmptyUri(R.drawable.zanahoria) // resource or drawable
-                .showImageOnFail(R.drawable.aubergine) // resource or drawable
-                .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .defaultDisplayImageOptions(defaultOptions)
-                .threadPoolSize(4)
-                .memoryCache(new WeakMemoryCache())
-                .imageDownloader(new BaseImageDownloader(context, 10 * 1000, 30 * 1000))
-                .build();
-        ImageLoader.getInstance().init(config);
+
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 
@@ -161,15 +167,18 @@ public class MainActivity extends NavigationBaseActivity
         recyclerView.setAdapter(adapter);
 
 
-        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
+        final EndlessRecyclerOnScrollListener scrollListener = new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
             @Override
             public void onLoadMore(int current_page, int current_scroll) {
+                Log.d(TAG, "onLoadMore() called with: " + "current_page = [" + current_page + "], current_scroll = [" + current_scroll + "]");
                 mSrcollY = current_scroll;
                 Log.d(TAG, "onLoadMore: mSrcoll nau: " + mSrcollY);
-                Log.d(TAG, "onLoadMore() called with: " + "current_page = [" + current_page + "]");
-                loadMoreData(current_page);
+                //page 1 is the same as page 0
+                loadMoreData(current_page+1);
             }
-        });
+        };
+
+        recyclerView.addOnScrollListener(scrollListener);
         //Get Ads
         getAdsFromWeb();
         //initializeData();
@@ -188,6 +197,7 @@ public class MainActivity extends NavigationBaseActivity
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
                         getAdsFromWeb();
+                        scrollListener.setCurrent_page(1);
 //                        initializeData();
                     }
                 }
@@ -199,6 +209,7 @@ public class MainActivity extends NavigationBaseActivity
     }
 
     private void loadMoreData(final int current_page) {
+        Log.d(TAG, "loadMoreData() called with: " + "current_page = [" + current_page + "]");
         AdUtils.fetchAds(current_page, this, new AdUtils.FetchAdsCallback() {
             @Override
             public void done(List<Ad> ads, Exception e) {
@@ -206,8 +217,9 @@ public class MainActivity extends NavigationBaseActivity
                     if (ads != null) {
                         Log.d(TAG, "loadMoreData_done() called with: " + "ads = [" + ads + "], e = [" + e + "]");
                         mAds.addAll(ads);
-                        adapter = new AdsAdapter(context, mAds);
-                        recyclerView.setAdapter(adapter);
+                        //adapter = new AdsAdapter(context, mAds);
+                        //recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
 
                         Log.d(TAG, "done: mScrollY " + mSrcollY);
                         Log.d(TAG, "done: current scroll " + recyclerView.getScrollY());
@@ -215,14 +227,14 @@ public class MainActivity extends NavigationBaseActivity
 //                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 //                            recyclerView.setScrollY(mSrcollY);
 //                        }
-                        recyclerView.scrollToPosition((current_page*10)+1);
-                        recyclerView.scrollTo(recyclerView.getScrollX(), mSrcollY);
-                        recyclerView.scrollTo(recyclerView.getScrollX(), 100);
+                        //recyclerView.scrollToPosition((current_page*10)+1);
+//                        recyclerView.scrollTo(recyclerView.getScrollX(), mSrcollY);
+                        //recyclerView.scrollToPosition(mSrcollY);
 
-                        Log.d(TAG, "done: current scroll after scrollto " + recyclerView.getScrollY());
+                        Log.d(TAG, "done: LoadMore current scroll after scrollto " + recyclerView.getScrollY());
 //                        ((AdsAdapter)adapter).setData(mAds);
 //                        adapter.notifyDataSetChanged();
-                        Log.d(TAG, "Anuncios general : " + mAds.size());
+                        Log.d(TAG, "LoadMore Anuncios general : " + mAds.size());
                     }
                 } else {
                     Log.e(TAG, "error al obtener los Anuncios");
@@ -315,14 +327,21 @@ public class MainActivity extends NavigationBaseActivity
                     if (e == null) {
                         Log.v(TAG, "---Ads get!");
                         mSwipeRefreshLayout.setRefreshing(false);
+
                         if (ads != null) {
                             mAds = ads;
                             adapter = new AdsAdapter(context, mAds);
                             recyclerView.setAdapter(adapter);
-                            removeExpiredAds();
+                            //removeExpiredAds();
 
                             adapter.notifyDataSetChanged();
                             Log.d(TAG, "Anuncios general : " + mAds.size());
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }, 1000);
                         }
                     } else {
                         Log.e(TAG, "error al obtener los Anuncios");
@@ -364,6 +383,7 @@ public class MainActivity extends NavigationBaseActivity
                 // Start the refresh background task.
                 // This method calls setRefreshing(false) when it's finished.
                 getAdsFromWeb();
+//                adapter.notifyDataSetChanged();
 
                 return true;
 
@@ -489,13 +509,34 @@ public class MainActivity extends NavigationBaseActivity
         if (!mGoogleApiClient.isConnected()) {
 
             try {
-                //if dont get de connection anyway them set location by ZIPCODE
-                if ((AppSession.getCurrentUser() != null) && (AppSession.getCurrentUser().zipCode != null)){
-                    Address address = Utils.getGPSfromZip(context, Integer.parseInt(AppSession.getCurrentUser().zipCode));
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    //ask for permission
+                    Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicacion del telefono");
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},
+                            LOCATION_REQUEST);
+                    //if dont get de connection anyway them set location by ZIPCODE
+                    if ((AppSession.getCurrentUser() != null) && (AppSession.getCurrentUser().zipCode != null)){
+                        Address address = Utils.getGPSfromZip(context, Integer.parseInt(AppSession.getCurrentUser().zipCode));
+                        AppSession.lastLocation = new Location("");
+                        AppSession.lastLocation.setLatitude(address.getLatitude());
+                        AppSession.lastLocation.setLongitude(address.getLongitude());
+                    }
+                } else {
+
+                    //if dont get conection get location from phone
+                    LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    double longitude = location.getLongitude();
+                    double latitude = location.getLatitude();
+
                     AppSession.lastLocation = new Location("");
-                    AppSession.lastLocation.setLatitude(address.getLatitude());
-                    AppSession.lastLocation.setLongitude(address.getLongitude());
+                    AppSession.lastLocation.setLatitude(latitude);
+                    AppSession.lastLocation.setLongitude(longitude);
                 }
+
+
             }catch (Exception e ){
                 e.printStackTrace();
             }
@@ -505,7 +546,8 @@ public class MainActivity extends NavigationBaseActivity
             //google me obliga a poner esto
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicaicon del telefono");
+
+                Log.d(TAG, "checkGoogleApiClient: no hay permisos para ver la ubicacion del telefono");
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},
                         LOCATION_REQUEST);
 
@@ -599,8 +641,9 @@ public class MainActivity extends NavigationBaseActivity
 
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-//                showToast(getString(R.string.address_found));
-                showToast(mAddressOutput);
+                showToast(getString(R.string.address_found));
+//                showToast(mAddressOutput);
+                Log.d(TAG, "onReceiveResult: "+ getString(R.string.address_found) +" "+ mAddressOutput);
             }
 
         }

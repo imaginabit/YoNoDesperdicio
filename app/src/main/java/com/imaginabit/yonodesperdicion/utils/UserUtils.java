@@ -3,8 +3,10 @@ package com.imaginabit.yonodesperdicion.utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -12,14 +14,19 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.User;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -142,16 +149,17 @@ public class UserUtils {
                                     } else
                                         ratting = 0;
 
+                                    String avatar = jsonItems.getString("image");
+
                                     if (response.has("session_user")){
                                         Log.d(TAG, "onResponse: yo mismo!");
                                         city = jsonItems.getString("city");
                                         String token = jsonItems.getString("auth_token");
-                                        String avatar = jsonItems.getString("image");
                                         AppSession.getCurrentUser().authToken = token;
                                         mUser = new User(userId,username,username,city,zip,total_quantity,ratting, avatar);
                                     } else {
                                         Log.d(TAG, "onResponse: otro");
-                                        mUser = new User(userId,username,username,city,zip,total_quantity,ratting);
+                                        mUser = new User(userId,username,username,city,zip,total_quantity,ratting,avatar);
                                     }
                                     callback.done(mUser, null);
                                 } catch (JSONException e) {
@@ -178,6 +186,46 @@ public class UserUtils {
 //            Utils.dismissProgressDialog(pd);
             e.printStackTrace();
             //callback.onErrror(e.getMessage());
+        }
+    }
+
+    public static void saveUserAvatar(String url) {
+        Log.d(TAG, "saveUserAvatar() called with: " + "url = [" + url + "]");
+
+        if (Utils.isNotEmptyOrNull(url)) {
+
+            //get image from website
+            ImageLoader imageLoader; // Get singleton instance
+            imageLoader = ImageLoader.getInstance();
+            String imageUri = Constants.HOME_URL + url.replace("/original/", "/thumb/");
+
+            imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                    // Do whatever you want with Bitmap
+                    String fname = "avatar.jpg";
+                    File file = new File(App.appContext.getFilesDir(), fname);
+                    if (file.exists()) file.delete();
+
+                    FileOutputStream out = null;
+                    try {
+                        out = new FileOutputStream(file);
+                        if (loadedImage != null) {
+                            Log.d(TAG, "saveAvatar: bitmap not null");
+                            loadedImage.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                            out.flush();
+                            out.close();
+                        } else {
+                            Log.d(TAG, "saveAvatar: bitmap null");
+                        }
+                    } catch (Exception e) {
+                        // FileNotFoundException
+                        // IOExeption
+                        e.printStackTrace();
+                    }
+                }
+            });
+
         }
     }
 

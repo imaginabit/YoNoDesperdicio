@@ -70,6 +70,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,7 +107,7 @@ public class ProfileActivity extends NavigationBaseActivity {
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_PICTURE = 1;
     protected static final int STORAGE_PERMISSION_RC = 3;
-    Bitmap bitmap;
+    Bitmap bitmap,bitmap2;
     String selectedImagePath;
     private Intent pictureActionIntent = null;
     File capturedPhoto;
@@ -145,7 +146,9 @@ public class ProfileActivity extends NavigationBaseActivity {
             if (data != null) {
                 Log.d(TAG, "onCreate: data " + data.toString());
                 Ad ad = (Ad) data.getParcelable("ad");
-                mUser = new UserData( (long)ad.getUserId(),"","",ad.getUserName(),ad.getUserName(),"","","",ad.getProvince(),String.valueOf(ad.getPostalCode()),0,0);
+                mUser = new UserData( (long)ad.getUserId(),"","",ad.getUserName(),
+                        ad.getUserName(),"","","",ad.getProvince(),
+                        String.valueOf(ad.getPostalCode()),0,0,"");
                 getUserWeb();
             }
             // show Back button in toolbar
@@ -300,7 +303,6 @@ public class ProfileActivity extends NavigationBaseActivity {
                 location.setText(cp + ", " + provincia);
             }
         });
-
     }
 
     /**
@@ -430,6 +432,8 @@ public class ProfileActivity extends NavigationBaseActivity {
                         Toast.LENGTH_SHORT).show();
             }
         }
+
+        saveAvatar();
     }
 
     private void setPhoto(File f) {
@@ -664,6 +668,43 @@ public class ProfileActivity extends NavigationBaseActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void saveAvatar(){
+        Log.d(TAG, "saveAvatar() called with: " + "");
+        //String filePath = MediaStore.Images.Media.DATA;
+        //File myDir=new File(filePath);
+        //myDir.mkdirs();
+
+        String fname = "avatar.jpg";
+        File file = new File (context.getFilesDir(), fname);
+        if (file.exists ()) file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            if (bitmap!= null) {
+
+                Log.d(TAG, "saveAvatar: bitmap not null");
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                out.flush();
+                out.close();
+            } else {
+                Log.d(TAG, "saveAvatar: bitmap null");
+            }
+
+            Log.d(TAG, "saveAvatar: set");
+            try {
+                //Bitmap bmImg = BitmapFactory.decodeFile(fname);
+                String path = context.getFilesDir() +"/"+ fname;
+                Log.d(TAG, "saveAvatar: path : " + path);
+                avatarView.setImageDrawable(Drawable.createFromPath(path));
+            } catch (Exception e){
+                Log.d(TAG, "saveAvatar: fallo al mostrar foto");
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

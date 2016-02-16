@@ -18,7 +18,7 @@ public abstract class EndlessRecyclerOnScrollListener extends
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount;
 
-    private int current_page = 1; //start with page 1
+    private int current_page = 0; //start with page 1
     private int current_scroll;
 
     private LinearLayoutManager mLinearLayoutManager;
@@ -45,7 +45,7 @@ public abstract class EndlessRecyclerOnScrollListener extends
         if (!loading
                 && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
             // End has been reached
-            Log.d(TAG, "onScrolled:  End has been reached");
+            Log.d(TAG, "onScrolled: LoadMore End has been reached");
 
 
             // Do something
@@ -58,4 +58,8 @@ public abstract class EndlessRecyclerOnScrollListener extends
     }
 
     public abstract void onLoadMore(int current_page, int current_scroll);
+
+    public void setCurrent_page(int current_page) {
+        this.current_page = current_page;
+    }
 }

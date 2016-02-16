@@ -3,7 +3,6 @@ package com.imaginabit.yonodesperdicion.activities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -82,11 +81,8 @@ public class FavoritesActivity extends NavigationBaseActivity{
 
         //Get ads id from database
 
-        ContentValues values= new ContentValues();
         contentResolver = getContentResolver();
-
         String[] projection = new String[]{BaseColumns._ID, AdsContract.FavoritesColumns.FAV_AD_ID};
-
         Cursor cursor = contentResolver.query(AdsContract.URI_TABLE_FAVORITES, projection, null, null, null);
         if (cursor.moveToFirst()) {
             do {
@@ -101,6 +97,9 @@ public class FavoritesActivity extends NavigationBaseActivity{
 
         //Get Ads info
         Log.d(TAG, "onCreate: adIds "+ adIds.toString());
+        if(adIds.size()<1){
+            Toast.makeText(FavoritesActivity.this, "Añade favoritos pulsando el corazón que aparece arriba a la derecha en cada anuncio", Toast.LENGTH_SHORT).show();
+        }
 
         getAdsFromWeb(adIds);
 

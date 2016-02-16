@@ -28,6 +28,7 @@ public class UserData {
     private static final String PREFS_KEY_ZIP_CODE = "user_zip_code";
     private static final String PREFS_KEY_RATING = "user_rating";
     private static final String PREFS_KEY_TOTAL_QUANTITY = "user_total_quantity";
+    private static final String PREFS_KEY_AVATAR_URL = "user_avatar_url";
 
 
     public long id = 0L;
@@ -42,6 +43,7 @@ public class UserData {
     public String zipCode = "";
     public float rating = 0.0f;
     public int totalQuantity = 0;
+    public String avatar = "";
 
     private static LocationListener locationListener = null;
     private static LocationManager locationMangaer = null;
@@ -65,7 +67,8 @@ public class UserData {
             String province,
             String zipCode,
             float rating,
-            int totalQuantity
+            int totalQuantity,
+            String avatar
     ) {
         this.id = id;
         this.created = created;
@@ -79,6 +82,7 @@ public class UserData {
         this.zipCode = zipCode;
         this.rating = rating;
         this.totalQuantity = totalQuantity;
+        this.avatar = avatar;
     }
 
     /**
@@ -99,6 +103,7 @@ public class UserData {
         ed.putString(PREFS_KEY_ZIP_CODE, zipCode);
         ed.putFloat(PREFS_KEY_RATING, rating);
         ed.putInt(PREFS_KEY_TOTAL_QUANTITY, totalQuantity);
+        ed.putString(PREFS_KEY_AVATAR_URL, avatar);
 
         return ed.commit();
     }
@@ -151,6 +156,7 @@ public class UserData {
         String zipCode = sp.getString(PREFS_KEY_ZIP_CODE, "");
         float rating = sp.getFloat(PREFS_KEY_RATING, 0.0f);
         int totalQuantity = sp.getInt(PREFS_KEY_TOTAL_QUANTITY, 0);
+        String avatar = sp.getString(PREFS_KEY_AVATAR_URL, "");
 
         UserData user = new UserData(
                                         id,
@@ -164,7 +170,8 @@ public class UserData {
                                         province,
                                         zipCode,
                                         rating,
-                                        totalQuantity
+                                        totalQuantity,
+                                        avatar
                                     );
 
         return user;
@@ -188,6 +195,7 @@ public class UserData {
         ed.remove(PREFS_KEY_ZIP_CODE);
         ed.remove(PREFS_KEY_RATING);
         ed.remove(PREFS_KEY_TOTAL_QUANTITY);
+        ed.remove(PREFS_KEY_AVATAR_URL);
 
         return ed.commit();
     }

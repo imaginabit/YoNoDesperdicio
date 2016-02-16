@@ -2,7 +2,6 @@ package com.imaginabit.yonodesperdicion.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.location.Address;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -11,9 +10,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.maps.model.LatLng;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.SearchForLocationTask;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
@@ -246,7 +247,7 @@ public class AdUtils {
                 //Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName)
                 ad = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
                 ad.setLocation(calculateLocation(ad));
-                ad.setLastDistance(calculateDistance(ad));
+//                ad.setLastDistance(calculateDistance(ad));
                 ad.setCategoria(categoria);
 
                 return ad;
@@ -259,47 +260,66 @@ public class AdUtils {
         }
     }
 
-    public static Location calculateLocation(Ad ad){
+    public static Location calculateLocation(final Ad ad){
         Log.d(TAG, "calculateLocation() called with: " + "ad = [" + ad.getTitle() + "]");
-        Location adLocation = new Location(ad.getTitle());
-        Address adAddress = Utils.getGPSfromZip( App.appContext , ad.getPostalCode());
+        final Location adLocation = new Location(ad.getTitle());
+        //final Address adAddress = Utils.getGPSfromZip( App.appContext , ad.getPostalCode());
 
-        if (adAddress!= null ) {
-            //TODO: need user postal code to get location from postal code zip
-            //Address userAddress = Utils.getGPSfromZip(context, Integer.parseInt( UserData.prefsFetch(context).zipCode ) );
 
-            Log.d(TAG, "calculateLocation: Address" + ad.getPostalCode() + " " + adAddress.getAddressLine(0));
-            String countryCode = adAddress.getCountryName();
-            Log.d(TAG, "calculateLocation: COUNTRY CODE " + countryCode );
+        Utils.getGPSfromZipGmaps(String.valueOf(ad.getPostalCode()) + " "+ ad.getProvince(), new SearchForLocationTask.SearchForLocationTaskEventListener() {
+            @Override
+            public void onFinish(LatLng result) {
+                Log.d(TAG, "calculateLocation searchforlocationTask onFinish() called with: " + "ad = [" + ad.getTitle() + "]" + "result = [" + result + "]" );
+                adLocation.setLatitude(result.latitude);
+                adLocation.setLongitude(result.longitude);
+                ad.setLocation(adLocation);
 
-            try {
-                adLocation.setLatitude(adAddress.getLatitude());
-                adLocation.setLongitude(adAddress.getLongitude());
-
-                return adLocation;
-            } catch (Exception e){
-                e.printStackTrace();
+                ad.setLastDistance(calculateDistance(ad));
             }
-        } else {
-            Log.d(TAG, "calculateLocation: No se pudo determinar la localizacion");
-        }
+        });
+
+
+
+//        if (adAddress!= null ) {
+//            Log.d(TAG, "calculateLocation: Address" + ad.getPostalCode() + " " + adAddress.getAddressLine(0));
+//            String countryCode = adAddress.getCountryName();
+//            Log.d(TAG, "calculateLocation: COUNTRY CODE " + countryCode );
+//
+//            try {
+//                adLocation.setLatitude(adAddress.getLatitude());
+//                adLocation.setLongitude(adAddress.getLongitude());
+//
+//                return adLocation;
+//            } catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        } else {
+//            Log.d(TAG, "calculateLocation: No se pudo determinar la localizacion");
+//        }
         return null;
     }
 
     /**
      * Calculate last distance from ad and the user in Kilometers and set it in Ad
      * @param ad
-     * @return distance in xilometer
+     * @return distance in kilometer
      */
     public static int calculateDistance(final Ad ad){
         Log.d(TAG, "calculateDistance() called with: " + "ad = [" + ad.getTitle() + "]");
         Location userLocation;
+        try {
+            Log.d(TAG, "calculateDistance: location: " + AppSession.lastLocation.getLatitude() + ", " + AppSession.lastLocation.getLongitude());
+            Log.d(TAG, "calculateDistance: location: " + AppSession.lastLocation.toString());
+        } catch (Exception e ){
+            Log.d(TAG, "calculateDistance: no hay lastlocation");
+            e.printStackTrace();
+        }
 
-        if (AppSession.lastLocation != null && ad.getLocation()!=null) {
+        if (AppSession.lastLocation != null  && ad.getLocation()!=null) {
             userLocation = AppSession.lastLocation;
             Log.d(TAG, "calculateDistance: " + ad.getTitle() + " lat:" + userLocation.getLatitude() + " lng: " + userLocation.getLongitude());
 
-            float d = (ad.getLocation().distanceTo(userLocation))/1000;//kilometers
+            float d = (ad.getLocation().distanceTo(userLocation)) / 1000;//kilometers
             int distance = Math.round(d);
             ad.setLastDistance(distance);
             Log.d(TAG, "calculateDistance: New distance: " + distance);
@@ -307,9 +327,24 @@ public class AdUtils {
         } else {
             if (AppSession.lastLocation == null) {
                 Log.d(TAG, "calculateDistance: no hay last location del gps");
+                //tendria que usar el el gps  o el  cp del usuario si hay sesion
+                if(AppSession.getCurrentUser()!=null) {
+                    Utils.getGPSfromZipGmaps(AppSession.getCurrentUser().zipCode,
+                            new SearchForLocationTask.SearchForLocationTaskEventListener() {
+                                @Override
+                                public void onFinish(LatLng result) {
+                                    Log.d(TAG, "calculateDistance searchforlocationTask onFinish() called with: " + "result = [" + result + "]");
+                                    Location l = new Location("user");
+                                    l.setLatitude(result.latitude);
+                                    l.setLongitude(result.longitude);
+                                    AppSession.lastLocation = l;
+                                }
+                            });
+                }
             }
             if(ad.getLocation()== null){
                 Log.d(TAG, "calculateDistance: no hay ad location ");
+
             }
 //            userLocation = new Location("User");
 //            userLocation.setLatitude(adAddress.getLatitude());
@@ -317,6 +352,12 @@ public class AdUtils {
 //                    userLocation.setLatitude(userAddress.getLatitude());
 //                    userLocation.setLongitude(userAddress.getLongitude());
         }
+
+
+        //Address userAddress = Utils.getGPSfromZip(App.appContext, Integer.parseInt( AppSession.getCurrentUser().zipCode ) );
+
+
+
         return -1;
     }
 
@@ -497,6 +538,62 @@ public class AdUtils {
             }
         };
         TasksUtils.execute(fetchAdTask);
+    }
+
+    public static void fetchCategories(final categoriesCallback callback){
+
+        AppSession.requestQueue = VolleySingleton.getRequestQueue();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
+                Constants.CATEGORIES_URL,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d(TAG, "onResponse() called with: " + "response = [" + response.toString(2) + "]");
+                        } catch (JSONException e) {
+                            Log.d(TAG, "onResponse: error");
+                        }
+                        List<String> categories = new ArrayList<>();
+
+                        if (response.has("categories")) {
+                            JSONArray jsonItems = new JSONArray();
+                            try {
+                                jsonItems = response.getJSONArray("categories");
+                                Log.d(TAG,"User has categories " + jsonItems.length());
+                                if (jsonItems.length() > 0) {
+                                    Log.d(TAG, "onResponse: items "+ jsonItems.toString());
+
+                                    for (int i = 0; i < jsonItems.length(); i++) {
+                                        String item = jsonItems.getString(i);
+                                        Log.d(TAG, "onResponse: "+ item);
+                                        categories.add(item.toString());
+
+                                    }
+                                    callback.done(categories);
+                                }
+                            } catch (JSONException e) {
+                                callback.error(e);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                        String errorMessage = VolleyErrorHelper.getMessage(App.appContext, error);
+//                        String errorDialogMsg = Utils.showErrorsJson(errorMessage, App.appContext);
+                    }
+                }
+        );
+        AppSession.requestQueue.add(request);
+    }
+
+
+    public interface categoriesCallback {
+        public void done(List<String> categories);
+        public void error(Exception e);
     }
 
 }

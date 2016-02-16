@@ -30,39 +30,39 @@ import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.Conversation;
-import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
-import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class AdDetailActivity extends NavigationBaseActivity {
-    String TAG = "AdDetailActivity";
-    Ad mAd;
+    private static final String TAG = "AdDetailActivity";
+    private Ad mAd;
     boolean isFavorite;
 
-    SharedPreferences.Editor prefsEdit = PrefsUtils.getSharedPreferencesEditor(context);
-    ContentResolver contentResolver;
-    ContentValues values;
+    private SharedPreferences.Editor prefsEdit = PrefsUtils.getSharedPreferencesEditor(context);
+    private ContentResolver contentResolver;
+    private ContentValues valuesFavorite;
+    private ContentValues valuesConversation;
 
-    String[] projection;
-    String selectionClause;
-    String[] selectionArgs;
-    String emptyWhere = "";
-    String[] emptyArgs = {};
+
+    private String[] projection;
+    private String selectionClause;
+    private String[] selectionArgs;
+    private String emptyWhere = "";
+    private String[] emptyArgs = {};
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ad_content);
         contentResolver = getContentResolver();
-        values = new ContentValues();
+        valuesFavorite = new ContentValues();
+
 
         // Retrieve args
         Bundle data = getIntent().getExtras();
@@ -119,6 +119,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, image);
+
 
             TextView categoriaText = (TextView) findViewById(R.id.ad_category);
             categoriaText.setText(ad.getCategoria());
@@ -232,9 +233,11 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             Log.d(TAG, "clickMessage: converId "+ converId );
 
+            //this if take old method conversation id saved in preferencies
             if(converId == 0) {
                 Log.d(TAG, "clickMessage: convertId = 0");
                 //create a new conversation, new message for this ad and go to it
+                /*
                 MessagesUtils.createConversation(converTitle, ad.getUserId(), new MessagesUtils.MessagesCallback() {
                     @Override
                     public void onFinished(List<Message> messages, Exception e) {
@@ -247,9 +250,9 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         Log.d(TAG, "clickMessage_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
                         if (data != null && data.size() > 0) {
                             Conversation conversation = ((Conversation) data.get(0));
-                            int converId= conversation.getId();
+                            int converId = conversation.getId();
                             //Toast.makeText(AdDetailActivity.this, "" + conversation.getId(), Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "------------------------onFinished: converforad "+ converForAd + " cid " + converId );
+                            Log.d(TAG, "------------------------onFinished: converforad " + converForAd + " cid " + converId);
 
                             prefsEdit.putInt(converForAd, conversation.getId());
                             prefsEdit.commit();
@@ -268,6 +271,64 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         //TODO: onError
                     }
                 });
+                */
+
+                //vars for intent
+                Conversation conversation;
+                Uri conversationUri;
+
+                //search if this ad is in conversations table
+//                projection = new String[]{AdsContract.ConversationsColumns.CONVERSATION_ID};
+                projection = new String[]{};
+                selectionClause = AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " = ?";
+                selectionArgs = new String[]{Integer.toString(mAd.getId())};
+                Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+                //if is in database take the existing conversation
+                if (returnConversation.moveToFirst()) {
+                    int paso=0;
+                    do {
+                        int id = returnConversation.getInt(0);
+                        int webId = returnConversation.getInt(1);
+                        int adId = returnConversation.getInt(2);
+                        int userId = returnConversation.getInt(3);
+                        String title = returnConversation.getString(5);
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1) );
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2) );
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3) );
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_TITLE 5: " + returnConversation.getString(5));
+
+                        paso++;
+                        if (paso > 1) title = title + " "+ paso;
+
+                        conversation = new Conversation(id, title);
+
+                        Log.d(TAG, "clickMessage: paso "+paso);
+                        conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
+                    } while (returnConversation.moveToNext());
+                } else {
+                    //db create new record in conversation table
+                    valuesConversation = new ContentValues();
+                    conversation = new Conversation(0, ad.getTitle());
+                    //save conversation in database
+                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_USER, ad.getUserId());
+                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, ad.getId());
+                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, ad.getTitle());
+                    conversationUri = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, valuesConversation);
+                    Log.d(TAG, "clickMessage: Record Id returned is " + conversationUri.toString());
+                }
+
+                //prefsEdit.putInt(converForAd, conversation.getId());
+                //prefsEdit.commit();
+
+                Intent intent = new Intent(context, MessagesChatActivity.class);
+//                intent.putExtra("conversationId", conversation.getId());
+                intent.putExtra("conversationUri", conversationUri);
+                intent.putExtra("adName", ad.getTitle());
+                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                AppSession.currentConversation = conversation;
+                context.startActivity(intent);
+
             } else {
                 Conversation conversation = new Conversation(converId, converTitle);
 
@@ -312,8 +373,8 @@ public class AdDetailActivity extends NavigationBaseActivity {
             if (mAd != null) {
                 Log.d(TAG, "onOptionsItemSelected: mAd " + mAd.getId());
                 if (!isFavorite){
-                    values.put(AdsContract.FavoritesColumns.FAV_AD_ID, mAd.getId());
-                    Uri returned = contentResolver.insert(AdsContract.URI_TABLE_FAVORITES, values);
+                    valuesFavorite.put(AdsContract.FavoritesColumns.FAV_AD_ID, mAd.getId());
+                    Uri returned = contentResolver.insert(AdsContract.URI_TABLE_FAVORITES, valuesFavorite);
                     Log.d(TAG, "onOptionsItemSelected: Record Id returned is " + returned.toString());
                     isFavorite = true;
 
