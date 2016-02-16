@@ -16,7 +16,7 @@ public class AdsDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 3;
     private final Context mContext;
 
-    interface Tables{
+    interface Tables {
         String ADS = "ads";
         String CONVERSATIONS = "conversations";
         String MESSAGES = "messages";

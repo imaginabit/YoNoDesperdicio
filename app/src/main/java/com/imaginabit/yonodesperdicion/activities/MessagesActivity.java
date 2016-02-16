@@ -143,7 +143,8 @@ public class MessagesActivity extends NavigationBaseActivity {
                     for (int i = 0; i < conversations.size(); i++) {
                         Log.d(TAG, "onFinished: for i = " + i );
                         Conversation c = conversations.get(i);
-                        Log.d(TAG, "onFinished: current conversation : " + c.toString() );
+                        Log.d(TAG, "onFinished: current conversation : " + c.toString());
+
                         //buscar en la base de datos y crear si no se encuentra
                         try {
                             //load data from database
@@ -152,10 +153,11 @@ public class MessagesActivity extends NavigationBaseActivity {
                             //get data from database
                             c.setDbId(dbC.getDbId());
                             c.setOtherUserId(dbC.getOtherUserId());
-                            String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
-                            c.setSubject(title);
-                            mConversationList.set(i,c);
-
+                            String title = c.getSubject();
+                            //String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
+                            //String title = c.getSubject() + " wid"+ c.getId() + " uid " + c.getOtherUserId();
+                            Log.d(TAG, "onFinished: title ad " + title);
+//                            c.setSubject(title);
                         } catch (Exception e2 ){
                             e2.printStackTrace();
                             //is not in database
@@ -163,7 +165,10 @@ public class MessagesActivity extends NavigationBaseActivity {
                             Integer dbId = saveInDb(c);
                             c.setDbId(dbId);
                         }
+                        //update data
+                        mapDbConversations.put(c.getId(),c);
                     }
+                    mConversationList = new ArrayList<Conversation>(mapDbConversations.values());
                     sortByDate(mConversationList);
                     updateAdapter();
 
@@ -247,23 +252,24 @@ public class MessagesActivity extends NavigationBaseActivity {
         if (returnConversation.moveToFirst()) {
             int paso = 0;
             do {
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
+
                 int id = returnConversation.getInt(0);
                 int webId = 0;
                 webId = returnConversation.getInt(1);
                 int adId = returnConversation.getInt(2);
                 int userId = returnConversation.getInt(3);
-                String title = returnConversation.getString(5);
 
-                Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
-                Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
-                Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
+                String title = returnConversation.getString(5);
                 Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
 
                 paso++;
                 Log.d(TAG, "clickMessage: paso " + paso);
                 Conversation conversation;
 
-                title = id +" "+ title + " wid"+ webId;
+                //title = id +" "+ title + " wid"+ webId;
 
                 conversation = new Conversation(webId, title);
                 conversation.setDbId(id);
