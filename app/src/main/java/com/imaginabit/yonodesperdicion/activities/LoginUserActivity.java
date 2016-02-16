@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
@@ -13,11 +14,17 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.UsersHelper;
 import com.imaginabit.yonodesperdicion.utils.UiUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * Authenticate user
@@ -56,6 +63,7 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
                 userPasswordEdit.setText(password);
             }
         }
+
 
         // Layout toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -171,6 +179,43 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
 
         // Default return
         return false;
+    }
+
+    private void saveUserAvatar(String url){
+
+        final Bitmap bitmap = null;
+
+        //get image from website
+        ImageLoader imageLoader; // Get singleton instance
+        imageLoader = ImageLoader.getInstance();
+        String imageUri = Constants.HOME_URL + url.replace("/original/","/thumb/");
+
+        imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                // Do whatever you want with Bitmap
+                String fname = "avatar.jpg";
+                File file = new File ( LoginUserActivity.this.getFilesDir(), fname);
+                if (file.exists()) file.delete ();
+
+                FileOutputStream out = null;
+                try {
+                    out = new FileOutputStream(file);
+                    if (bitmap!= null) {
+                        Log.d(TAG, "saveAvatar: bitmap not null");
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                        out.flush();
+                        out.close();
+                    } else {
+                        Log.d(TAG, "saveAvatar: bitmap null");
+                    }
+                } catch (Exception e) {
+                    // FileNotFoundException
+                    // IOExeption
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 

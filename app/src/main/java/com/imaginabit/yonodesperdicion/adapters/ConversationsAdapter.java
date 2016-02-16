@@ -141,6 +141,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
                         Log.d(TAG, "getUserWeb done: imageuri " + imageUri);
 
                         if (!(imageUri.contains("/propias/"))) {
+                            imageUri = imageUri.replace("/original/","/thumb/");
                             Log.d(TAG, "getUserWeb done: load avatar");
                             imageLoader.displayImage(imageUri, holder.avatar);
                         }
