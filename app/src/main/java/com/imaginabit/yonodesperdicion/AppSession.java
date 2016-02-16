@@ -20,6 +20,7 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.UiUtils;
+import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import org.json.JSONObject;
@@ -37,6 +38,8 @@ public class AppSession {
     // User
     public static void setCurrentUser(UserData user) {
         AppSession.user = user;
+
+        UserUtils.saveUserAvatar(user.avatar);
     }
 
     public static UserData getCurrentUser() {
