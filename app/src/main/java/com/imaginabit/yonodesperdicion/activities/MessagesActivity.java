@@ -2,6 +2,10 @@ package com.imaginabit.yonodesperdicion.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,17 +14,18 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.AppSession;
-import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.ConversationsAdapter;
+import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class MessagesActivity extends NavigationBaseActivity {
@@ -30,6 +35,8 @@ public class MessagesActivity extends NavigationBaseActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<Conversation> mConversationList;
+    private ContentResolver mContentResolver;
+    private ContentValues mContentValues;
 
     //private List<Ad> mAds;
     @Override
@@ -37,6 +44,8 @@ public class MessagesActivity extends NavigationBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mContentValues = new ContentValues();
 
         // Put on session
         UserData user = UserData.prefsFetch(this);
@@ -55,11 +64,18 @@ public class MessagesActivity extends NavigationBaseActivity {
         adapter = new ConversationsAdapter(context, mConversationList);
         recyclerView.setAdapter(adapter);
 
+        mContentResolver = getContentResolver();
+        mConversationList = new ArrayList<Conversation>();
+
         VolleySingleton.init(this);
-        getMessages();
+        getConversationAppData();
+        getConversationsFromApi();
         checkMessages();
     }
 
+    /**
+     * Check for conversation info every 2 minutes
+     */
     private void checkMessages(){
         new Handler().postDelayed(new RunnableCheckActive(this) {
             @Override
@@ -68,7 +84,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                 MessagesActivity a = (MessagesActivity) mActivity;
                 if ( a.isActive() ){
                     Log.d(TAG, "run: active!");
-                    getMessages();
+                    getConversationsFromApi();
 
                 }
                 checkMessages();
@@ -90,7 +106,24 @@ public class MessagesActivity extends NavigationBaseActivity {
         }
     }
 
-    private void getMessages(){
+    private void updateAdapter(){
+        adapter = new ConversationsAdapter(context, mConversationList);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        Log.v(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
+    }
+
+    /**
+     * get all conversations on website
+     * if they are in database get the other user info
+     */
+    private void getConversationsFromApi(){
+        Log.d(TAG, "getConversationsFromApi() called with: " + "");
+        final HashMap<Integer, Conversation> mapDbConversations = new HashMap<>();
+        for ( Conversation c : mConversationList ) {
+            mapDbConversations.put(c.getId(), c);
+        }
+
         MessagesUtils.getConversations(MessagesActivity.this, new MessagesUtils.ConversationsCallback() {
             @Override
             public void onFinished(List<Conversation> conversation, Exception e) {
@@ -101,69 +134,43 @@ public class MessagesActivity extends NavigationBaseActivity {
             public void onFinished(final List<Conversation> conversations, Exception e,ProgressDialog pd) {
                 Log.v(TAG, "onFinished: finishesd");
                 if (conversations != null) {
-
-                    /*
-                     this is a nonsese.....
-                    if(mConversationList!=null) {
-                        Log.d(TAG, "onFinished: CONVERSATION NOT NULL");
-                        Utils.dismissProgressDialog(pd);
-                        //copy oy mConversations w/o messages
-                        List<Conversation> mconversationsLight = new ArrayList<Conversation>();
-                        for (int i=0;i<mConversationList.size();i++){
-                            Conversation c = mConversationList.get(i);
-                            if (c!=null) {
-                                c.setMessages(null);
-                                mconversationsLight.add(i, c);
-                            }
-                        }
-                        //compare conversation form api with loaded in app
-                        if (mconversationsLight == conversations) {
-                            Log.d(TAG, "onFinished: no hay cambios");
-                        } else {
-                            Log.d(TAG, "onFinished: Cambios");
-                            Log.d(TAG, "onFinished: mConversationList size:" + mconversationsLight.size() );
-                            Log.d(TAG, "onFinished: conversations: size" + conversations.size() );
-//                            Log.d(TAG, "onFinished: mConversationList:" + mConversationList.get(0).toString()  );
-//                            Log.d(TAG, "onFinished: conversations:" + conversations.get(0).toString()  );
-                            Log.d(TAG, "onFinished: mConversationList:" + mconversationsLight.get(mConversationList.size()-1).toString()  );
-                            Log.d(TAG, "onFinished: conversations:" + conversations.get(conversations.size()-1).toString()  );
-
-                            Log.d(TAG, "onFinished: compare "+ (conversations.get(1) == mconversationsLight.get(1)) );
-                            Log.d(TAG, "onFinished: compare "+ conversations.get(1).toString() );
-                            Log.d(TAG, "onFinished: compare "+ mconversationsLight.get(1).toString() );
-
-                            if ((mconversationsLight.containsAll(conversations)) &&
-                                    (mconversationsLight.size() == conversations.size())){
-                                //TODO: si son iguales ??
-                                // no hace falta cargar los mensajes pero esto da igual no? ya los ha cargado
-                                //genial no recuerdo por que estaba prubando todo este rollo ya
-                                Log.d(TAG, "onFinished: TRUE");
-                            }
-
-                            Log.d(TAG, "onFinished: containsAll" + mconversationsLight.equals(conversations));
-                            mconversationsLight.removeAll(conversations);
-//                            Log.d(TAG, "onFinished: mConversationList size after:" + mconversationsLight.size());
-//                            Log.d(TAG, "onFinished: mConversationList string:" + mconversationsLight.toString() );
-
-                            //Log.d(TAG, "onFinished: conversations:" + conversations.toString());
-                        }
-                    } else {
-                        Log.d(TAG, "onFinished: CONVERSATION NULL --------------------");
-                    }
-                    */
-
                     mConversationList = conversations;
-                    sortByDate(mConversationList);
-
-                    adapter = new ConversationsAdapter(context, mConversationList);
-                    recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
                     Log.v(TAG, "Conversacionesl : " + conversations.size());
-                    Log.v(TAG, "Conversaciones getItemCount : " + adapter.getItemCount());
 
+//                    Date d = new Date();
+//                    Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
 
-                    Date d = new Date();
-                    Log.v(TAG, "getConversaitonMessages time: " + Constants.DATE_JSON_FORMAT.format(d.getTime()));
+                    for (int i = 0; i < conversations.size(); i++) {
+                        Log.d(TAG, "onFinished: for i = " + i );
+                        Conversation c = conversations.get(i);
+                        Log.d(TAG, "onFinished: current conversation : " + c.toString());
+
+                        //buscar en la base de datos y crear si no se encuentra
+                        try {
+                            //load data from database
+                            Conversation dbC = mapDbConversations.get(c.getId());
+                            Log.d(TAG, "onFinished: coversation database " + dbC.toString());
+                            //get data from database
+                            c.setDbId(dbC.getDbId());
+                            c.setOtherUserId(dbC.getOtherUserId());
+                            String title = c.getSubject();
+                            //String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
+                            //String title = c.getSubject() + " wid"+ c.getId() + " uid " + c.getOtherUserId();
+                            Log.d(TAG, "onFinished: title ad " + title);
+//                            c.setSubject(title);
+                        } catch (Exception e2 ){
+                            e2.printStackTrace();
+                            //is not in database
+                            //save conversation in database
+                            Integer dbId = saveInDb(c);
+                            c.setDbId(dbId);
+                        }
+                        //update data
+                        mapDbConversations.put(c.getId(),c);
+                    }
+                    mConversationList = new ArrayList<Conversation>(mapDbConversations.values());
+                    sortByDate(mConversationList);
+                    updateAdapter();
 
                     //get messages from all conversations
                     //TAKE too much time to load
@@ -209,7 +216,7 @@ public class MessagesActivity extends NavigationBaseActivity {
 
 //    Esto solo se puede hacer si obtengo primero todos los mensajes
 //    private int getOtherUser(Conversation conversation){
-//        List<Message> messages = conversation.getMessages();
+//        List<Message> messages = conversation.getConversationsFromApi();
 //        for (int j = 0; j < messages.size(); j++) {
 //            int userid = messages.get(j).getSender_id();
 //            if (userid != AppSession.getCurrentUser().id){
@@ -230,6 +237,78 @@ public class MessagesActivity extends NavigationBaseActivity {
         });
 
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * get conversation info from internal app database
+     */
+    private void getConversationAppData(){
+        String[] projection = new String[]{};
+        String selectionClause = "";
+        String[] selectionArgs = new String[]{};
+        ContentResolver contentResolver = getContentResolver();
+        Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+        //if is in database take the existing conversation
+        if (returnConversation.moveToFirst()) {
+            int paso = 0;
+            do {
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
+
+                int id = returnConversation.getInt(0);
+                int webId = 0;
+                webId = returnConversation.getInt(1);
+                int adId = returnConversation.getInt(2);
+                int userId = returnConversation.getInt(3);
+
+                String title = returnConversation.getString(5);
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
+
+                paso++;
+                Log.d(TAG, "clickMessage: paso " + paso);
+                Conversation conversation;
+
+                //title = id +" "+ title + " wid"+ webId;
+
+                conversation = new Conversation(webId, title);
+                conversation.setDbId(id);
+                conversation.setOtherUserId(userId);
+                mConversationList.add(conversation);
+                Log.d(TAG, "getConversationAppData: conversation " +  conversation.toString());
+                updateAdapter();
+                //Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
+            } while (returnConversation.moveToNext());
+        }
+
+    }
+
+    private Integer saveInDb(Conversation conversation){
+        Log.d(TAG, "saveInDb() called with: " + "conversation = [" + conversation + "]");
+        mContentValues = new ContentValues();
+        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_WEB_ID, conversation.getId());
+        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
+        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, "");
+
+        Uri returned = mContentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, mContentValues);
+        String returnedId = returned.getLastPathSegment();
+
+        Log.d(TAG, "onFinished: returnedId Save in db with id " + returnedId);
+        return Integer.valueOf(returnedId);
+    }
+
+    private Integer updateInDb(Conversation conversation){
+        Log.d(TAG, "updateInDb() called with: " + "conversation = [" + conversation + "]");
+        mContentValues = new ContentValues();
+        String where = "";
+        String[] args = {};
+
+        Uri uri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
+
+        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
+
+        Integer count = mContentResolver.update(uri, mContentValues, where, args);
+        return count;
     }
 
 

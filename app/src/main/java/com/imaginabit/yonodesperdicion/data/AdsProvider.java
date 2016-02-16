@@ -27,6 +27,8 @@ public class AdsProvider extends ContentProvider {
     private static final int FAVORITES = 200;
     private static final int FAVORITES_ID = 201;
     private static final int FAVORITES_AD_ID = 202;
+    private static final int CONVERSATIONS = 300;
+    private static final int CONVERSATIONS_ID = 301;
 
     private static UriMatcher buildUriMatcher(){
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -36,6 +38,8 @@ public class AdsProvider extends ContentProvider {
         matcher.addURI(authority, "favorites", FAVORITES);
         matcher.addURI(authority, "favorites/ad/*", FAVORITES_AD_ID );// like routes in rails you need this before
         matcher.addURI(authority, "favorites/*", FAVORITES_ID );
+        matcher.addURI(authority, "conversations", CONVERSATIONS);
+        matcher.addURI(authority, "conversations/*", CONVERSATIONS_ID );
 
 
         return matcher;
@@ -65,6 +69,10 @@ public class AdsProvider extends ContentProvider {
                 return AdsContract.Favorites.CONTENT_TYPE;
             case FAVORITES_ID:
                 return AdsContract.Favorites.CONTENT_ITEM_TYPE;
+            case CONVERSATIONS:
+                return AdsContract.Conversations.CONTENT_TYPE;
+            case CONVERSATIONS_ID:
+                return AdsContract.Conversations.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unkown Uri: "+ uri);
         }
@@ -91,6 +99,7 @@ public class AdsProvider extends ContentProvider {
                 id = AdsContract.Ads.getAdId(uri);
                 queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
                 break;
+
             case FAVORITES:
                 // get all
                 queryBuilder.setTables(AdsDatabase.Tables.FAVORITES);
@@ -99,6 +108,17 @@ public class AdsProvider extends ContentProvider {
                 // Get one
                 queryBuilder.setTables(AdsDatabase.Tables.FAVORITES);
                 id = AdsContract.Favorites.getFavoriteId(uri);
+                queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
+                break;
+
+            case CONVERSATIONS:
+                // get all
+                queryBuilder.setTables(AdsDatabase.Tables.CONVERSATIONS);
+                break;
+            case CONVERSATIONS_ID:
+                // Get one
+                queryBuilder.setTables(AdsDatabase.Tables.CONVERSATIONS);
+                id = AdsContract.Conversations.getConversationId(uri);
                 queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
                 break;
             default:
@@ -136,9 +156,13 @@ public class AdsProvider extends ContentProvider {
                 recordId = db.insertOrThrow(AdsDatabase.Tables.ADS, null, values);
                 return AdsContract.Ads.buildAdUri(String.valueOf(recordId));
             case FAVORITES:
-                // get all ads
+                // get all favorites
                 recordId = db.insertOrThrow(AdsDatabase.Tables.FAVORITES, null, values);
-                return AdsContract.Ads.buildAdUri(String.valueOf(recordId));
+                return AdsContract.Favorites.buildFavoriteUri(String.valueOf(recordId));
+            case CONVERSATIONS:
+                // get all
+                recordId = db.insertOrThrow(AdsDatabase.Tables.CONVERSATIONS, null, values);
+                return AdsContract.Conversations.buildConversationUri(String.valueOf(recordId));
             default:
                 throw new IllegalArgumentException("Unkown Uri");
         }
@@ -182,6 +206,18 @@ public class AdsProvider extends ContentProvider {
                         + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
                 updateCount = db.update(AdsDatabase.Tables.FAVORITES, values, selectionCriteria, selectionArgs);
                 break;
+
+            case CONVERSATIONS:
+                // do nothing, prevent update all records if not id provide
+                break;
+
+            case CONVERSATIONS_ID:
+                id = AdsContract.Conversations.getConversationId(uri);
+                selectionCriteria = BaseColumns._ID + "=" + id
+                        + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ") " : "");
+                updateCount = db.update(AdsDatabase.Tables.CONVERSATIONS, values, selectionCriteria, selectionArgs);
+                break;
+
 
             default:
                 throw new IllegalArgumentException("Unkown Uri");

@@ -28,6 +28,7 @@ public class Constants {
     public static final String NEW_CONVERSATION_API_URL = HOME_URL + "api/new_message/"; // + RECIPIENT_ID
 
     public static final String IDEA_URL = HOME_URL + "idea/"; //+ idea id
+    public static final String CATEGORIES_URL = HOME_URL + "api/categories";
 
 
     public static final String longline = "--------------------------------------------------------";
