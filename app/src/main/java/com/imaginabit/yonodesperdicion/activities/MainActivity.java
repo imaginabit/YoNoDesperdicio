@@ -89,8 +89,24 @@ public class MainActivity extends NavigationBaseActivity
         setContentView(R.layout.activity_main);
         App.appContext = context;//for make getGPSfromZip works
 
+        //init Singleton instances
         VolleySingleton.init(this);
         ProvinciasCP.init();
+        // Initialize Universal Image Loader
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .showImageForEmptyUri(R.drawable.zanahoria) // resource or drawable
+                .showImageOnFail(R.drawable.aubergine) // resource or drawable
+                .build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+                .defaultDisplayImageOptions(defaultOptions)
+                .threadPoolSize(4)
+                .memoryCache(new WeakMemoryCache())
+                .imageDownloader(new BaseImageDownloader(context, 10 * 1000, 30 * 1000))
+                .build();
+        ImageLoader.getInstance().init(config);
 
 
         // Put on session
@@ -132,21 +148,7 @@ public class MainActivity extends NavigationBaseActivity
                     .introduceMyself();
         }
 
-        // Initialize Universal Image Loader
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisc(true)
-                .resetViewBeforeLoading(true)
-                .showImageForEmptyUri(R.drawable.zanahoria) // resource or drawable
-                .showImageOnFail(R.drawable.aubergine) // resource or drawable
-                .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .defaultDisplayImageOptions(defaultOptions)
-                .threadPoolSize(4)
-                .memoryCache(new WeakMemoryCache())
-                .imageDownloader(new BaseImageDownloader(context, 10 * 1000, 30 * 1000))
-                .build();
-        ImageLoader.getInstance().init(config);
+
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 

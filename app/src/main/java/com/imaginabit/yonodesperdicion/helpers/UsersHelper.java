@@ -293,6 +293,7 @@ public class UsersHelper {
                 String zipCode = jsonUserData.optString("zipcode", "");
                 float rating = (float) jsonUserData.optDouble("rating", 0.0d);
                 int totalQuantity = jsonUserData.optInt("total_quantity", 0);
+                String avatar = jsonUserData.optString("image","");
 
                 // Populate
                 user.id = id;
@@ -303,6 +304,7 @@ public class UsersHelper {
                 user.zipCode = zipCode;
                 user.rating = rating;
                 user.totalQuantity = totalQuantity;
+                user.avatar = avatar;
             }
         } catch (JSONException e) {
             e.printStackTrace();
