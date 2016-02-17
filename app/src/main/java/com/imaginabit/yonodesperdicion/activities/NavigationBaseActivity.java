@@ -88,11 +88,17 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         // Access to login panel
         navHeaderLayout.setClickable(true);
         navHeaderLayout.setBackgroundResource(R.drawable.selectable_item_background);
+
         navHeaderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
-                startActivity(loginPanelIntent);
+                if (AppSession.getCurrentUser() == null) {
+                    Intent loginPanelIntent = new Intent(context, LoginPanelActivity.class);
+                    startActivity(loginPanelIntent);
+                } else {
+                    Intent itntPerfil = new Intent(context, ProfileActivity.class);
+                    startActivity(itntPerfil);
+                }
             }
         });
 
@@ -140,7 +146,6 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
                 Intent itntPerfil = new Intent(context, ProfileActivity.class);
                 startActivity(itntPerfil);
             }
-
         }
         else if (id == R.id.nav_favoritos) {
             Intent itntFav = new Intent(context, FavoritesActivity.class);
@@ -151,7 +156,6 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             // he puesto ver el formulaciro de crear el anuncio aqui como prueba
             Intent itntMsgs = new Intent(context, MessagesActivity.class);
             startActivity(itntMsgs);
-
         }
 
         else if (id == R.id.nav_masinfo) {
