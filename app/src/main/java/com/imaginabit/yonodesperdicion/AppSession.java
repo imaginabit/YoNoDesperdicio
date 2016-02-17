@@ -13,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
+import com.imaginabit.yonodesperdicion.data.AdsDatabase;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.UsersHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
@@ -38,7 +39,6 @@ public class AppSession {
     // User
     public static void setCurrentUser(UserData user) {
         AppSession.user = user;
-
         UserUtils.saveUserAvatar(user.avatar);
     }
 
@@ -48,7 +48,16 @@ public class AppSession {
 
     // Release session data
     public static synchronized void release() {
+        UserUtils.deleteUserAvatar();
         AppSession.user = null;
+    }
+
+    public static void logoff(Activity activity){
+        if (AppSession.getCurrentUser()!=null) {
+            AppSession.user.prefsRemove(activity);
+            AdsDatabase.deleteDatabase(activity);
+            release();
+        }
     }
 
     public static Conversation currentConversation;

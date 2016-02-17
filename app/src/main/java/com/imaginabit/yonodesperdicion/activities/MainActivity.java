@@ -528,12 +528,14 @@ public class MainActivity extends NavigationBaseActivity
                     //if dont get conection get location from phone
                     LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    double longitude = location.getLongitude();
-                    double latitude = location.getLatitude();
+                    if (location!=null){
+                        double longitude = location.getLongitude();
+                        double latitude = location.getLatitude();
 
-                    AppSession.lastLocation = new Location("");
-                    AppSession.lastLocation.setLatitude(latitude);
-                    AppSession.lastLocation.setLongitude(longitude);
+                        AppSession.lastLocation = new Location("");
+                        AppSession.lastLocation.setLatitude(latitude);
+                        AppSession.lastLocation.setLongitude(longitude);
+                    }
                 }
 
 
