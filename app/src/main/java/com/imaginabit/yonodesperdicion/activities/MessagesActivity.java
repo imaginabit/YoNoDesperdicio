@@ -21,6 +21,7 @@ import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,32 +46,36 @@ public class MessagesActivity extends NavigationBaseActivity {
         setContentView(R.layout.activity_messages);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mContentValues = new ContentValues();
+        if (Utils.checkLoginAndRedirect(MessagesActivity.this)) {
+            mContentValues = new ContentValues();
 
-        // Put on session
-        UserData user = UserData.prefsFetch(this);
-        if (user != null) {
-            AppSession.setCurrentUser(user);
+            // Put on session
+            UserData user = UserData.prefsFetch(this);
+            if (user != null) {
+                AppSession.setCurrentUser(user);
+            }
+
+            // Fix action bar and drawer
+            Toolbar toolbar = setSupportedActionBar();
+            setDrawerLayout(toolbar);
+
+            recyclerView = (RecyclerView) findViewById(R.id.recycler_conversations);
+            recyclerView.setHasFixedSize(true);
+            layoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(layoutManager);
+            adapter = new ConversationsAdapter(context, mConversationList);
+            recyclerView.setAdapter(adapter);
+
+            mContentResolver = getContentResolver();
+            mConversationList = new ArrayList<Conversation>();
+
+            VolleySingleton.init(this);
+            getConversationAppData();
+            getConversationsFromApi();
+            checkMessages();
+        } else {
+            finish();
         }
-
-        // Fix action bar and drawer
-        Toolbar toolbar = setSupportedActionBar();
-        setDrawerLayout(toolbar);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_conversations);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new ConversationsAdapter(context, mConversationList);
-        recyclerView.setAdapter(adapter);
-
-        mContentResolver = getContentResolver();
-        mConversationList = new ArrayList<Conversation>();
-
-        VolleySingleton.init(this);
-        getConversationAppData();
-        getConversationsFromApi();
-        checkMessages();
     }
 
     /**

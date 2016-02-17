@@ -33,6 +33,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     private static final String TAG = "NavigationBaseActivity";
     public static Context context;
     private RoundedImageView navUserImage;
+    private boolean isAvatarFromLocal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         // Set the context
         this.context = getApplicationContext();
         App.appContext = context;
+        isAvatarFromLocal=false;
     }
 
     /**
@@ -111,6 +113,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         //getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.activity_main_drawer,menu);
         return true;
     }
 
@@ -169,6 +172,11 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             Intent itntSettings = new Intent(context, SettingsActivity.class);
             startActivity( itntSettings );
         }
+        else if (id == R.id.logoff) {
+            //closse session
+            AppSession.logoff(NavigationBaseActivity.this);
+            AppSession.restart(NavigationBaseActivity.this);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -205,12 +213,11 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        if (navUserImage.getDrawable().equals(ContextCompat.getDrawable(context, R.drawable.brick_avatar))){
+        Log.d(TAG, "onResume: ");
+        if (!isAvatarFromLocal){
+            Log.d(TAG, "onResume: is avatar from local true");
             //if avatar is set to brickavatar them load avatar form disk
-            Log.d(TAG, "setAvatarFromLocal: Drawables equals");
             setAvatarFromLocal();
-        } else {
-            Log.d(TAG, "setAvatarFromLocal: drawables not equal");
         }
         active = true;
         super.onResume();
@@ -225,9 +232,19 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
         File file = new File(path);
 
         if(file.exists()) {
-            navUserImage.setImageDrawable(Drawable.createFromPath(path));
+            if(navUserImage!=null) {
+                navUserImage.setImageDrawable(Drawable.createFromPath(path));
+                isAvatarFromLocal = true;
+                Log.d(TAG, "setAvatarFromLocal: isAvatarFromLocal TRUE");
+            }
         }else{
             navUserImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.brick_avatar));
+            isAvatarFromLocal= false;
         }
     }
+
+
+
+
+
 }

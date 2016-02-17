@@ -228,6 +228,11 @@ public class UserUtils {
 
         }
     }
+    public static void deleteUserAvatar() {
+        String fname = "avatar.jpg";
+        File file = new File(App.appContext.getFilesDir(), fname);
+        if (file.exists()) file.delete();
+    }
 
 
 
