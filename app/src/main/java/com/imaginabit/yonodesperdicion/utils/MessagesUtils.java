@@ -455,7 +455,7 @@ public class MessagesUtils {
                 String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
 
                 //String errorDialogMsg = Utils.showErrorsJson(errorMessage, activity);
-                Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                Log.d(TAG, "onErrorResponse: error message:" + errorMessage + error );
                 callback.onError(errorMessage);
             }
         };

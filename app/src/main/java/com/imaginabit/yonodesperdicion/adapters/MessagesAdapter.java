@@ -79,7 +79,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                             holder.userName.setText(user.getUserName());
                             mOtherUser = user;
                         } else {
+                            Log.d(TAG, "done: Other User null");
                             if(e!= null) e.printStackTrace();
+                            holder.userName.setText("");
                         }
                     }
                 });
