@@ -199,7 +199,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-            if (AppSession.getCurrentUser()!=null && AppSession.getCurrentUser().id == ad.getUserId()){
+            if ( userIsOwner(ad) ){
                 fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -218,6 +218,10 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 });
             }
         }
+    }
+
+    private boolean userIsOwner(Ad ad){
+        return AppSession.getCurrentUser()!=null && AppSession.getCurrentUser().id == ad.getUserId();
     }
 
     private void clickMessage(final Ad ad){
@@ -358,7 +362,13 @@ public class AdDetailActivity extends NavigationBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.ad, menu);
+
+        if(userIsOwner(mAd)) {
+            getMenuInflater().inflate(R.menu.ad_owner, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.ad, menu);
+        }
+
         return true;
     }
 
@@ -397,6 +407,10 @@ public class AdDetailActivity extends NavigationBaseActivity {
             }
 
             return true;
+        } else if(id== R.id.action_booked ){
+            Toast.makeText(AdDetailActivity.this, "booked", Toast.LENGTH_SHORT).show();
+        }else if(id== R.id.action_deliver ){
+            Toast.makeText(AdDetailActivity.this, "deliver", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }

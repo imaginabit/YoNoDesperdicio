@@ -294,5 +294,6 @@
     
     <color name="ad_disponible">#3f6835</color>
     <color name="ad_reservado">#ff5617</color>
+    <color name="booked_action">@color/orange_100</color>
     <color name="activity_background">@color/grey_300</color>
 </resources>

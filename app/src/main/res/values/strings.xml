@@ -37,6 +37,7 @@
     the big cheese.</string>
 
     <string name="save_fav">Guardar como favorito</string>
+
     <string name="texto_caritas">texto ramdom intetne añadir caras unicode pero no</string>
 
     <string name="edit_location">Editar ubicación</string>
@@ -138,7 +139,8 @@
     <string name="credits2">Diseño sitio web: Estudio Blg\nDesarrollo web y API: Punto
         Abierto\nDiseño y desarrollo de la APP: Freepress S. Coop.
     </string>
-
+    <string name="mark_booked">Reservado</string>
+    <string name="mark_delivered">Entregado</string>
 
 
 </resources>
