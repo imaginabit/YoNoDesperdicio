@@ -14,7 +14,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
-import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
@@ -137,7 +136,8 @@ public class MessagesUtils {
         Log.d(TAG, "getConversationsBase() called with: " + "url = [" + url + "], context = [" + context.getPackageName() + "], callback = [" + callback.getClass().getSimpleName() + "], activity = [" + activity.getClass().getSimpleName() + "]");
         MessagesUtils.context = context;
         // Show Loading dialog
-        MessagesUtils.pd = ProgressDialog.show(MessagesUtils.context, "", context.getString(R.string.loading));
+        // MessagesUtils.pd = ProgressDialog.show(MessagesUtils.context, "", context.getString(R.string.loading));
+        MessagesUtils.pd = new ProgressDialog(context);
         mCurrentActivity = activity;
 
         try{
