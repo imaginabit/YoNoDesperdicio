@@ -8,7 +8,7 @@
 ![LOGO PROSALUS][logo]
 
 * Diseño sitio web: [Estudio Blg](http://estudioblg.com/)
-* Desarrollo web y API: [Punto Abierto](http://puntoabierto.net/)
+* Desarrollo web y API: [Punto Abierto](http://puntoabierto.net/) [Github/PuntoAbierto](https://github.com/PuntoAbierto)
 * Diseño y desarrollo de la APP: [Freepress S. Coop.](http://Freepress.coop)
 
 
