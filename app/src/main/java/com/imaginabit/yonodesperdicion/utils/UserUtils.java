@@ -173,6 +173,7 @@ public class UserUtils {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.d(TAG, "onErrorResponse: ERROR");
+                            callback.done(null,new Exception(error));
                             //Utils.dismissProgressDialog(UserUtils.pd);
                         }
                     }

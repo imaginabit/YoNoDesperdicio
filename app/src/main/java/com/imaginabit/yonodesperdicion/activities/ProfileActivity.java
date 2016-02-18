@@ -283,7 +283,12 @@ public class ProfileActivity extends NavigationBaseActivity {
             @Override
             public void done(User user, Exception e) {
                 Log.d(TAG, "getUserWeb UserUtils.getUser->done() called with: " + "user = [" + user + "], e = [" + e + "]");
-                if (e != null) e.printStackTrace();
+                if (e != null) {
+                    Log.d(TAG, "done: ERROR");
+                    e.printStackTrace();
+                    return;
+                }
+                    
                 mUserWeb = user;
                 String cp = mUserWeb.getZipCode();
                 ProvinciasCP.init();
