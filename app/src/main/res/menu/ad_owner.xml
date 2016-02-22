@@ -13,11 +13,11 @@
         android:icon="@drawable/ic_local_offer"
         android:orderInCategory="1"
         android:title="@string/mark_booked"
-        app:showAsAction="always" />
+        app:showAsAction="always|withText" />
     <item
         android:id="@+id/action_deliver"
         android:icon="@drawable/ic_sentiment_very_satisfied"
         android:orderInCategory="1"
         android:title="@string/mark_delivered"
-        app:showAsAction="always" />
+        app:showAsAction="always|withText" />
 </menu>
