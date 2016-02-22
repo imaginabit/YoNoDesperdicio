@@ -85,16 +85,16 @@ public class MessagesActivity extends NavigationBaseActivity {
         new Handler().postDelayed(new RunnableCheckActive(this) {
             @Override
             public void run() {
-                Log.v(TAG, "checkMessages run() called with: " + "");
+                Log.v(TAG, "checkMessages run() called");
                 MessagesActivity a = (MessagesActivity) mActivity;
-                if ( a.isActive() ){
+                if (a.isActive()) {
                     Log.d(TAG, "run: active!");
                     getConversationsFromApi();
-
                 }
                 checkMessages();
             }
-        }, 2 * 60 * 1000);
+        }, 30 * 1000); //1 * 60 * 1000 = 1minute
+
     }
 
     public static class RunnableCheckActive implements Runnable {
@@ -119,7 +119,7 @@ public class MessagesActivity extends NavigationBaseActivity {
     }
 
     /**
-     * get all conversations on website
+     * Get all conversations on website
      * if they are in database get the other user info
      */
     private void getConversationsFromApi(){
@@ -253,6 +253,7 @@ public class MessagesActivity extends NavigationBaseActivity {
         String[] selectionArgs = new String[]{};
         ContentResolver contentResolver = getContentResolver();
         Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+        mConversationList = new ArrayList<Conversation>();
         //if is in database take the existing conversation
         if (returnConversation.moveToFirst()) {
             int paso = 0;
@@ -266,15 +267,16 @@ public class MessagesActivity extends NavigationBaseActivity {
                 webId = returnConversation.getInt(1);
                 int adId = returnConversation.getInt(2);
                 int userId = returnConversation.getInt(3);
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
 
                 String title = returnConversation.getString(5);
-                Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 5: " + title );
 
                 paso++;
                 Log.d(TAG, "clickMessage: paso " + paso);
                 Conversation conversation;
 
-                //title = id +" "+ title + " wid"+ webId;
+                title = id +" "+ title + " wid"+ webId;
 
                 conversation = new Conversation(webId, title);
                 conversation.setDbId(id);
@@ -294,6 +296,7 @@ public class MessagesActivity extends NavigationBaseActivity {
         mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_WEB_ID, conversation.getId());
         mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
         mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, "");
+        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, conversation.getSubject());
 
         Uri returned = mContentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, mContentValues);
         String returnedId = returned.getLastPathSegment();
@@ -316,5 +319,13 @@ public class MessagesActivity extends NavigationBaseActivity {
         return count;
     }
 
+    @Override
+    protected void onRestart() {
+        Log.d(TAG, "onRestart: ");
+        super.onRestart();
+        getConversationAppData();
+        getConversationsFromApi();
+
+    }
 
 }

@@ -125,29 +125,36 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         imageLoader = ImageLoader.getInstance();
 
         if (holder.user == null) {
-            UserUtils.getUser(conversation.getOtherUserId(), context, new UserUtils.FetchUserCallback() {
-                @Override
-                public void done(User user, Exception e) {
-                    Log.d(TAG, "getUserWeb UserUtils.getUser->done() called with: " + "user = [" + user + "], e = [" + e + "]");
-                    if (e != null) e.printStackTrace();
+            Log.d(TAG, "onBindViewHolder: conversation other user: "+ conversation.getOtherUserId() );
+            if ( conversation.getOtherUserId()!=0 ) {
+                UserUtils.getUser(conversation.getOtherUserId(), context, new UserUtils.FetchUserCallback() {
+                    @Override
+                    public void done(User user, Exception e) {
+                        Log.d(TAG, "getUserWeb UserUtils.getUser->done() called with: " + "user = [" + user + "], e = [" + e + "]");
+                        if (e != null) {
+                            Log.d(TAG, "done: Error when try get other user info");
+                            e.printStackTrace();
+                            return;
+                        }
 
-                    holder.user = user;
-                    //holder.subject.setText(user.getUserName() + " | " +conversation.getSubject());
-                    holder.lastMessage.setText(user.getUserName());
+                        holder.user = user;
+                        //holder.subject.setText(user.getUserName() + " | " +conversation.getSubject());
+                        holder.lastMessage.setText(user.getUserName());
 
-                    if (user.getAvatar() != null) {
-                        String imageUri = Constants.HOME_URL + user.getAvatar();
-                        ImageSize targetSize = new ImageSize(200, 200); // result Bitmap will be fit to this size
-                        Log.d(TAG, "getUserWeb done: imageuri " + imageUri);
+                        if (user.getAvatar() != null) {
+                            String imageUri = Constants.HOME_URL + user.getAvatar();
+                            ImageSize targetSize = new ImageSize(200, 200); // result Bitmap will be fit to this size
+                            Log.d(TAG, "getUserWeb done: imageuri " + imageUri);
 
-                        if (!(imageUri.contains("/propias/"))) {
-                            imageUri = imageUri.replace("/original/","/thumb/");
-                            Log.d(TAG, "getUserWeb done: load avatar");
-                            imageLoader.displayImage(imageUri, holder.avatar);
+                            if (!(imageUri.contains("/propias/"))) {
+                                imageUri = imageUri.replace("/original/", "/thumb/");
+                                Log.d(TAG, "getUserWeb done: load avatar");
+                                imageLoader.displayImage(imageUri, holder.avatar);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         } else {
             holder.lastMessage.setText(holder.user.getUserName());
             if (holder.user.getAvatar() != null) {
