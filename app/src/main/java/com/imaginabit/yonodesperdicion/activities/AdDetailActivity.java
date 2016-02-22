@@ -23,10 +23,18 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.data.AdsContract;
+import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.Conversation;
@@ -37,10 +45,20 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class AdDetailActivity extends NavigationBaseActivity {
     private static final String TAG = "AdDetailActivity";
     private Ad mAd;
-    boolean isFavorite;
+    private boolean isFavorite;
+    private boolean isBooked;
+    private boolean isDelivered;
+    private TextView statusView;
+    private ImageView statusImageView;
 
     private SharedPreferences.Editor prefsEdit = PrefsUtils.getSharedPreferencesEditor(context);
     private ContentResolver contentResolver;
@@ -85,6 +103,8 @@ public class AdDetailActivity extends NavigationBaseActivity {
             if (returned.getCount()>0) {
                 isFavorite = true;
             }
+            isBooked = (mAd.getStatus() == Ad.Status.BOOKED);
+            isDelivered = (mAd.getStatus() == Ad.Status.DELIVERED);
 
             Log.d(TAG, "onCreate: mAd = " +mAd.getId() );
             // Fix action bar and drawer
@@ -98,11 +118,13 @@ public class AdDetailActivity extends NavigationBaseActivity {
             TextView bodyView = (TextView) findViewById(R.id.ad_body);
             bodyView.setText(ad.getBody());
 
-            TextView statusView = (TextView) findViewById(R.id.ad_status);
+
+            statusView = (TextView) findViewById(R.id.ad_status);
             statusView.setText(ad.getStatusStr());
             statusView.setTextColor(ContextCompat.getColor(context, ad.getStatusColor()));
 
-            ImageView statusImageView = (ImageView) findViewById(R.id.ad_image_status);
+
+            statusImageView = (ImageView) findViewById(R.id.ad_image_status);
             statusImageView.setImageDrawable(ContextCompat.getDrawable(context, ad.getStatusImage()));
 //            statusImageView.getDrawable().setColorFilter(ContextCompat.getColor(context, ad.getStatusColor()), android.graphics.PorterDuff.Mode.MULTIPLY);
 
@@ -199,7 +221,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-            if (AppSession.getCurrentUser()!=null && AppSession.getCurrentUser().id == ad.getUserId()){
+            if ( userIsOwner(ad) ){
                 fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -218,6 +240,10 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 });
             }
         }
+    }
+
+    private boolean userIsOwner(Ad ad){
+        return AppSession.getCurrentUser()!=null && AppSession.getCurrentUser().id == ad.getUserId();
     }
 
     private void clickMessage(final Ad ad){
@@ -358,7 +384,13 @@ public class AdDetailActivity extends NavigationBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.ad, menu);
+
+        if(userIsOwner(mAd)) {
+            getMenuInflater().inflate(R.menu.ad_owner, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.ad, menu);
+        }
+
         return true;
     }
 
@@ -393,31 +425,150 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         isFavorite = false;
                     }
                 }
-                invalidateOptionsMenu();
             }
-
+            invalidateOptionsMenu();
             return true;
+        } else if(id== R.id.action_booked ){
+            if (isBooked){
+                isBooked = false;
+                Toast.makeText(AdDetailActivity.this, "Quitada la reserva", Toast.LENGTH_SHORT).show();
+            }else {
+                isBooked = true;
+                isDelivered = false;//they can be both
+                statusView.setText("reservado");
+                statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_reservado));
+                statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_booked ));
+                Toast.makeText(AdDetailActivity.this, "Marcado como reservado", Toast.LENGTH_SHORT).show();
+            }
+        }else if(id== R.id.action_deliver ){
+            if (isDelivered){
+                isDelivered = false;
+            }else {
+                isDelivered = true;
+                isBooked = false;//they can be both
+                statusView.setText("entregado");
+                statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_reservado));
+                statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_booked));
+                Toast.makeText(AdDetailActivity.this, "Marcado como entregado", Toast.LENGTH_SHORT).show();
+            }
         }
+        if( isBooked == false && isDelivered == false){
+            Log.d(TAG, "onOptionsItemSelected: avalaible ");
+            statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_available));
+            statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_disponible));
+            statusView.setText("disponible");
+            try {
+                sendStatus(Ad.Status.AVAILABLE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //send status
+        try {
+            if (isBooked)
+                sendStatus(Ad.Status.BOOKED);
+            if (isDelivered)
+                sendStatus(Ad.Status.DELIVERED);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        invalidateOptionsMenu();
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private void sendStatus(Ad.Status status) throws JSONException {
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+        JSONObject jsonAd = new JSONObject();
+        jsonAd.put("status", "1");
+        if (status == Ad.Status.BOOKED){
+            jsonAd.put("status", "2");
+        }
+        if (status == Ad.Status.DELIVERED){
+            jsonAd.put("status", "3");
+        }
+        JSONObject jsonRequest = new JSONObject().put("ad", jsonAd);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT,
+                Constants.ADS_API_URL + "/" + mAd.getId(),
+                jsonRequest,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse() called with: " + "response = [" + response + "]");
+                        VolleyLog.v("Response:%n %s", response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                        String errorMessage;
+                        String errorDialogMsg;
+                        errorMessage = VolleyErrorHelper.getMessage(AdDetailActivity.this, error);
+                        errorDialogMsg = Utils.showErrorsJson(errorMessage, AdDetailActivity.this);
+                        Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map headers = new HashMap();
+                String token = AppSession.getCurrentUser().authToken;
+                headers.put("Authorization", token);
+                Log.d(TAG, "getHeaders: authToken " + token);
+
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
+        queue.add(request);
+        Log.d(TAG, "sendDataRequest: request: " + request.toString());
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         Log.d(TAG, "onPrepareOptionsMenu() called with: " + "menu = [" + menu + "]");
 
+        int favPosition = 0;
+
+
         if(isFavorite){
-            menu.getItem(0).setIcon(R.drawable.ic_favorite_white);
+            menu.getItem(favPosition).setIcon(R.drawable.ic_favorite_white);
 //            add icon on runtime
             MenuItem mi = menu.add("Favorito");
 //            mi.setIcon(R.drawable.zanahoria);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 mi.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                Log.d(TAG, "onPrepareOptionsMenu: mi id : " + mi.getItemId() );
             }
 //            isFavorite = false;
             }
         else{
-            menu.getItem(0).setIcon(R.drawable.ic_favorite_border);
+            menu.getItem(favPosition).setIcon(R.drawable.ic_favorite_border);
 //            isFavorite = true;
+        }
+
+        if (mAd!=null && userIsOwner(mAd)) {
+
+            if (isBooked) {
+                Log.d(TAG, "onPrepareOptionsMenu: is booked");
+                menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer_black);
+            } else {
+                Log.d(TAG, "onPrepareOptionsMenu: is not booked");
+                menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer);
+            }
+
+            if (isDelivered) {
+                Log.d(TAG, "onPrepareOptionsMenu: is delivered");
+                menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied_black);
+            } else {
+                Log.d(TAG, "onPrepareOptionsMenu: is not delivered");
+                menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied);
+            }
         }
 
         return super.onPrepareOptionsMenu(menu);
