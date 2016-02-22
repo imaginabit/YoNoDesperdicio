@@ -276,7 +276,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                 Log.d(TAG, "clickMessage: paso " + paso);
                 Conversation conversation;
 
-                title = id +" "+ title + " wid"+ webId;
+                //title = id +" "+ title + " wid"+ webId;
 
                 conversation = new Conversation(webId, title);
                 conversation.setDbId(id);
