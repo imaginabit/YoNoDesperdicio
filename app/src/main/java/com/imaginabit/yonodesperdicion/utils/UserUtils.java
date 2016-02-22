@@ -173,6 +173,7 @@ public class UserUtils {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.d(TAG, "onErrorResponse: ERROR");
+                            callback.done(null,new Exception(error));
                             //Utils.dismissProgressDialog(UserUtils.pd);
                         }
                     }
@@ -227,6 +228,11 @@ public class UserUtils {
             });
 
         }
+    }
+    public static void deleteUserAvatar() {
+        String fname = "avatar.jpg";
+        File file = new File(App.appContext.getFilesDir(), fname);
+        if (file.exists()) file.delete();
     }
 
 
