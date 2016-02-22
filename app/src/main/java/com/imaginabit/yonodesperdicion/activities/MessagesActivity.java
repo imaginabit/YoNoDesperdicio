@@ -158,11 +158,11 @@ public class MessagesActivity extends NavigationBaseActivity {
                             //get data from database
                             c.setDbId(dbC.getDbId());
                             c.setOtherUserId(dbC.getOtherUserId());
-                            String title = c.getSubject();
+                            String title = dbC.getSubject();
                             //String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
-                            //String title = c.getSubject() + " wid"+ c.getId() + " uid " + c.getOtherUserId();
+                            //String title = c.getSubject() + " wid"+ c.getId() + " uid " + c.getOtherUserId() ;
                             Log.d(TAG, "onFinished: title ad " + title);
-//                            c.setSubject(title);
+                            c.setSubject(title);
                         } catch (Exception e2 ){
                             e2.printStackTrace();
                             //is not in database
@@ -276,7 +276,19 @@ public class MessagesActivity extends NavigationBaseActivity {
                 Log.d(TAG, "clickMessage: paso " + paso);
                 Conversation conversation;
 
-                title = id +" "+ title + " wid"+ webId;
+                title = id +" "+ title + " wid"+ webId + " ad "+ adId;
+
+                //TODO: if adId == 0 them try to bind to an Ad
+                // if is on inbox and first message is from other user
+                //    them is one my ads
+                //       if only have one then bind to this
+                //       if i have many
+                //           bind to one with the same name
+                //           let me choose from a list
+                // if first message is from me
+                //     get other user id
+                //        find ad with same name
+                //        or let me choose from a list
 
                 conversation = new Conversation(webId, title);
                 conversation.setDbId(id);
