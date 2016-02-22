@@ -552,21 +552,23 @@ public class AdDetailActivity extends NavigationBaseActivity {
 //            isFavorite = true;
         }
 
-        if(isBooked){
-            Log.d(TAG, "onPrepareOptionsMenu: is booked");
-            menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer_black);
+        if (mAd!=null && userIsOwner(mAd)) {
 
-        }else {
-            Log.d(TAG, "onPrepareOptionsMenu: is not booked");
-            menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer);
-        }
+            if (isBooked) {
+                Log.d(TAG, "onPrepareOptionsMenu: is booked");
+                menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer_black);
+            } else {
+                Log.d(TAG, "onPrepareOptionsMenu: is not booked");
+                menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer);
+            }
 
-        if(isDelivered){
-            Log.d(TAG, "onPrepareOptionsMenu: is delivered");
-            menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied_black);
-        }else {
-            Log.d(TAG, "onPrepareOptionsMenu: is not delivered");
-            menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied);
+            if (isDelivered) {
+                Log.d(TAG, "onPrepareOptionsMenu: is delivered");
+                menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied_black);
+            } else {
+                Log.d(TAG, "onPrepareOptionsMenu: is not delivered");
+                menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied);
+            }
         }
 
         return super.onPrepareOptionsMenu(menu);
