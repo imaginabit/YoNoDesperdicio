@@ -174,6 +174,8 @@ public class ProfileActivity extends NavigationBaseActivity {
             getAdsFromWeb((int) mUser.id);
         }
 
+
+        //hide avatar when drag toolbar up
         mAppbarLayout = (AppBarLayout) findViewById(R.id.appbar);
         mRootLayout = (CoordinatorLayout) findViewById(R.id.main_content);
         final String collapsedTitle = mUser.username;
@@ -260,7 +262,7 @@ public class ProfileActivity extends NavigationBaseActivity {
                     //
                     DisplayMetrics dm = getResources().getDisplayMetrics();
                     float adDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 135, dm);
-                    float headDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, dm);
+                    float headDpInPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, dm);
                     int adsTotalHeight = (int) ((int) (ads.size() * adDpInPx) + headDpInPx);
                     Log.d(TAG, "done: Height px :" + adsTotalHeight);
                     userads.setLayoutParams(new LinearLayout.LayoutParams(layoutManager.getWidth(), adsTotalHeight));
@@ -281,7 +283,12 @@ public class ProfileActivity extends NavigationBaseActivity {
             @Override
             public void done(User user, Exception e) {
                 Log.d(TAG, "getUserWeb UserUtils.getUser->done() called with: " + "user = [" + user + "], e = [" + e + "]");
-                if (e != null) e.printStackTrace();
+                if (e != null) {
+                    Log.d(TAG, "done: ERROR");
+                    e.printStackTrace();
+                    return;
+                }
+                    
                 mUserWeb = user;
                 String cp = mUserWeb.getZipCode();
                 ProvinciasCP.init();
