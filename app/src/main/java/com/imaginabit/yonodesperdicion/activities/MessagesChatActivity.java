@@ -1,18 +1,23 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -363,7 +368,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
         Uri uri = AdsContract.Conversations.buildConversationUri(String.valueOf( conversation.getDbId() ));
 
-        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, otherUser );
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, otherUser);
 
         Integer count = mContentResolver.update(uri, contentValues, where, args);
         return count;
@@ -374,7 +379,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         //con que anuncio esta asociado esta conversacion?
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this ,R.style.yndDialog );
 
-        dialog.setTitle("Asociar un anuncio");
+        dialog.setTitle("Asociar a un anuncio");
         //yo cant set message and items list
 //        dialog.setMessage("Este chat no esta asociado ningun anuncio\n¿Quieres asociarlo ahora?");
 
@@ -428,5 +433,42 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             Log.d(TAG, "anuncios : " + ads.size());
             Log.d(TAG, "done: anuncios : "+ ads.toString() );
         }
+    }
+
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Check if user triggered a refresh:
+            case R.id.goto_ad:
+                final ProgressDialog pd = new ProgressDialog(MessagesChatActivity.this);
+                pd.setTitle("Cargando");
+                pd.setMessage("Recibiendo datos...");
+                pd.show();
+
+                AdUtils.fetchAd(mConversation.getId(), new AdUtils.FetchAdCallback() {
+                    @Override
+                    public void done(Ad ad, User user, Exception e) {
+                        Intent intent = new Intent(MessagesChatActivity.this, AdDetailActivity.class);
+                        intent.putExtra("ad", (Parcelable) ad );
+                        intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        Utils.dismissProgressDialog(pd);
+                    }
+                });
+                return true;
+            case R.id.action_booked:
+                return true;
+            case R.id.action_deliver:
+                return true;
+        }
+        // User didn't trigger a refresh, let the superclass handle this action
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.message_chat, menu);
+        return true;
     }
 }
