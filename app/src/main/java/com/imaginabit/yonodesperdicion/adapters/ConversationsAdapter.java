@@ -103,27 +103,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime(), now, DateUtils.HOUR_IN_MILLIS);
         holder.updatedAt.setText(d);
 
-        // CardView click listener
-        holder.messageBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //buscar esta conversacion en la base de datos?
-                Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
-
-                Intent intent = new Intent(context, MessagesChatActivity.class);
-                intent.putExtra("conversationId", conversation.getId());
-                intent.putExtra("conversationUri", conversationUri);
-                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-                AppSession.currentConversation = conversation;
-                context.startActivity(intent);
-            }
-        });
-
         //get image from website
         final ImageLoader imageLoader; // Get singleton instance
         imageLoader = ImageLoader.getInstance();
-
         if (holder.user == null) {
             Log.d(TAG, "onBindViewHolder: conversation other user: "+ conversation.getOtherUserId() );
             if ( conversation.getOtherUserId()!=0 ) {
@@ -163,6 +145,27 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
             }
 
         }
+
+        // CardView click listener
+        holder.messageBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //buscar esta conversacion en la base de datos?
+                Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
+
+                Intent intent = new Intent(context, MessagesChatActivity.class);
+                intent.putExtra("conversationId", conversation.getId());
+                intent.putExtra("conversationUri", conversationUri);
+                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                AppSession.currentConversation = conversation;
+                AppSession.currentOtherUser = holder.user;
+
+                context.startActivity(intent);
+            }
+        });
+
+
 
     }
 

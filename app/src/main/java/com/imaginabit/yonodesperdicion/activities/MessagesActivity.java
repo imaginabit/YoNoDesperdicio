@@ -278,18 +278,6 @@ public class MessagesActivity extends NavigationBaseActivity {
 
                 title = id +" "+ title + " wid"+ webId + " ad "+ adId;
 
-                //TODO: if adId == 0 them try to bind to an Ad
-                // if is on inbox and first message is from other user
-                //    them is one my ads
-                //       if only have one then bind to this
-                //       if i have many
-                //           bind to one with the same name
-                //           let me choose from a list
-                // if first message is from me
-                //     get other user id
-                //        find ad with same name
-                //        or let me choose from a list
-
                 conversation = new Conversation(webId, title);
                 conversation.setDbId(id);
                 conversation.setOtherUserId(userId);
