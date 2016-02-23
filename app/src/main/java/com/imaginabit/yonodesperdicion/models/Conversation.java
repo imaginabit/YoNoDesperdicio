@@ -20,6 +20,7 @@ public class Conversation {
     private int dbId;
     private int adId;
     private List<Message> mMessages;
+    private boolean visible;
 
     @Override
     public String toString() {
@@ -43,6 +44,7 @@ public class Conversation {
         mCreatedAt = createdAt;
         mUpdatedAt = updatedAt;
         mThreadId = threadId;
+        visible = true;
 
 
 //        MessagesUtils.getConversationMessagesInbox(id, new MessagesUtils.MessagesCallback() {
@@ -66,6 +68,7 @@ public class Conversation {
         mCreatedAt = new Date();
         mUpdatedAt = new Date();
         mThreadId = 0;
+        visible = true;
     }
 
     public static String getTAG() {
@@ -150,5 +153,13 @@ public class Conversation {
 
     public void setAdId(int adId) {
         this.adId = adId;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

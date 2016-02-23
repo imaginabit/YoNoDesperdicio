@@ -45,7 +45,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         private ImageView rattingStatus;
         private TextView lastMessage;
         private LinearLayout messageBox;
+        private LinearLayout messageTop;
         private RoundedImageView avatar;
+        private ImageView separator;
 
         private User user;
 
@@ -61,7 +63,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
             rattingStatus = (ImageView) view.findViewById(R.id.ratting_status);
             lastMessage = (TextView) view.findViewById(R.id.last_message);
             messageBox = (LinearLayout) view.findViewById(R.id.message);
+            messageTop = (LinearLayout) view.findViewById(R.id.message_top);
             avatar = (RoundedImageView) view.findViewById(R.id.user_avatar);
+            separator = (ImageView) view.findViewById(R.id.message_separator);
 
         }
     }
@@ -84,6 +88,14 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     public void onBindViewHolder(final ConversationsAdapter.ViewHolder holder, int position) {
         Log.v(TAG, "onBindViewHolder: ");
         final Conversation conversation = mConversationList.get(position);
+
+        if ( !conversation.isVisible() ){
+            Log.d(TAG, "onBindViewHolder: conversation not visible");
+            //holder.lastMessage.setText( holder.lastMessage.getText() + " oculto");
+            holder.messageBox.setVisibility(View.GONE);
+            holder.separator.setVisibility(View.GONE);
+            return;
+        }
 
         holder.subject.setText(conversation.getSubject());
         if (conversation.getMessages() != null) {
@@ -164,9 +176,6 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
                 context.startActivity(intent);
             }
         });
-
-
-
     }
 
     @Override
