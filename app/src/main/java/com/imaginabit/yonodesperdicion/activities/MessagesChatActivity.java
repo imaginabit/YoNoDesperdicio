@@ -276,17 +276,6 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                     if (mConversation.getAdId() == 0 && mMessages.size()>0){
                         if ( mMessages.get(0).getSender_id() == AppSession.getCurrentUser().id){
                             Log.d(TAG, "onFinished: search Ad, first Message from me");
-                            //get user ads
-                            User u = new User((int) AppSession.getCurrentUser().id, "", "", "", "", 0, 0);
-                            Log.d(TAG, "get Ads From Web");
-                            AdUtils.fetchAdsVolley(u, MessagesChatActivity.this, new AdUtils.FetchAdsCallback() {
-                                @Override
-                                public void done(List<Ad> ads, Exception e) {
-                                    Log.d(TAG, "done get ads from current user");
-                                    findConversationAd(ads);
-                                }
-                            });
-                        } else {
                             if (mConversation.getOtherUserId()!=0) {
                                 Log.d(TAG, "onFinished: search Ad, first Message from other");
                                 User u = new User(mConversation.getOtherUserId(), "", "", "", "", 0, 0);
@@ -299,6 +288,19 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                                     }
                                 });
                             }
+                        } else {
+                            Log.d(TAG, "onFinished: search Ad, first Message from other user");
+                            //get user ads
+                            User u = new User((int) AppSession.getCurrentUser().id, "", "", "", "", 0, 0);
+                            Log.d(TAG, "get Ads From Web");
+                            AdUtils.fetchAdsVolley(u, MessagesChatActivity.this, new AdUtils.FetchAdsCallback() {
+                                @Override
+                                public void done(List<Ad> ads, Exception e) {
+                                    Log.d(TAG, "done get ads from current user");
+                                    findConversationAd(ads);
+                                }
+                            });
+
                         }
                     }
 

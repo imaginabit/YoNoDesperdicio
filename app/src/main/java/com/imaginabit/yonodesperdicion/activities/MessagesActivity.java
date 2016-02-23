@@ -160,11 +160,11 @@ public class MessagesActivity extends NavigationBaseActivity {
                             //get data from database
                             c.setDbId(dbC.getDbId());
                             c.setOtherUserId(dbC.getOtherUserId());
-//                            String title = dbC.getSubject();
-                            String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
+                            String title = dbC.getSubject();
+//                            String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
                             //String title = c.getSubject() + " wid"+ c.getId() + " uid " + c.getOtherUserId() ;
                             Log.d(TAG, "onFinished: title ad " + title);
-                            c.setSubject(title);
+//                            c.setSubject(title);
                             MessagesUtils.updateConversationInDb(mContentResolver, c);
                         } catch (Exception e2 ){
                             e2.printStackTrace();
