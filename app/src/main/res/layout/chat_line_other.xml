@@ -24,43 +24,50 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
-            <LinearLayout
+            <TextView
+                android:id="@+id/chat_user_name"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/chat_user_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre Usuario"
-                    android:textSize="12dp"
-                    />
-                <TextView
-                    android:id="@+id/chat_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Enviado time"
-                    android:paddingRight="5dp"
-                    android:paddingLeft="5dp"
-                    />
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:text="Nombre Usuario"
+                android:textSize="12dp"
+                />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:paddingTop="0dp"
-                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp"
                 android:gravity="left"
                 >
+                <com.imaginabit.yonodesperdicion.views.RoundedImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/brick_avatar"
+                    />
                 <TextView
                     android:id="@+id/chat_messages"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Mesaje / Alimento Entregado"
                     style="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:padding="5dp"
-                    android:background="@color/blue_100"
+                    android:paddingLeft="30dp"
+                    android:paddingRight="40dp"
+                    android:paddingTop="15dp"
+                    android:background="@drawable/buble_other"
                     />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/chat_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enviado time"
+                android:textSize="12dp"
+                android:paddingRight="0dp"
+                android:paddingLeft="0dp"
+                android:paddingBottom="5dp"
+                />
         </LinearLayout>
 
 
