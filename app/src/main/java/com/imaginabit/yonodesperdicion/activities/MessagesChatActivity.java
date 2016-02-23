@@ -272,9 +272,9 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                             break;
                         }
                     }
-                    //if Ad asigned to conversation
-                    if (mConversation.getAdId() == 0){
-                        if (mMessages.get(0).getSender_id() == AppSession.getCurrentUser().id){
+                    //if no Ad asigned to conversation
+                    if (mConversation.getAdId() == 0 && mMessages.size()>0){
+                        if ( mMessages.get(0).getSender_id() == AppSession.getCurrentUser().id){
                             Log.d(TAG, "onFinished: search Ad, first Message from me");
                             //get user ads
                             User u = new User((int) AppSession.getCurrentUser().id, "", "", "", "", 0, 0);
@@ -283,15 +283,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                                 @Override
                                 public void done(List<Ad> ads, Exception e) {
                                     Log.d(TAG, "done get ads from current user");
-                                    if (ads != null) {
-                                        if(ads.size()>1) {
-                                            showDialogChooseConversationAd(ads);
-                                        }
-                                        if (ads.size()==1) mConversation.setAdId( ads.get(0).getId() );
-
-                                        Log.d(TAG, "anuncios : " + ads.size());
-                                        Log.d(TAG, "done: anuncios : "+ ads.toString() );
-                                    }
+                                    findConversationAd(ads);
                                 }
                             });
                         } else {
@@ -303,15 +295,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                                     @Override
                                     public void done(List<Ad> ads, Exception e) {
                                         Log.d(TAG, "done get ads from other user");
-                                        if (ads != null) {
-                                            Log.d(TAG, "anuncios : " + ads.size());
-                                            if(ads.size()>1) {
-                                                showDialogChooseConversationAd(ads);
-                                            }
-                                            if (ads.size()==1) mConversation.setAdId( ads.get(0).getId() );
-
-                                            //
-                                        }
+                                        findConversationAd(ads);
                                     }
                                 });
                             }
@@ -388,8 +372,9 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         //con que anuncio esta asociado esta conversacion?
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this ,R.style.yndDialog );
 
-        dialog.setTitle("Anuncio asociado");
-        //dialog.setMessage("Este chat no esta asociado ningun anuncio\n¿Quieres asociarlo ahora?");
+        dialog.setTitle("Asociar un anuncio");
+        //yo cant set message and items list
+//        dialog.setMessage("Este chat no esta asociado ningun anuncio\n¿Quieres asociarlo ahora?");
 
 //        HashMap<Integer, Ad> mapAdsId = new HashMap<>();
 //        HashMap<String, Ad> mapAdsName = new HashMap<>();
@@ -401,62 +386,45 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         final CharSequence[] options = adsTitles;
 
         //final CharSequence[] strAds =  ads.toArray(new String[ads.size()]);
-        dialog.setItems( options , new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int item) {
-                    Log.d(TAG, "onClick() called with: " + "dialog = [" + dialog + "], item = [" + item + "]");
-                    String selectedText = adsTitles[item].toString();  //Selected item in listview
-                    mConversation.setAdId(ads.get(item).getId());
-                    //todo save in database
-                    MessagesUtils.updateConversationInDb(mContentResolver,mConversation);
-                }
+        dialog.setItems(options, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                Log.d(TAG, "onClick() called with: " + "dialog = [" + dialog + "], item = [" + item + "]");
+                String selectedText = adsTitles[item].toString();  //Selected item in listview
+                mConversation.setAdId(ads.get(item).getId());
+                //todo save in database
+                MessagesUtils.updateConversationInDb(mContentResolver, mConversation);
+            }
         });
 
         //Create alert dialog object via builder
         AlertDialog alertDialogObject = dialog.create();
-
-//        dialog.setPositiveButton("Si",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface arg0, int arg1) {
-//                        Log.d(TAG, "onClick: si");
-//                    }
-//                });
-//        dialog.setNegativeButton("No",
-//                new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Log.d(TAG, "onClick: no");
-//                    }
-//                });
-
         dialog.show();
-
-        }
-
-
-    public void ShowAlertDialogWithListview()
-    {
-        List<String> mAnimals = new ArrayList<String>();
-        mAnimals.add("Cat");
-        mAnimals.add("Dog");
-        mAnimals.add("Horse");
-        mAnimals.add("Elephant");
-        mAnimals.add("Rat");
-        mAnimals.add("Lion");
-        //Create sequence of items
-        final CharSequence[] Animals = mAnimals.toArray(new String[mAnimals.size()]);
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setTitle("Animals");
-        dialogBuilder.setItems(Animals, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                String selectedText = Animals[item].toString();  //Selected item in listview
-            }
-        });
-        //Create alert dialog object via builder
-        AlertDialog alertDialogObject = dialogBuilder.create();
-        //Show the dialog
-        alertDialogObject.show();
     }
 
+    private void findConversationAd( List<Ad> ads ){
+        if (ads != null) {
+            if(ads.size()>1) {
+                List<String> adsTitles = new ArrayList<String>();
+                int i;
+                for ( i = 0; i < ads.size(); i++) {
+                    adsTitles.add(ads.get(i).getTitle());
+                    if ( ads.get(i).getTitle().equals( mConversation.getSubject()) ){
+                        Log.d(TAG, "done set ad: " +
+                                " title: " + ads.get(i).getTitle() +
+                                " adId: " + ads.get(i).getId() );
+                        mConversation.setAdId(ads.get(i).getId());
+                        break;
+                    }
+                }
+                //if for is all run w/o get ad id
+                if (i== ads.size()) {
+                    showDialogChooseConversationAd(ads);
+                }
+            }
+            if (ads.size()==1) mConversation.setAdId( ads.get(0).getId() );
 
-
+            Log.d(TAG, "anuncios : " + ads.size());
+            Log.d(TAG, "done: anuncios : "+ ads.toString() );
+        }
+    }
 }

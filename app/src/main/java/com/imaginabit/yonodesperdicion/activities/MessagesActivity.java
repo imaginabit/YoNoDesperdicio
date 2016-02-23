@@ -126,8 +126,10 @@ public class MessagesActivity extends NavigationBaseActivity {
         Log.d(TAG, "getConversationsFromApi() called with: " + "");
         final HashMap<Integer, Conversation> mapDbConversations = new HashMap<>();
         for ( Conversation c : mConversationList ) {
+            c.setVisible(false);
             mapDbConversations.put(c.getId(), c);
         }
+        mConversationList = new ArrayList<Conversation>();
 
         MessagesUtils.getConversations(MessagesActivity.this, new MessagesUtils.ConversationsCallback() {
             @Override
@@ -158,20 +160,22 @@ public class MessagesActivity extends NavigationBaseActivity {
                             //get data from database
                             c.setDbId(dbC.getDbId());
                             c.setOtherUserId(dbC.getOtherUserId());
-                            String title = dbC.getSubject();
-                            //String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
+//                            String title = dbC.getSubject();
+                            String title = c.getDbId() +" "+ c.getSubject() + " wid"+ c.getId();
                             //String title = c.getSubject() + " wid"+ c.getId() + " uid " + c.getOtherUserId() ;
                             Log.d(TAG, "onFinished: title ad " + title);
                             c.setSubject(title);
+                            MessagesUtils.updateConversationInDb(mContentResolver, c);
                         } catch (Exception e2 ){
                             e2.printStackTrace();
                             //is not in database
                             //save conversation in database
+                            c.setVisible(true);
                             Integer dbId = saveInDb(c);
                             c.setDbId(dbId);
                         }
                         //update data
-                        mapDbConversations.put(c.getId(),c);
+                        mapDbConversations.put(c.getId(), c);
                     }
                     mConversationList = new ArrayList<Conversation>(mapDbConversations.values());
                     sortByDate(mConversationList);
@@ -252,7 +256,7 @@ public class MessagesActivity extends NavigationBaseActivity {
         String selectionClause = "";
         String[] selectionArgs = new String[]{};
         ContentResolver contentResolver = getContentResolver();
-        Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+        Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS, projection, selectionClause, selectionArgs, "");
         mConversationList = new ArrayList<Conversation>();
         //if is in database take the existing conversation
         if (returnConversation.moveToFirst()) {
@@ -305,19 +309,7 @@ public class MessagesActivity extends NavigationBaseActivity {
         return Integer.valueOf(returnedId);
     }
 
-    private Integer updateInDb(Conversation conversation){
-        Log.d(TAG, "updateInDb() called with: " + "conversation = [" + conversation + "]");
-        mContentValues = new ContentValues();
-        String where = "";
-        String[] args = {};
 
-        Uri uri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
-
-        mContentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
-
-        Integer count = mContentResolver.update(uri, mContentValues, where, args);
-        return count;
-    }
 
     @Override
     protected void onRestart() {
