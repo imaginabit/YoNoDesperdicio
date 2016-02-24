@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,7 +36,13 @@ import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
+import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.imaginabit.yonodesperdicion.views.RoundedImageView;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +59,8 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     private ArrayList<Message> mMessages = new ArrayList<Message>();
     private ImageView mBtnSend;
     private boolean pushed;
+    private RoundedImageView avatar;
+    private Bitmap avatarBm;
 
     private Uri mUri;
     private ContentResolver mContentResolver;
@@ -113,8 +122,10 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new MessagesAdapter(mMessages);
+        adapter = new MessagesAdapter(mMessages,otherUser,avatarBm);
         recyclerView.setAdapter(adapter);
+
+//        avatar = (RoundedImageView) findViewById(R.id.chat_avatar);
 
         getMessages();
         checkMessages();
@@ -266,15 +277,43 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                     mConversation = (Conversation) data.get(0);
                     mMessages = (ArrayList<Message>) mConversation.getMessages();
 
-                    //get other user id
-                    for (Message m : messages) {
-                        Log.d(TAG, "getUserWeb onFinished: recorriendo mensajes ");
-                        Log.d(TAG, "getUserWeb onFinished: message : " + m.toString() );
-                        if (m.getSender_id()!= AppSession.getCurrentUser().id){
-                            userId = m.getSender_id();
-                            Log.d(TAG, "onFinished: getUserWeb get user from message " + userId );
-                            updateOtherUserInDb(mConversation,userId);
-                            break;
+                    if (otherUser==null) {
+                        //get other user id
+                        for (Message m : messages) {
+                            Log.d(TAG, "getUserWeb onFinished: recorriendo mensajes ");
+                            Log.d(TAG, "getUserWeb onFinished: message : " + m.toString());
+                            if (m.getSender_id() != AppSession.getCurrentUser().id) {
+                                userId = m.getSender_id();
+                                Log.d(TAG, "onFinished: getUserWeb get user from message " + userId);
+
+                                UserUtils.getUser(userId, MessagesChatActivity.this, new UserUtils.FetchUserCallback() {
+                                    @Override
+                                    public void done(User user, Exception e) {
+                                        otherUser = user;
+                                        //get image from website
+                                        ImageSize targetSize = new ImageSize(300, 300); // result Bitmap will be fit to this size
+                                        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                                                .delayBeforeLoading(0)
+                                                .cacheInMemory(true)
+                                                .build();
+                                        ImageLoader imageLoader; // Get singleton instance
+                                        imageLoader = ImageLoader.getInstance();
+                                        String imageUri = Constants.HOME_URL + user.getAvatar();
+                                        Log.i(TAG, "avatar url : " + imageUri);
+                                        imageLoader.loadImage(imageUri, targetSize, options, new SimpleImageLoadingListener() {
+                                            @Override
+                                            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                                                // Do whatever you want with Bitmap
+                                                avatarBm = loadedImage;
+                                                updateScreen();
+                                            }
+                                        });
+
+                                    }
+                                });
+                                updateOtherUserInDb(mConversation, userId);
+                                break;
+                            }
                         }
                     }
                     //if no Ad asigned to conversation
@@ -339,7 +378,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     private void updateScreen() {
         Log.d(TAG, "updateScreen: " + ((MessagesAdapter) adapter).getItemCount());
 //        TODO: this is wrong, notifyDataSetChanged must update the adapter but no working!
-        adapter = new MessagesAdapter(mMessages);
+        adapter = new MessagesAdapter(mMessages,otherUser,avatarBm);
         recyclerView.setAdapter(adapter);
 
         getSupportActionBar().setTitle(mConversation.getSubject());
