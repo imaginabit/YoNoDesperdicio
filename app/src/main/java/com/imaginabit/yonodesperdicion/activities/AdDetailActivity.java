@@ -301,9 +301,8 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 });
                 */
 
-                //vars for intent
-                Conversation conversation;
-                Uri conversationUri;
+                Conversation conversation = null;
+                Uri conversationUri = null;
 
                 //search if this ad is in conversations table
 //                projection = new String[]{AdsContract.ConversationsColumns.CONVERSATION_ID};
@@ -335,14 +334,34 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
                     } while (returnConversation.moveToNext());
                 } else {
-                    //db create new record in conversation table
-                    valuesConversation = new ContentValues();
-                    conversation = new Conversation(0, ad.getTitle());
-                    //save conversation in database
-                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_USER, ad.getUserId());
-                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, ad.getId());
-                    valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, ad.getTitle());
-                    conversationUri = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, valuesConversation);
+                    //search if there is other conversation in database with the same name
+                    projection = new String[]{};
+                    selectionClause = AdsContract.ConversationsColumns.CONVERSATION_TITLE + " = ?";
+                    selectionArgs = new String[]{mAd.getTitle()};
+                    Cursor returnConversationByTitle =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+                    if (returnConversationByTitle.moveToFirst()) {
+                        do {
+
+                            int id = returnConversationByTitle.getInt(0);
+                            int webId = returnConversationByTitle.getInt(1);
+                            int adId = returnConversationByTitle.getInt(2);
+                            int userId = returnConversationByTitle.getInt(3);
+                            String title = returnConversationByTitle.getString(5);
+                            conversation = new Conversation(webId, title);
+                            conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
+                        } while (returnConversationByTitle.moveToNext());
+                    }
+                    //if there is no conversation create a new one
+                    if ( conversation == null) {
+                        //db create new record in conversation table
+                        valuesConversation = new ContentValues();
+                        conversation = new Conversation(0, ad.getTitle());
+                        //save conversation in database
+                        valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_USER, ad.getUserId());
+                        valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, ad.getId());
+                        valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, ad.getTitle());
+                        conversationUri = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, valuesConversation);
+                    }
                     Log.d(TAG, "clickMessage: Record Id returned is " + conversationUri.toString());
                 }
 
