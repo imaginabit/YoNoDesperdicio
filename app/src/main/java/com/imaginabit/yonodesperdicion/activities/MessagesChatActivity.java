@@ -24,6 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
@@ -104,8 +105,9 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 //                    Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + cursor.getString(3) );
 //                    Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + cursor.getString(4));
                     mConversation.setDbId( cursor.getInt(0) );
-                    mConversation.setOtherUserId( cursor.getInt(3) );
-                    mConversation.setAdId( cursor.getInt(2) );
+                    mConversation.setOtherUserId(cursor.getInt(3));
+                    mConversation.setAdId(cursor.getInt(2));
+                    userId = mConversation.getOtherUserId();
                 } while (cursor.moveToNext());
             }
 
@@ -124,8 +126,6 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
         adapter = new MessagesAdapter(mMessages,otherUser,avatarBm);
         recyclerView.setAdapter(adapter);
-
-//        avatar = (RoundedImageView) findViewById(R.id.chat_avatar);
 
         getMessages();
         checkMessages();
@@ -170,6 +170,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
             if (mConversation!= null && mConversation.getId()!=0) {
                 //conversation alredy exists and just send new message
+                Log.d(TAG, "pushedSendMessageButton: message in old conversation: " + mConversation.getId() );
                 MessagesUtils.reply(mConversation.getId(), msg, new MessagesUtils.MessagesCallback() {
                     @Override
                     public void onFinished(List<Message> messages, Exception e) {
@@ -198,6 +199,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                 });
             } else {
                 //new conversation
+                Log.d(TAG, "pushedSendMessageButton: new conversation: to user: " + userId );
                 MessagesUtils.createConversation(adName, userId, msg, new MessagesUtils.MessagesCallback() {
                     @Override
                     public void onFinished(List<Message> messages, Exception e) {
@@ -283,10 +285,11 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                             Log.d(TAG, "getUserWeb onFinished: recorriendo mensajes ");
                             Log.d(TAG, "getUserWeb onFinished: message : " + m.toString());
                             if (m.getSender_id() != AppSession.getCurrentUser().id) {
-                                userId = m.getSender_id();
-                                Log.d(TAG, "onFinished: getUserWeb get user from message " + userId);
+                                int otherUserId = m.getSender_id();
 
-                                UserUtils.getUser(userId, MessagesChatActivity.this, new UserUtils.FetchUserCallback() {
+                                Log.d(TAG, "onFinished: getUserWeb get user from message " + otherUserId );
+
+                                UserUtils.getUser( otherUserId , MessagesChatActivity.this, new UserUtils.FetchUserCallback() {
                                     @Override
                                     public void done(User user, Exception e) {
                                         otherUser = user;
@@ -311,42 +314,12 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
                                     }
                                 });
-                                updateOtherUserInDb(mConversation, userId);
+                                updateOtherUserInDb(mConversation, otherUserId );
                                 break;
                             }
                         }
                     }
-                    //if no Ad asigned to conversation
-                    if (mConversation.getAdId() == 0 && mMessages.size()>0){
-                        if ( mMessages.get(0).getSender_id() == AppSession.getCurrentUser().id){
-                            Log.d(TAG, "onFinished: search Ad, first Message from me");
-                            if (mConversation.getOtherUserId()!=0) {
-                                Log.d(TAG, "onFinished: search Ad, first Message from other");
-                                User u = new User(mConversation.getOtherUserId(), "", "", "", "", 0, 0);
-                                Log.d(TAG, "get Ads From Web");
-                                AdUtils.fetchAdsVolley(u, MessagesChatActivity.this, new AdUtils.FetchAdsCallback() {
-                                    @Override
-                                    public void done(List<Ad> ads, Exception e) {
-                                        Log.d(TAG, "done get ads from other user");
-                                        findConversationAd(ads);
-                                    }
-                                });
-                            }
-                        } else {
-                            Log.d(TAG, "onFinished: search Ad, first Message from other user");
-                            //get user ads
-                            User u = new User((int) AppSession.getCurrentUser().id, "", "", "", "", 0, 0);
-                            Log.d(TAG, "get Ads From Web");
-                            AdUtils.fetchAdsVolley(u, MessagesChatActivity.this, new AdUtils.FetchAdsCallback() {
-                                @Override
-                                public void done(List<Ad> ads, Exception e) {
-                                    Log.d(TAG, "done get ads from current user");
-                                    findConversationAd(ads);
-                                }
-                            });
-
-                        }
-                    }
+                    // bindAdToConversation();
 
                 } else {
                     Log.d(TAG, "onFinished: Data menor o igual 0");
@@ -448,6 +421,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     }
 
     private void findConversationAd( List<Ad> ads ){
+        Log.d(TAG, "findConversationAd() called with: " + "\nads = [" + ads + "]");
         if (ads != null) {
             if(ads.size()>1) {
                 List<String> adsTitles = new ArrayList<String>();
@@ -467,7 +441,10 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                     showDialogChooseConversationAd(ads);
                 }
             }
-            if (ads.size()==1) mConversation.setAdId( ads.get(0).getId() );
+            if (ads.size()==1){
+                mConversation.setAdId( ads.get(0).getId() );
+                goToAd();
+            }
 
             Log.d(TAG, "anuncios : " + ads.size());
             Log.d(TAG, "done: anuncios : "+ ads.toString() );
@@ -479,21 +456,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         switch (item.getItemId()) {
             // Check if user triggered a refresh:
             case R.id.goto_ad:
-                final ProgressDialog pd = new ProgressDialog(MessagesChatActivity.this);
-                pd.setTitle("Cargando");
-                pd.setMessage("Recibiendo datos...");
-                pd.show();
-
-                AdUtils.fetchAd(mConversation.getId(), new AdUtils.FetchAdCallback() {
-                    @Override
-                    public void done(Ad ad, User user, Exception e) {
-                        Intent intent = new Intent(MessagesChatActivity.this, AdDetailActivity.class);
-                        intent.putExtra("ad", (Parcelable) ad );
-                        intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        Utils.dismissProgressDialog(pd);
-                    }
-                });
+                goToAd();
                 return true;
             case R.id.action_booked:
                 return true;
@@ -509,5 +472,67 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         //return super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.message_chat, menu);
         return true;
+    }
+
+    private void bindAdToConversation(){
+        //if no Ad asigned to conversation
+        if (mConversation.getAdId() == 0 && mMessages.size()>0){
+            if ( mMessages.get(0).getSender_id() == AppSession.getCurrentUser().id){
+                Log.d(TAG, "onFinished: search Ad, first Message from me");
+                if (mConversation.getOtherUserId()!=0) {
+                    Log.d(TAG, "onFinished: search Ad, first Message from other");
+                    User u = new User(mConversation.getOtherUserId(), "", "", "", "", 0, 0);
+                    Log.d(TAG, "get Ads From Web");
+                    AdUtils.fetchAdsVolley(u, MessagesChatActivity.this, new AdUtils.FetchAdsCallback() {
+                        @Override
+                        public void done(List<Ad> ads, Exception e) {
+                            Log.d(TAG, "done get ads from other user");
+                            Log.d(TAG, "done() called with: " + "ads = [" + ads + "], e = [" + e + "]");
+                            findConversationAd(ads);
+                        }
+                    });
+                } else {
+                    Toast.makeText(MessagesChatActivity.this, "No se puede determinar", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Log.d(TAG, "onFinished: search Ad, first Message from other user");
+                //get user ads
+                User u = new User((int) AppSession.getCurrentUser().id, "", "", "", "", 0, 0);
+                Log.d(TAG, "get Ads From Web");
+                AdUtils.fetchAdsVolley(u, MessagesChatActivity.this, new AdUtils.FetchAdsCallback() {
+                    @Override
+                    public void done(List<Ad> ads, Exception e) {
+                        Log.d(TAG, "done get ads from current user");
+                        findConversationAd(ads);
+                    }
+                });
+
+            }
+        }
+    }
+
+    private void goToAd(){
+        Log.d(TAG, "goToAd called");
+        if (mConversation != null && mConversation.getAdId() != 0 ) {
+            final ProgressDialog pd = new ProgressDialog(MessagesChatActivity.this);
+            pd.setTitle("Cargando");
+            pd.setMessage("Recibiendo datos...");
+            pd.show();
+
+            AdUtils.fetchAd(mConversation.getAdId(), new AdUtils.FetchAdCallback() {
+                @Override
+                public void done(Ad ad, User user, Exception e) {
+                    Log.d(TAG, "ongoto_ad_done called with: " + "ad = [" + ad + "], user = [" + user + "], e = [" + e + "]");
+                    Intent intent = new Intent(MessagesChatActivity.this, AdDetailActivity.class);
+                    intent.putExtra("ad", (Parcelable) ad);
+                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    Utils.dismissProgressDialog(pd);
+                }
+            });
+        } else {
+            bindAdToConversation();
+            //Toast.makeText(MessagesChatActivity.this, "no encontramos a que anuncio pertenece esta conversacion, escoge la que corresponda", Toast.LENGTH_SHORT).show();
+        }
     }
 }
