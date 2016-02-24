@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+tools:context=".activities.MessagesChatActivity">
+
+
+    <item
+        android:id="@+id/goto_ad"
+        app:showAsAction="withText"
+        android:icon="@drawable/ic_store"
+        android:title="Ir al anuncio"
+        />
+    <!--
+    <item
+        android:id="@+id/action_booked"
+        android:icon="@drawable/ic_local_offer"
+        android:title="@string/mark_booked"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_deliver"
+        android:icon="@drawable/ic_sentiment_very_satisfied"
+        android:title="@string/mark_delivered"
+        app:showAsAction="never" />
+
+        -->
+</menu>

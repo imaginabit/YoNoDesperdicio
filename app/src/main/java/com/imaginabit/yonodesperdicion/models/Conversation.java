@@ -18,8 +18,25 @@ public class Conversation {
     public boolean loaded= false;
     private int mOtherUserId;
     private int dbId;
-
+    private int adId;
     private List<Message> mMessages;
+    private boolean visible;
+
+    @Override
+    public String toString() {
+        return "Conversation{" +
+                "mId=" + mId +
+                ", mSubject='" + mSubject + '\'' +
+                ", mCreatedAt=" + mCreatedAt +
+                ", mUpdatedAt=" + mUpdatedAt +
+                ", mThreadId=" + mThreadId +
+                ", loaded=" + loaded +
+                ", mOtherUserId=" + mOtherUserId +
+                ", dbId=" + dbId +
+                ", adId=" + adId +
+                ", mMessages=" + mMessages +
+                '}';
+    }
 
     public Conversation(int id, String subject, Date createdAt, Date updatedAt, int threadId) {
         mId = id;
@@ -27,6 +44,7 @@ public class Conversation {
         mCreatedAt = createdAt;
         mUpdatedAt = updatedAt;
         mThreadId = threadId;
+        visible = true;
 
 
 //        MessagesUtils.getConversationMessagesInbox(id, new MessagesUtils.MessagesCallback() {
@@ -50,6 +68,7 @@ public class Conversation {
         mCreatedAt = new Date();
         mUpdatedAt = new Date();
         mThreadId = 0;
+        visible = true;
     }
 
     public static String getTAG() {
@@ -128,19 +147,19 @@ public class Conversation {
         this.dbId = dbId;
     }
 
-    @Override
-    public String toString() {
-        return "Conversation{" +
-                "mId=" + mId + "\n" +
-                ", mSubject='" + mSubject + '\'' + "\n" +
-                ", mCreatedAt=" + mCreatedAt +"\n" +
-                ", mUpdatedAt=" + mUpdatedAt +"\n" +
-                ", mThreadId=" + mThreadId +"\n" +
-                ", loaded=" + loaded +"\n" +
-                ", mOtherUserId=" + mOtherUserId +"\n" +
-                ", dbId=" + dbId +"\n" +
-                ", mMessages=" + mMessages +"\n" +
-                '}';
+    public int getAdId() {
+        return adId;
     }
 
+    public void setAdId(int adId) {
+        this.adId = adId;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 }

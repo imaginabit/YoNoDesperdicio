@@ -84,7 +84,9 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
         // Retrieve args
         Bundle data = getIntent().getExtras();
+        Log.d(TAG, "onCreate: data : " + data.toString() );
         final Ad ad = (Ad) data.getParcelable("ad");
+        Log.d(TAG, "onCreate: ad: " + ad );
         isFavorite = false;
 
         if (ad == null) {
@@ -327,7 +329,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         paso++;
                         if (paso > 1) title = title + " "+ paso;
 
-                        conversation = new Conversation(id, title);
+                        conversation = new Conversation(webId, title);
 
                         Log.d(TAG, "clickMessage: paso "+paso);
                         conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
@@ -350,7 +352,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 Intent intent = new Intent(context, MessagesChatActivity.class);
 //                intent.putExtra("conversationId", conversation.getId());
                 intent.putExtra("conversationUri", conversationUri);
-                intent.putExtra("adName", ad.getTitle());
+                intent.putExtra("adName", ad.getTitle() );
                 intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
                 AppSession.currentConversation = conversation;
                 context.startActivity(intent);
