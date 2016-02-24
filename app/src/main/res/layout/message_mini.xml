@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-
+    android:id="@+id/message_top"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
@@ -93,6 +93,7 @@
 
     </LinearLayout>
     <ImageView
+        android:id="@+id/message_separator"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/grey_300"

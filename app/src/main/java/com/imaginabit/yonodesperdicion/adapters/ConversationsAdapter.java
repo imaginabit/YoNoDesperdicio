@@ -45,7 +45,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         private ImageView rattingStatus;
         private TextView lastMessage;
         private LinearLayout messageBox;
+        private LinearLayout messageTop;
         private RoundedImageView avatar;
+        private ImageView separator;
 
         private User user;
 
@@ -61,7 +63,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
             rattingStatus = (ImageView) view.findViewById(R.id.ratting_status);
             lastMessage = (TextView) view.findViewById(R.id.last_message);
             messageBox = (LinearLayout) view.findViewById(R.id.message);
+            messageTop = (LinearLayout) view.findViewById(R.id.message_top);
             avatar = (RoundedImageView) view.findViewById(R.id.user_avatar);
+            separator = (ImageView) view.findViewById(R.id.message_separator);
 
         }
     }
@@ -85,6 +89,14 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         Log.v(TAG, "onBindViewHolder: ");
         final Conversation conversation = mConversationList.get(position);
 
+        if ( !conversation.isVisible() ){
+            Log.d(TAG, "onBindViewHolder: conversation not visible");
+            //holder.lastMessage.setText( holder.lastMessage.getText() + " oculto");
+            holder.messageBox.setVisibility(View.GONE);
+            holder.separator.setVisibility(View.GONE);
+            return;
+        }
+
         holder.subject.setText(conversation.getSubject());
         if (conversation.getMessages() != null) {
             Message lastMessage = conversation.getMessages().get(conversation.getMessages().size() - 1);
@@ -103,27 +115,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime(), now, DateUtils.HOUR_IN_MILLIS);
         holder.updatedAt.setText(d);
 
-        // CardView click listener
-        holder.messageBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //buscar esta conversacion en la base de datos?
-                Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
-
-                Intent intent = new Intent(context, MessagesChatActivity.class);
-                intent.putExtra("conversationId", conversation.getId());
-                intent.putExtra("conversationUri", conversationUri);
-                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-                AppSession.currentConversation = conversation;
-                context.startActivity(intent);
-            }
-        });
-
         //get image from website
         final ImageLoader imageLoader; // Get singleton instance
         imageLoader = ImageLoader.getInstance();
-
         if (holder.user == null) {
             Log.d(TAG, "onBindViewHolder: conversation other user: "+ conversation.getOtherUserId() );
             if ( conversation.getOtherUserId()!=0 ) {
@@ -164,6 +158,24 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
 
         }
 
+        // CardView click listener
+        holder.messageBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //buscar esta conversacion en la base de datos?
+                Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
+
+                Intent intent = new Intent(context, MessagesChatActivity.class);
+                intent.putExtra("conversationId", conversation.getId());
+                intent.putExtra("conversationUri", conversationUri);
+                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                AppSession.currentConversation = conversation;
+                AppSession.currentOtherUser = holder.user;
+
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

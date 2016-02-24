@@ -2,7 +2,10 @@ package com.imaginabit.yonodesperdicion.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -14,6 +17,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
@@ -815,6 +819,40 @@ public class MessagesUtils {
 //        data.add(c);
 //
 //    }
+
+    public static Integer saveConversationInDb(ContentResolver contentResolver, Conversation conversation){
+        Log.d(TAG, "saveInDb() called with: " + "conversation = [" + conversation + "]");
+
+        ContentValues contentValues;
+        contentValues = new ContentValues();
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_WEB_ID, conversation.getId());
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, conversation.getAdId());
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, conversation.getSubject());
+
+        Uri returned = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, contentValues);
+        String returnedId = returned.getLastPathSegment();
+
+        Log.d(TAG, "onFinished: returnedId Save in db with id " + returnedId);
+        return Integer.valueOf(returnedId);
+    }
+
+    public static Integer updateConversationInDb(ContentResolver contentResolver, Conversation conversation){
+        Log.d(TAG, "updateInDb() called with: " + "conversation = [" + conversation + "]");
+        ContentValues contentValues = new ContentValues();
+        String where = "";
+        String[] args = {};
+
+        Uri uri = AdsContract.Conversations.buildConversationUri(String.valueOf(conversation.getDbId()));
+
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_WEB_ID, conversation.getId());
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_USER, conversation.getOtherUserId());
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, conversation.getSubject());
+        contentValues.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, conversation.getAdId());
+
+        Integer count = contentResolver.update(uri, contentValues, where, args);
+        return count;
+    }
 
 
 }
