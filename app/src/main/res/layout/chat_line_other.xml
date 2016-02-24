@@ -41,6 +41,7 @@
                 android:gravity="left"
                 >
                 <com.imaginabit.yonodesperdicion.views.RoundedImageView
+                    android:id="@+id/chat_avatar"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:src="@drawable/brick_avatar"
