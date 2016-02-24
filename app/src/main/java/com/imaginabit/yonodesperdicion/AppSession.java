@@ -19,6 +19,7 @@ import com.imaginabit.yonodesperdicion.helpers.UsersHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
+import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.UiUtils;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
@@ -50,6 +51,12 @@ public class AppSession {
     public static synchronized void release() {
         UserUtils.deleteUserAvatar();
         AppSession.user = null;
+        AppSession.currentConversation = null;
+        AppSession.currentOtherUser = null;
+        //AppSession.currentAd = null;
+        AppSession.lastLocation = null;
+        AppSession.lastLocation = null;
+        //AppSession.userAds = null;
     }
 
     public static void logoff(Activity activity){
@@ -61,9 +68,11 @@ public class AppSession {
     }
 
     public static Conversation currentConversation;
+    public static User currentOtherUser;
+    //public static Ad currentAd;
     public static Location lastLocation;
     public static RequestQueue requestQueue;
-
+    //public List<Ad> userAds;
 
 
     /**

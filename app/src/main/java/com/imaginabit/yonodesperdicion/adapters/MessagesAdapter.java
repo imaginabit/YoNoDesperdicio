@@ -1,6 +1,9 @@
 package com.imaginabit.yonodesperdicion.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -13,7 +16,7 @@ import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
-import com.imaginabit.yonodesperdicion.utils.UserUtils;
+import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,15 +31,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private List<Message> mMessages = new ArrayList<Message>();
     private User mOtherUser;
     private Context mContext;
+    private Bitmap mAvatar;
 
     private static final int MYSELF=0;
     private static final int OTHER=1;
 
 
-    public MessagesAdapter(List<Message> messages) {
+    public MessagesAdapter( List<Message> messages, User user, Bitmap image ) {
         Log.v(TAG, "MessagesAdapter() called with: " + "messages = [" + messages + "]");
         Log.d(TAG, "MessagesAdapter: size " + messages.size());
         mMessages = messages;
+        mOtherUser = user;
+        mAvatar = image;
     }
 
 
@@ -70,7 +76,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         } else {
             if (mOtherUser != null && UserID==mOtherUser.getUserId()){
                 holder.userName.setText(mOtherUser.getUserName());
+                if (mAvatar != null)
+                    holder.avatar.setImageDrawable( new BitmapDrawable(Resources.getSystem(),mAvatar));
             } else {
+                Log.d(TAG, "onBindViewHolder: no other user data");
+                /*
                 UserUtils.getUser(UserID, mContext, new UserUtils.FetchUserCallback() {
                     @Override
                     public void done(User user, Exception e) {
@@ -78,6 +88,21 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                             Log.d(TAG, "done: user "+ user.toString());
                             holder.userName.setText(user.getUserName());
                             mOtherUser = user;
+
+
+                            //get image from website
+                            ImageLoader imageLoader; // Get singleton instance
+                            imageLoader = ImageLoader.getInstance();
+                            String imageUri = Constants.HOME_URL + user.getAvatar();
+                            Log.i(TAG, "avatar url : " + imageUri);
+                            try {
+                                Log.d(TAG, "done: loaded avatar");
+                                imageLoader.displayImage(imageUri, holder.avatar );
+                            } catch ( Exception eUser){
+                                eUser.printStackTrace();
+                                holder.avatar.setImageDrawable(ContextCompat.getDrawable(App.appContext, R.drawable.brick));
+                            }
+
                         } else {
                             Log.d(TAG, "done: Other User null");
                             if(e!= null) e.printStackTrace();
@@ -85,11 +110,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                         }
                     }
                 });
-//                UserUtils.fetchUser(UserID, new UserUtils.FetchUserCallback() {
-//                    @Override
-//                    public void done(User user, Exception e) {//
-//                    }
-//                });
+                */
             }
         }
         holder.chatMessage.setText(mMessages.get(position).getBody().toString());
@@ -123,6 +144,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         private TextView chatMessage;
         private TextView userName;
         private TextView time;
+        private RoundedImageView avatar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -131,6 +153,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             chatMessage = (TextView) itemView.findViewById(R.id.chat_messages);
             userName = (TextView) itemView.findViewById(R.id.chat_user_name);
             time = (TextView) itemView.findViewById(R.id.chat_time);
+            avatar = (RoundedImageView) itemView.findViewById(R.id.chat_avatar);
         }
     }
 
