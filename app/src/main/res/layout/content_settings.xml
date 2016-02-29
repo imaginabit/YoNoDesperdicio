@@ -77,6 +77,12 @@
                 android:text="@string/credits2"
                 />
 
+            <TextView
+                android:id="@+id/version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
         </LinearLayout>
 
     </LinearLayout>

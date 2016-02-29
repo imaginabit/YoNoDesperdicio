@@ -5,6 +5,7 @@
 .DS_Store
 /build
 /captures
+/app/google-services.json
 
 # Copyright: Benjamin Weiss (keyboardsurfer) https://github.com/keyboardsurfer
 # Under CC-BY-SA V3.0 (https://creativecommons.org/licenses/by-sa/3.0/legalcode)
@@ -61,6 +62,7 @@ Thumbs.db
 # gradle directory
 .gradle
 build/
+gradle.properties
 
 #for oh-my-zsh jira plugin (https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#jira)
 .jira-url
