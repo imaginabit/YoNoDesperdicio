@@ -151,7 +151,7 @@
                 android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
         </activity>
 
-        <!-- for use GCM -->
+        <!-- for use GCM Deactivated for now...
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -180,6 +180,8 @@
         <service
             android:name=".gcm.RegistrationIntentService"
             android:exported="false"></service>
+
+         -->
 
     </application>
 
