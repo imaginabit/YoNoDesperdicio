@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +31,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
@@ -72,7 +79,8 @@ public class AdDetailActivity extends NavigationBaseActivity {
     private String emptyWhere = "";
     private String[] emptyArgs = {};
 
-
+    private GoogleMap mMap;
+    private MapView mMapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +88,6 @@ public class AdDetailActivity extends NavigationBaseActivity {
         setContentView(R.layout.ad_content);
         contentResolver = getContentResolver();
         valuesFavorite = new ContentValues();
-
 
         // Retrieve args
         Bundle data = getIntent().getExtras();
@@ -179,6 +186,28 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 }
             });
 
+            mMapView = (MapView) findViewById(R.id.mapview);
+            mMapView.onCreate(savedInstanceState);
+
+            // Gets to GoogleMap from the MapView and does initialization stuff
+            mMap = mMapView.getMap();
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.setMyLocationEnabled(true);
+
+            // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
+            try {
+                MapsInitializer.initialize(AdDetailActivity.this);
+            }catch (Exception e) {
+                e.printStackTrace();
+//            } catch (GooglePlayServicesNotAvailableException eMap) {
+//                eMap.printStackTrace();
+            }
+
+            Location adLocation = ad.getLocation();
+
+            // Updates the location and zoom of the MapView
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(adLocation.getLatitude(), adLocation.getLongitude()), 13);
+            mMap.animateCamera(cameraUpdate);
 
             //actualy geting user info in ads api
             Log.d(TAG, "onCreate: Ad id :" + ad.getId());
@@ -200,6 +229,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
                         TextView userWeight = (TextView) findViewById(R.id.user_weight);
                         userWeight.setText(Utils.gramsToKgStr(user.getGrams()));
                         Log.d(TAG, "done: mad: " + mAd.getId());
+
                     } else {
                         Log.d(TAG, "AdUtils.fetchAd_done return null ad");
                     }
@@ -594,5 +624,41 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
         return super.onPrepareOptionsMenu(menu);
 
+    }
+
+/*    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "onMapReady() called with: " + "googleMap = [" + googleMap + "]");
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+    }*/
+
+    @Override
+    public void onResume() {
+        mMapView.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
     }
 }

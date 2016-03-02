@@ -2,7 +2,6 @@
 
     <string name="app_name">Yo No Desperdicio</string>
     <string name="web_url">http://yonodesperdicio.com/</string>
-    <string name="google_app_id">238334887877</string>
 
     <string name="navigation_drawer_open">Abrir menu lateral</string>
     <string name="navigation_drawer_close">Cerrar menu lateral</string>
