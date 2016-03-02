@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.imaginabit.yonodesperdicion.App;
@@ -37,6 +38,7 @@ import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.gcm.RegistrationIntentService;
 import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener;
@@ -82,6 +84,7 @@ public class MainActivity extends NavigationBaseActivity
     private int mSrcollY;
 
     protected static final int LOCATION_REQUEST = 0;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,6 +209,12 @@ public class MainActivity extends NavigationBaseActivity
         //Get Last Location
         // Create an instance of GoogleAPIClient.
         checkGoogleApiClient();
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
     }
 
     private void loadMoreData(final int current_page) {
@@ -696,5 +705,25 @@ public class MainActivity extends NavigationBaseActivity
 //        adapter.notifyDataSetChanged();
     }
 
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 
 }

@@ -512,7 +512,7 @@ public class ProfileActivity extends NavigationBaseActivity {
     }
 
     private void sendAvatarToWeb() {
-        Log.d(TAG, "sendAvatarToWeb: ");
+        Log.d(TAG, "sendAvatarToWeb: ------------------------------------------------------------");
         JSONObject jsonImage = null;
 
         if (bitmap != null) {
@@ -539,6 +539,7 @@ public class ProfileActivity extends NavigationBaseActivity {
                 e.printStackTrace();
             }
         }
+        Log.d(TAG, "sendAvatarToWeb: FIN --------------------------------------------------------");
     }
 
 
