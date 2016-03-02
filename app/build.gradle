@@ -29,12 +29,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "mapKey", "\"${mapkey}\""
             buildConfigField "String", "googleAppId", "\"${googleappid}\""
+            buildConfigField "String", "gcmdefaultSenderId", "\"${gcmdefaultSenderId}\""
+            buildConfigField "String", "googlekey", "\"${googlekey}\""
         }
         debug {
             proguardFiles 'proguard-rules.pro'
             buildConfigField "String", "mapKey", "\"${mapkey}\""
             buildConfigField "String", "googleAppId", "\"${googleappid}\""
             buildConfigField "String", "gcmdefaultSenderId", "\"${gcmdefaultSenderId}\""
+            buildConfigField "String", "googlekey", "\"${googlekey}\""
         }
     }
 
