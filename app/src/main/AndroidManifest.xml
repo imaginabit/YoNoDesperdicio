@@ -2,7 +2,7 @@
 <manifest package="com.imaginabit.yonodesperdicion"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -19,8 +19,10 @@
     <uses-permission android:name="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
 
     <!-- for use GCM push -->
-    <permission android:name="com.imaginabit.yonodesperdicion.permission.C2D_MESSAGE"
+    <permission
+        android:name="com.imaginabit.yonodesperdicion.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="com.imaginabit.yonodesperdicion.permission.C2D_MESSAGE" />
 
     <uses-feature
@@ -35,8 +37,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -53,8 +54,7 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/app_name"
-            >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -77,8 +77,7 @@
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settigns"
-            android:parentActivityName=".activities.MainActivity"
-            >
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -98,9 +97,9 @@
         <activity
             android:name=".activities.AdCreateActivity"
             android:label="Nuevo Anuncio"
-            android:parentActivityName=".activities.MainActivity"
-            />
-        <activity android:name=".activities.MoreInfoActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.MoreInfoActivity"
             android:label="Mas Información"
             android:parentActivityName=".activities.MainActivity" />
         <activity
@@ -126,8 +125,7 @@
         <activity
             android:name=".activities.MessagesChatActivity"
             android:label="@string/title_activity_messages_chat"
-            android:parentActivityName=".activities.MessagesActivity"
-            >
+            android:parentActivityName=".activities.MessagesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MessagesActivity" />
@@ -147,8 +145,7 @@
         <activity
             android:name=".activities.FavoritesActivity"
             android:label="@string/title_activity_favorites"
-            android:parentActivityName=".activities.MainActivity"
-            >
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
@@ -158,15 +155,17 @@
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="com.example.gcm" />
             </intent-filter>
         </receiver>
+
         <service
             android:name=".gcm.MyGcmListenerService"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
@@ -180,8 +179,11 @@
         </service>
         <service
             android:name=".gcm.RegistrationIntentService"
-            android:exported="false">
-        </service>
+            android:exported="false"></service>
+
+        <activity
+            android:name=".activities.MapsActivity"
+            android:label="@string/title_activity_maps"></activity>
     </application>
 
 </manifest>
