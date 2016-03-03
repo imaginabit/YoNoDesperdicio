@@ -112,6 +112,8 @@ public class ProfileActivity extends NavigationBaseActivity {
     private Intent pictureActionIntent = null;
     File capturedPhoto;
 
+    private Boolean isMe;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,23 +139,35 @@ public class ProfileActivity extends NavigationBaseActivity {
         adapter = new AdsAdapter(context, mAds);
         recyclerView.setAdapter(adapter);
 
-        if (AppSession.getCurrentUser() != null) {
-            VolleySingleton.init(context);
-            mUser = AppSession.getCurrentUser();
-        } else {
-            //if send an user id show that user
-            Bundle data = getIntent().getExtras();
-            if (data != null) {
-                Log.d(TAG, "onCreate: data " + data.toString());
-                Ad ad = (Ad) data.getParcelable("ad");
-                mUser = new UserData( (long)ad.getUserId(),"","",ad.getUserName(),
-                        ad.getUserName(),"","","",ad.getProvince(),
-                        String.valueOf(ad.getPostalCode()),0,0,"");
-                getUserWeb();
-            }
-            // show Back button in toolbar
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        VolleySingleton.init(context);
+
+        Bundle data = getIntent().getExtras();
+
+        //if send an user id show that user
+        if (data != null) {
+            Log.d(TAG, "onCreate: data " + data.toString());
+            Ad ad = (Ad) data.getParcelable("ad");
+            User user = (User) data.getParcelable("user");
+//            mUser = new UserData( (long)ad.getUserId(),"","",ad.getUserName(),
+//                    ad.getUserName(),"","","",ad.getProvince(),
+//                    String.valueOf(ad.getPostalCode()),0,0,"");
+            mUser = new UserData( (long)user.getUserId(),"","",user.getUserName(),
+                    user.getUserName(),"","","","provincia",
+                    String.valueOf(ad.getPostalCode()),user.getRatting(),user.getGrams(),user.getAvatar());
+            getUserWeb();
+
+            //disable menu
+            isMe = false;
         }
+        // show Back button in toolbar
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //if no user show current user
+        if (mUser == null && AppSession.getCurrentUser() != null) {
+            mUser = AppSession.getCurrentUser();
+            isMe = true;
+        }
+
 
         if (mUser!= null){
             userName = (TextView) findViewById(R.id.user_name);
@@ -209,8 +223,12 @@ public class ProfileActivity extends NavigationBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.profile, menu);
-        return true;
+        if (isMe) {
+            getMenuInflater().inflate(R.menu.profile, menu);
+            return true;
+        }
+        return false;
+
     }
 
     @Override
