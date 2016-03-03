@@ -59,8 +59,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
-public class AdDetailActivity extends NavigationBaseActivity {
+public class AdDetailActivity extends NavigationBaseActivity implements Observer {
     private static final String TAG = "AdDetailActivity";
     private Ad mAd;
     private boolean isFavorite;
@@ -102,6 +104,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
         } else {
             mAd = ad;
+            observe( mAd );
 
             projection = new String[]{AdsContract.FavoritesColumns.FAV_AD_ID};
             selectionClause = AdsContract.FavoritesColumns.FAV_AD_ID + " = ?";
@@ -205,14 +208,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
 //                eMap.printStackTrace();
             }
 
-            Location adLocation = ad.getLocation();
-
-            if (adLocation!= null) {
-                // Updates the location and zoom of the MapView
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(adLocation.getLatitude(), adLocation.getLongitude()), 13);
-                mMap.animateCamera(cameraUpdate);
-            }
-
+            zoomLocation(ad);
 
             //actualy geting user info in ads api
             Log.d(TAG, "onCreate: Ad id :" + ad.getId());
@@ -255,6 +251,9 @@ public class AdDetailActivity extends NavigationBaseActivity {
                                 //Toast.makeText(AdDetailActivity.this, "Usuario "+ user.getUserId(), Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                        observe(mAd);
+                        mAd.setLocation(AdUtils.calculateLocation(mAd));
 
                         Log.d(TAG, "done: mad: " + mAd.getId());
                     } else {
@@ -299,6 +298,8 @@ public class AdDetailActivity extends NavigationBaseActivity {
                 });
             }
         }
+
+
     }
 
     private boolean userIsOwner(Ad ad){
@@ -688,4 +689,32 @@ public class AdDetailActivity extends NavigationBaseActivity {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
+
+    public void observe(Observable o) {
+        Log.d(TAG, "observe() called with: " + "o = [" + o + "]");
+        o.addObserver(this);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        Log.d(TAG, "update() called with: " + "observable = [" + observable + "], data = [" + data + "]");
+        Location location = ((Ad) observable).getLocation();
+
+        zoomLocation((Ad) observable);
+    }
+
+    /**
+     * Center the map on ad location
+     * @param ad
+     */
+    private void zoomLocation(Ad ad){
+        Location adLocation = ad.getLocation();
+
+        if (adLocation!= null) {
+            // Updates the location and zoom of the MapView
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(adLocation.getLatitude(), adLocation.getLongitude()), 13);
+            mMap.animateCamera(cameraUpdate);
+        }
+    }
+
 }
