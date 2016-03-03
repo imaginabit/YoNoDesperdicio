@@ -53,8 +53,9 @@
                     android:text="Mesaje / Alimento Entregado"
                     style="@style/Base.TextAppearance.AppCompat.Medium"
                     android:paddingLeft="30dp"
-                    android:paddingRight="40dp"
-                    android:paddingTop="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:background="@drawable/buble_other"
                     />
             </LinearLayout>

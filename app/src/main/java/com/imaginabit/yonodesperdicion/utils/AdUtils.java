@@ -516,9 +516,9 @@ public class AdUtils {
                     String zip = userJson.optString("zipcode", "");
                     int total_quantity = userJson.optInt("total_quantity", 0);
                     float rating = (float) userJson.optDouble("rating",0.0);
+                    String avatar = userJson.optString("image", "");
 
-                    user = new User(userId,userName,userName ,"",zip,total_quantity, rating );
-
+                    user = new User(userId,userName,userName ,"",zip,total_quantity, rating, avatar );
                 }
                 if (jObj.has("comments")){
                     //implementar cargar comentarios
