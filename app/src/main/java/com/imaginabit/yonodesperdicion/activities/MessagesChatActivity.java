@@ -279,7 +279,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                     mConversation = (Conversation) data.get(0);
                     mMessages = (ArrayList<Message>) mConversation.getMessages();
 
-                    if (otherUser==null) {
+                    if (otherUser == null) {
                         //get other user id
                         for (Message m : messages) {
                             Log.d(TAG, "getUserWeb onFinished: recorriendo mensajes ");
@@ -287,9 +287,9 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                             if (m.getSender_id() != AppSession.getCurrentUser().id) {
                                 int otherUserId = m.getSender_id();
 
-                                Log.d(TAG, "onFinished: getUserWeb get user from message " + otherUserId );
+                                Log.d(TAG, "onFinished: getUserWeb get user from message " + otherUserId);
 
-                                UserUtils.getUser( otherUserId , MessagesChatActivity.this, new UserUtils.FetchUserCallback() {
+                                UserUtils.getUser(otherUserId, MessagesChatActivity.this, new UserUtils.FetchUserCallback() {
                                     @Override
                                     public void done(User user, Exception e) {
                                         otherUser = user;
@@ -314,7 +314,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
                                     }
                                 });
-                                updateOtherUserInDb(mConversation, otherUserId );
+                                updateOtherUserInDb(mConversation, otherUserId);
                                 break;
                             }
                         }
@@ -446,8 +446,14 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                 goToAd();
             }
 
+            if (ads.size()==0){
+                Toast.makeText(MessagesChatActivity.this, "No se ha encontrado ningun anuncio relacionado", Toast.LENGTH_SHORT).show();
+            }
+
             Log.d(TAG, "anuncios : " + ads.size());
             Log.d(TAG, "done: anuncios : "+ ads.toString() );
+        } else {
+            Toast.makeText(MessagesChatActivity.this, "No se ha encontrado ningun anuncio relacionado", Toast.LENGTH_SHORT).show();
         }
     }
 
