@@ -519,9 +519,6 @@ public class AdUtils {
                     String avatar = userJson.optString("image", "");
 
                     user = new User(userId,userName,userName ,"",zip,total_quantity, rating, avatar );
-
-
-
                 }
                 if (jObj.has("comments")){
                     //implementar cargar comentarios

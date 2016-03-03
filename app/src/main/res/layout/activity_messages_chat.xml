@@ -24,9 +24,10 @@
             <LinearLayout
                 android:paddingTop="?attr/actionBarSize"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:nestedScrollingEnabled="true"
+                android:gravity="bottom"
                 >
 
                 <!--<include layout="@layout/chat_line_me"/>-->
@@ -35,9 +36,10 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/list_chat_messages"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:paddingBottom="60dp"
                     android:background="@color/activity_background"
+
                     />
 
             </LinearLayout>

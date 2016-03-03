@@ -48,9 +48,9 @@
                     android:text="Mesaje / Alimento Entregado un ao ehu taoe utae ouahnue ae oatoe utt e o u"
                     style="@style/Base.TextAppearance.AppCompat.Medium"
 
-                    android:paddingRight="40dp"
-                    android:paddingLeft="30dp"
-                    android:paddingTop="15dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="30dp"
+                    android:paddingTop="10dp"
                     android:paddingBottom="10dp"
 
                     android:background="@drawable/chatbuble"
