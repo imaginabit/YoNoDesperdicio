@@ -207,9 +207,12 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             Location adLocation = ad.getLocation();
 
-            // Updates the location and zoom of the MapView
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(adLocation.getLatitude(), adLocation.getLongitude()), 13);
-            mMap.animateCamera(cameraUpdate);
+            if (adLocation!= null) {
+                // Updates the location and zoom of the MapView
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(adLocation.getLatitude(), adLocation.getLongitude()), 13);
+                mMap.animateCamera(cameraUpdate);
+            }
+
 
             //actualy geting user info in ads api
             Log.d(TAG, "onCreate: Ad id :" + ad.getId());
@@ -237,7 +240,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
                             Log.d(TAG, "done: Default Avatar: " + Constants.DEFAULT_USER_AVATAR );
                             RoundedImageView userAvatar = (RoundedImageView) findViewById(R.id.user_avatar);
                             ImageLoader imageLoaderAvatar = ImageLoader.getInstance(); // Get singleton instance
-                            imageLoaderAvatar.displayImage(user.getAvatar(), userAvatar);
+                            imageLoaderAvatar.displayImage(Constants.HOME_URL + user.getAvatar(),  userAvatar );
                         }
 
                         CardView cardView = (CardView) findViewById(R.id.perfil_mini);
