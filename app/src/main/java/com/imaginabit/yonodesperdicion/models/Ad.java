@@ -16,12 +16,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Observable;
 
 /**
  * Created by fer2015julio on 24/11/15.
  * Model of Ads Data
  */
-public class Ad implements Parcelable {
+public class Ad extends Observable implements Parcelable {
     private static final String TAG = "Ad Model";
 
     // Statuses
@@ -396,12 +397,16 @@ public class Ad implements Parcelable {
     }
 
 
-    public Location getLocation() {
+    public synchronized Location getLocation() {
         return location;
     }
 
     public void setLocation(Location location) {
-        this.location = location;
+        synchronized (this) {
+            this.location = location;
+        }
+        setChanged();
+        notifyObservers();
     }
 
     public int getLastDistance() {

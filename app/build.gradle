@@ -15,8 +15,8 @@ android {
         applicationId "com.imaginabit.yonodesperdicion"
         minSdkVersion 10
         targetSdkVersion 23
-        versionCode 30
-        versionName "1.11"
+        versionCode 31
+        versionName "1.12"
     }
 
     compileOptions {
@@ -40,7 +40,7 @@ android {
             buildConfigField "String", "googleAppId", "\"${googleappid}\""
             buildConfigField "String", "gcmdefaultSenderId", "\"${gcmdefaultSenderId}\""
             buildConfigField "String", "googlekey", "\"${googlekey}\""
-            resValue "string", "google_maps_key", "\"${google_maps_key}\""
+            resValue "string", "google_mapKey", "\"${google_maps_key}\""
         }
     }
 
