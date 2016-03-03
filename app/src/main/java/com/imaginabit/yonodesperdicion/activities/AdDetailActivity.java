@@ -13,6 +13,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -49,6 +50,7 @@ import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -90,7 +92,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
         valuesFavorite = new ContentValues();
 
         // Retrieve args
-        Bundle data = getIntent().getExtras();
+        final Bundle data = getIntent().getExtras();
         Log.d(TAG, "onCreate: data : " + data.toString() );
         final Ad ad = (Ad) data.getParcelable("ad");
         Log.d(TAG, "onCreate: ad: " + ad );
@@ -146,7 +148,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
             final ImageView image = (ImageView) findViewById(R.id.backdrop);
 
             ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
-            String imageUri = Constants.HOME_URL + ad.getImageUrl();
+            final String imageUri = Constants.HOME_URL + ad.getImageUrl();
 
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, image);
@@ -214,7 +216,7 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
             AdUtils.fetchAd(ad.getId(), new AdUtils.FetchAdCallback() {
                 @Override
-                public void done(Ad ad, User user, Exception e) {
+                public void done(final Ad ad, final User user, Exception e) {
                     Log.d(TAG, "done() called with: " + "ad = [" + ad + "], user = [" + user + "], e = [" + e + "]");
                     if (ad != null) {
                         mAd = ad;
@@ -228,8 +230,30 @@ public class AdDetailActivity extends NavigationBaseActivity {
 
                         TextView userWeight = (TextView) findViewById(R.id.user_weight);
                         userWeight.setText(Utils.gramsToKgStr(user.getGrams()));
-                        Log.d(TAG, "done: mad: " + mAd.getId());
 
+                        //load avatar
+                        if ( ! user.getAvatar().equals(Constants.DEFAULT_USER_AVATAR) ){
+                            Log.d(TAG, "done: User Avatar: " + user.getAvatar() );
+                            Log.d(TAG, "done: Default Avatar: " + Constants.DEFAULT_USER_AVATAR );
+                            RoundedImageView userAvatar = (RoundedImageView) findViewById(R.id.user_avatar);
+                            ImageLoader imageLoaderAvatar = ImageLoader.getInstance(); // Get singleton instance
+                            imageLoaderAvatar.displayImage(user.getAvatar(), userAvatar);
+                        }
+
+                        CardView cardView = (CardView) findViewById(R.id.perfil_mini);
+                        cardView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent itntPerfil = new Intent(context, ProfileActivity.class);
+                                itntPerfil.setFlags(itntPerfil.FLAG_ACTIVITY_NEW_TASK);
+                                itntPerfil.putExtra("ad", (Parcelable) ad);
+                                itntPerfil.putExtra("user", (Parcelable) user);
+                                startActivity(itntPerfil);
+                                //Toast.makeText(AdDetailActivity.this, "Usuario "+ user.getUserId(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        Log.d(TAG, "done: mad: " + mAd.getId());
                     } else {
                         Log.d(TAG, "AdUtils.fetchAd_done return null ad");
                     }

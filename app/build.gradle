@@ -40,7 +40,7 @@ android {
             buildConfigField "String", "googleAppId", "\"${googleappid}\""
             buildConfigField "String", "gcmdefaultSenderId", "\"${gcmdefaultSenderId}\""
             buildConfigField "String", "googlekey", "\"${googlekey}\""
-            resValue "string", "google_maps_key", "\"${google_maps_key}\""
+            resValue "string", "google_mapKey", "\"${google_maps_key}\""
         }
     }
 

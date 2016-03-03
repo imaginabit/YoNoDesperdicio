@@ -1,12 +1,14 @@
 package com.imaginabit.yonodesperdicion.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 /**
  * Created by Fernando on 29/11/15.
  * User Model
  */
-public class User {
+public class User implements Parcelable {
     private static final String TAG = "User Model";
 
     private int mUserId;
@@ -121,4 +123,42 @@ public class User {
                 ", mAvatar='" + mAvatar + '\'' +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.mUserId);
+        dest.writeString(this.mName);
+        dest.writeString(this.mUserName);
+        dest.writeString(this.mAddress);
+        dest.writeString(this.mZipCode);
+        dest.writeInt(this.mGrams);
+        dest.writeFloat(this.mRatting);
+        dest.writeString(this.mAvatar);
+    }
+
+    protected User(Parcel in) {
+        this.mUserId = in.readInt();
+        this.mName = in.readString();
+        this.mUserName = in.readString();
+        this.mAddress = in.readString();
+        this.mZipCode = in.readString();
+        this.mGrams = in.readInt();
+        this.mRatting = in.readFloat();
+        this.mAvatar = in.readString();
+    }
+
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }
