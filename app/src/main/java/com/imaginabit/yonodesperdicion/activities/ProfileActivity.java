@@ -551,8 +551,9 @@ public class ProfileActivity extends NavigationBaseActivity {
                 jsonUser.put("id", mUser.id);
                 jsonUser.put("image", jsonImage);
                 Log.d(TAG, "sendAvatarToWeb: jsonuser : " + jsonUser.toString(2));
-
-                sendDataRequest(jsonUser);
+                JSONObject jsonRequest = new JSONObject();
+                jsonRequest.put("user",jsonUser);
+                sendDataRequest(jsonRequest);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
