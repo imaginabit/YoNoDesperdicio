@@ -101,6 +101,9 @@ public class MoreInfoActivity extends NavigationBaseActivity {
         }
     }
 
+    /**
+     * get the weight of shared food (all users)
+     */
     private void getTotalWeightFromWeb() {
         Log.d(TAG, "get total weight from Web");
         // Check if network link is available
