@@ -42,14 +42,14 @@
             android:text="Categoria"
             />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/idea_introduction"
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Introduccion"
-            />
+            />-->
 
         <TextView
             android:id="@+id/idea_body"

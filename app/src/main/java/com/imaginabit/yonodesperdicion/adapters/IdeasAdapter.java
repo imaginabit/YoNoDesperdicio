@@ -49,7 +49,7 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
             title = (TextView) view.findViewById(R.id.idea_title);
             category = (TextView) view.findViewById(R.id.idea_category);
             body = (TextView) view.findViewById(R.id.idea_body);
-            intro = (TextView) view.findViewById(R.id.idea_introduction);
+//            intro = (TextView) view.findViewById(R.id.idea_introduction);
             image = (ImageView) view.findViewById(R.id.idea_image);
         }
     }
@@ -93,7 +93,7 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
             holder.title.setText(weightTotal.toString() + " Kg");
             holder.image.setVisibility(View.GONE);
             holder.category.setVisibility(View.GONE);
-            holder.intro.setVisibility(View.GONE);
+//            holder.intro.setVisibility(View.GONE);
         } else {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
@@ -101,7 +101,7 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
             holder.title.setText(idea.getTitle());
             holder.body.setText(idea.getBody());
             holder.category.setText(idea.getCategory());
-            holder.intro.setText(idea.getIntroduction());
+//            holder.intro.setText(idea.getIntroduction());
 
 
             //get image from website
