@@ -123,13 +123,20 @@
                         />
                     </android.support.design.widget.TextInputLayout>
 
-                    <Spinner
+                    <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/input_categoria"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.7"
                         style="@style/Base.Widget.AppCompat.Spinner.Underlined"
                         />
+                    <!--<Spinner-->
+                        <!--android:id="@+id/input_categoria"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:layout_weight="0.7"-->
+                        <!--style="@style/Base.Widget.AppCompat.Spinner.Underlined"-->
+                        <!--/>-->
 
 
                 </LinearLayout>
