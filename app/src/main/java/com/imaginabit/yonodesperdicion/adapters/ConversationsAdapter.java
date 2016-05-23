@@ -22,7 +22,6 @@ import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
-import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -46,7 +45,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         private TextView lastMessage;
         private LinearLayout messageBox;
         private LinearLayout messageTop;
-        private RoundedImageView avatar;
+        private ImageView avatar;
         private ImageView separator;
 
         private User user;
@@ -64,7 +63,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
             lastMessage = (TextView) view.findViewById(R.id.last_message);
             messageBox = (LinearLayout) view.findViewById(R.id.message);
             messageTop = (LinearLayout) view.findViewById(R.id.message_top);
-            avatar = (RoundedImageView) view.findViewById(R.id.user_avatar);
+            avatar = (ImageView) view.findViewById(R.id.user_avatar);
             separator = (ImageView) view.findViewById(R.id.message_separator);
 
         }

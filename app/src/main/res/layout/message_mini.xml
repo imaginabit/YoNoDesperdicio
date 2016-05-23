@@ -17,7 +17,7 @@
         android:background="@color/grey_200"
         >
 
-        <com.imaginabit.yonodesperdicion.views.RoundedImageView
+        <ImageView
             android:id="@+id/user_avatar"
             android:layout_width="45dp"
             android:layout_height="45dp"

@@ -10,13 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
-import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -144,7 +144,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         private TextView chatMessage;
         private TextView userName;
         private TextView time;
-        private RoundedImageView avatar;
+        private ImageView avatar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -153,7 +153,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             chatMessage = (TextView) itemView.findViewById(R.id.chat_messages);
             userName = (TextView) itemView.findViewById(R.id.chat_user_name);
             time = (TextView) itemView.findViewById(R.id.chat_time);
-            avatar = (RoundedImageView) itemView.findViewById(R.id.chat_avatar);
+            avatar = (ImageView) itemView.findViewById(R.id.chat_avatar);
         }
     }
 
