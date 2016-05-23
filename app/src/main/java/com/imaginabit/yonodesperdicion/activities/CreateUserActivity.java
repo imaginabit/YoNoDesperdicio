@@ -25,7 +25,7 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
 /**
  * Create user
  */
-public class CreateUserActivity extends AppCompatActivity implements View.OnClickListener {
+public class CreateUserActivity extends AppCompatActivity {
     // Total number of pages
     private static final int MAX_FORM_PAGES = 3;
 
@@ -64,6 +64,8 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
 
     private AppCompatButton nextButton;
     private AppCompatButton confirmButton;
+    private AppCompatButton createUserAlreadyButton;
+
     private TextView legalInfo;
 
     // Current form index
@@ -108,6 +110,41 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
         // Buttons
         nextButton = (AppCompatButton) findViewById(R.id.create_user_next_button);
         confirmButton = (AppCompatButton) findViewById(R.id.create_user_confirm_button);
+        createUserAlreadyButton = (AppCompatButton) findViewById(R.id.create_user_already_created_button);
+//        startLoginUserActivity();
+
+
+        View.OnClickListener listenerUno = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentFormIndex <= MAX_FORM_PAGES) {
+                    // Validate current UI form fields
+                    if (validateCurrentForm()) {
+                        if (currentFormIndex == MAX_FORM_PAGES) {
+                            createUserAccount();
+                        } else {
+                            currentFormIndex++;
+                            // Update current UI form
+                            updateCurrentUI();
+                        }
+                    }
+                }
+            }
+        };
+
+        nextButton.setOnClickListener(listenerUno);
+        confirmButton.setOnClickListener(listenerUno);
+
+
+//    case R.id.create_user_already_created_button:
+        View.OnClickListener heyLisent  = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startLoginUserActivity();
+            }
+        };
+
+        createUserAlreadyButton.setOnClickListener( heyLisent );
 
         legalInfo = (TextView) findViewById(R.id.link_informacion_legal);
 
@@ -255,7 +292,7 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
         UiUtils.hideKeyboard(this, userFullnameEdit.getWindowToken());
     }
 
-    @Override
+    /*@Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.create_user_already_created_button:
@@ -278,7 +315,7 @@ public class CreateUserActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
         }
-    }
+    }*/
 
     /**
      * Create user account

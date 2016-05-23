@@ -87,9 +87,10 @@
             android:textAppearance="?android:textAppearanceSmall"
             android:background="@drawable/white_square_selector"
             android:text="CREAR CUENTA"
-            android:onClick="onClick"
-            android:textStyle="bold"
         />
+
+
+        <!--android:onClick="onClick"-->
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/login_panel_login_button"
@@ -101,10 +102,10 @@
             android:textColor="@color/create_user_color"
             android:textAppearance="?android:textAppearanceSmall"
             android:background="@drawable/white_square_selector"
-            android:textStyle="bold"
             android:text="INICIAR SESIÓN"
-            android:onClick="onClick"
         />
+
+
 
     </LinearLayout>
 

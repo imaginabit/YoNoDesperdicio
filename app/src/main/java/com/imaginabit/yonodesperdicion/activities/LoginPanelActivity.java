@@ -16,8 +16,12 @@ import com.imaginabit.yonodesperdicion.R;
 /**
  * User access panel
  */
-public class LoginPanelActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginPanelActivity extends AppCompatActivity {
     private static final String TAG = "LoginPanelActivity";
+
+    private AppCompatButton createAccount;
+    private AppCompatButton login;
+    private AppCompatButton googleLogin;
 
     private Activity getActivity() {
         return this;
@@ -27,6 +31,26 @@ public class LoginPanelActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_panel_activity);
+
+        login = (AppCompatButton) findViewById(R.id.login_panel_login_button);
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Log.d(TAG, "onClick: click login ");
+                Intent loginUserIntent = new Intent(LoginPanelActivity.this, LoginUserActivity.class);
+                startActivityForResult(loginUserIntent, 1);
+            }
+        });
+
+        createAccount = (AppCompatButton) findViewById(R.id.login_panel_create_account_button);
+        createAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent createUserIntent = new Intent(LoginPanelActivity.this, CreateUserActivity.class);
+                startActivityForResult(createUserIntent, 0);
+            }
+        });
+
 
         // Layout toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -39,8 +63,6 @@ public class LoginPanelActivity extends AppCompatActivity implements View.OnClic
 
         AppCompatButton loginPanelGoogleLoginButton = (AppCompatButton) findViewById(R.id.login_panel_google_login_button);
         loginPanelGoogleLoginButton.setVisibility(View.GONE);
-
-
     }
 
     @Override
@@ -61,26 +83,26 @@ public class LoginPanelActivity extends AppCompatActivity implements View.OnClic
 
     // Local
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.login_panel_create_account_button:
-                Intent createUserIntent = new Intent(this, CreateUserActivity.class);
-                startActivityForResult(createUserIntent, 0);
-                break;
-
-            case R.id.login_panel_login_button:
-                Intent loginUserIntent = new Intent(this, LoginUserActivity.class);
-                startActivityForResult(loginUserIntent, 1);
-                break;
-
-            case R.id.login_panel_google_login_button:
-                Intent googleSignInIntent = new Intent(this, GoogleSignInActivity.class);
-                startActivityForResult(googleSignInIntent, 2);
-                break;
-
-        }
-    }
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//            case R.id.login_panel_create_account_button:
+//                Intent createUserIntent = new Intent(this, CreateUserActivity.class);
+//                startActivityForResult(createUserIntent, 0);
+//                break;
+//
+//            case R.id.login_panel_login_button:
+//                Intent loginUserIntent = new Intent(this, LoginUserActivity.class);
+//                startActivityForResult(loginUserIntent, 1);
+//                break;
+//
+//            case R.id.login_panel_google_login_button:
+//                Intent googleSignInIntent = new Intent(this, GoogleSignInActivity.class);
+//                startActivityForResult(googleSignInIntent, 2);
+//                break;
+//
+//        }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
