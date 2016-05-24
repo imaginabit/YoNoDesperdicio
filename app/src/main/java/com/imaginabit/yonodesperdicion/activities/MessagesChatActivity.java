@@ -39,7 +39,6 @@ import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
-import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -60,7 +59,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     private ArrayList<Message> mMessages = new ArrayList<Message>();
     private ImageView mBtnSend;
     private boolean pushed;
-    private RoundedImageView avatar;
+//    private RoundedImageView avatar;
     private Bitmap avatarBm;
 
     private Uri mUri;

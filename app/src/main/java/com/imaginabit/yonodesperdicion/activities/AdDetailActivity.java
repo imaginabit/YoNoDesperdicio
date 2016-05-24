@@ -50,7 +50,7 @@ import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
-import com.imaginabit.yonodesperdicion.views.RoundedImageView;
+//import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -234,7 +234,8 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                         if ( ! user.getAvatar().equals(Constants.DEFAULT_USER_AVATAR) ){
                             Log.d(TAG, "done: User Avatar: " + user.getAvatar() );
                             Log.d(TAG, "done: Default Avatar: " + Constants.DEFAULT_USER_AVATAR );
-                            RoundedImageView userAvatar = (RoundedImageView) findViewById(R.id.user_avatar);
+//                            RoundedImageView userAvatar = (RoundedImageView) findViewById(R.id.user_avatar);
+                            ImageView userAvatar = (ImageView) findViewById(R.id.user_avatar);
                             ImageLoader imageLoaderAvatar = ImageLoader.getInstance(); // Get singleton instance
                             imageLoaderAvatar.displayImage(Constants.HOME_URL + user.getAvatar(),  userAvatar );
                         }

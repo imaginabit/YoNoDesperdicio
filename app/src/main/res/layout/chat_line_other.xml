@@ -40,7 +40,7 @@
                 android:paddingBottom="10dp"
                 android:gravity="left"
                 >
-                <com.imaginabit.yonodesperdicion.views.RoundedImageView
+                <ImageView
                     android:id="@+id/chat_avatar"
                     android:layout_width="60dp"
                     android:layout_height="60dp"

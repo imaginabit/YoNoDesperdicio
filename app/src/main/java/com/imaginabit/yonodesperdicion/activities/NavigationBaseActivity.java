@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,7 +24,6 @@ import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.utils.Utils;
-import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 
 import java.io.File;
 
@@ -32,7 +32,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
                                              implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "NavigationBaseActivity";
     public static Context context;
-    private RoundedImageView navUserImage;
+    private ImageView navUserImage;
     private boolean isAvatarFromLocal;
 
     @Override
@@ -75,7 +75,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
         // Current user data
         View headerNavView = navigationView.getHeaderView(0);
-        navUserImage = (RoundedImageView) headerNavView.findViewById(R.id.nav_header_user_image);
+        navUserImage = (ImageView) headerNavView.findViewById(R.id.nav_header_user_image);
         TextView navUserFullname = (TextView) headerNavView.findViewById(R.id.nav_header_user_fullname);
 
         // User login panel

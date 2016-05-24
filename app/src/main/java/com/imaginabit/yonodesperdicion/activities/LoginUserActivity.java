@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,8 +30,11 @@ import java.io.FileOutputStream;
 /**
  * Authenticate user
  */
-public class LoginUserActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginUserActivity extends AppCompatActivity {
     private static final String TAG = "LoginUserActivity";
+
+    private AppCompatButton buttonIniciar;
+    private AppCompatButton buttonCrearCuenta;
 
     private TextInputLayout userNameWrapper;
     private EditText userNameEdit;
@@ -46,6 +50,24 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_user_activity);
+
+        buttonIniciar = (AppCompatButton) findViewById( R.id.login_confirm_button );
+        buttonIniciar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateEnteredCredentials()) {
+                    authEnteredCredentials();
+                }
+            }
+        });
+
+        buttonCrearCuenta = (AppCompatButton) findViewById(R.id.login_create_button);
+        buttonCrearCuenta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCreateUserActivity();
+            }
+        });
 
         // Credentials
         userNameWrapper = (TextInputLayout) findViewById(R.id.login_user_username_wrapper);
@@ -63,7 +85,6 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
                 userPasswordEdit.setText(password);
             }
         }
-
 
         // Layout toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -111,20 +132,20 @@ public class LoginUserActivity extends AppCompatActivity implements View.OnClick
         UiUtils.hideKeyboard(this, userNameEdit.getWindowToken());
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.login_create_button:
-                startCreateUserActivity();
-                break;
-
-            case R.id.login_confirm_button:
-                if (validateEnteredCredentials()) {
-                    authEnteredCredentials();
-                }
-                break;
-        }
-    }
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//            case R.id.login_create_button:
+//                startCreateUserActivity();
+//                break;
+//
+//            case R.id.login_confirm_button:
+//                if (validateEnteredCredentials()) {
+//                    authEnteredCredentials();
+//                }
+//                break;
+//        }
+//    }
 
     /**
      * Authenticate entered credentials

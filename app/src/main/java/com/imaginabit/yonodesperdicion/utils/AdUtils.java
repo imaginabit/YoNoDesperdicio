@@ -240,7 +240,7 @@ public class AdUtils {
         try {
             //status 3 => producto entregado
             if ( Utils.isNotEmptyOrNull(title)
-                    && status != 3
+//                    && status != 3
                     && ( pick_up_date=="null" ||
                                 !Utils.isExpired(Constants.DATE_JSON_SORT_FORMAT.parse(pick_up_date) ) )
                     ) {

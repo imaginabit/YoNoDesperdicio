@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatSpinner;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -32,7 +33,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -127,7 +127,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         VolleySingleton.init(this);
         thisAdCreateActivity = this;
 
-        final Spinner spinner = (Spinner) findViewById(R.id.input_categoria);
+        final AppCompatSpinner spinner = (AppCompatSpinner) findViewById(R.id.input_categoria);
         // Create an ArrayAdapter using the string array and a default spinner layout
 
         AdUtils.fetchCategories(new AdUtils.categoriesCallback() {
@@ -148,6 +148,8 @@ public class AdCreateActivity extends NavigationBaseActivity
 
             @Override
             public void error(Exception e) {
+
+                Log.e(TAG, "error: loading spinner cat", e );
                 e.printStackTrace();
 
                 Resources res = getResources();
@@ -189,9 +191,15 @@ public class AdCreateActivity extends NavigationBaseActivity
             getSupportActionBar().setTitle("Editar " + ad.getTitle());
 //            btnDeleteAd.setVisibility(View.VISIBLE);
 
-            imageEditable.setImageDrawable(
-                    ContextCompat.getDrawable(this, R.drawable.brick));
-            imageEditable.setVisibility(View.VISIBLE);
+            try {
+                imageEditable.setImageDrawable(
+                        ContextCompat.getDrawable(this, R.drawable.brick));
+                imageEditable.setVisibility(View.VISIBLE);
+            } catch (Exception e ){
+                e.printStackTrace();
+            }
+
+
 
             //rellenar campos
             title.setText(ad.getTitle());
