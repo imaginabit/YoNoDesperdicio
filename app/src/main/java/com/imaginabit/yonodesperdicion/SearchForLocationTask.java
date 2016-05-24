@@ -61,13 +61,14 @@ public class SearchForLocationTask extends AsyncTask<String, Void, LatLng> {
         Geocoder geocoder = new Geocoder(mContext);
         List<Address> addressList = null;
         if(Log.isLoggable(TAG, Log.INFO))Log.i(TAG, "Using geocoder");
+
         try {
             addressList = geocoder.getFromLocationName(mAddress, 5);
         } catch (IOException e) {
             if(Log.isLoggable(TAG, Log.ERROR))Log.e(TAG, "Error geocoding address", e);
         }
 
-        if(addressList.size() > 0) {
+        if( (addressList != null) && (addressList.size() > 0)) {
             returnedLocation = new LatLng(addressList.get(0).getLatitude(), addressList.get(0).getLongitude());
         }
         if(returnedLocation == null) {

@@ -61,6 +61,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends NavigationBaseActivity
@@ -338,6 +339,13 @@ public class MainActivity extends NavigationBaseActivity
                         mSwipeRefreshLayout.setRefreshing(false);
 
                         if (ads != null) {
+                            //if status is delivered remove from list
+                            for(Iterator<Ad> i = ads.iterator(); i.hasNext(); ) {
+                                Ad item = i.next();
+                                if (item.getStatus() == Ad.Status.DELIVERED ) {
+                                    i.remove();
+                                }
+                            }
                             mAds = ads;
                             adapter = new AdsAdapter(context, mAds);
                             recyclerView.setAdapter(adapter);

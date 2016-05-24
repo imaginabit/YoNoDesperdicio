@@ -36,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
@@ -61,7 +62,6 @@ import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
-import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -89,7 +89,7 @@ public class ProfileActivity extends NavigationBaseActivity {
     private TextView weight;
     private RatingBar rating;
     private LinearLayout userads;
-    private RoundedImageView avatarView;
+    private ImageView avatarView;
     private Drawable avatar;
 
     private RecyclerView recyclerView;
@@ -175,7 +175,7 @@ public class ProfileActivity extends NavigationBaseActivity {
             weight = (TextView) findViewById(R.id.kilos);
             rating = (RatingBar) findViewById(R.id.ad_reputacion);
             userads = (LinearLayout) findViewById(R.id.user_ads);
-            avatarView = (RoundedImageView) findViewById(R.id.avatarpic);
+            avatarView = (ImageView) findViewById(R.id.avatarpic);
 
             userName.setText(mUser.username);
             location.setText(mUser.city);
@@ -397,7 +397,7 @@ public class ProfileActivity extends NavigationBaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         bitmap = null;
         selectedImagePath = null;
-        RoundedImageView image = avatarView;
+        ImageView image = avatarView;
 
         if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
             File f = new File(Environment.getExternalStorageDirectory()
@@ -462,7 +462,7 @@ public class ProfileActivity extends NavigationBaseActivity {
     }
 
     private void setPhoto(File f) {
-        RoundedImageView image = avatarView;
+        ImageView image = avatarView;
         for (File temp : f.listFiles()) {
             if (temp.getName().equals("temp.jpg")) {
                 f = temp;

@@ -272,7 +272,6 @@
             android:textAppearance="?android:textAppearanceSmall"
             android:background="@drawable/white_square_selector"
             android:text="¿YA TIENES CUENTA?"
-            android:onClick="onClick"
             android:textStyle="bold"
         />
 
@@ -288,7 +287,6 @@
             android:background="@drawable/white_square_selector"
             android:textStyle="bold"
             android:text="SIGUIENTE"
-            android:onClick="onClick"
         />
 
         <android.support.v7.widget.AppCompatButton
