@@ -18,8 +18,12 @@ import com.imaginabit.yonodesperdicion.models.Idea;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by fer2015julio on 19/11/15.
@@ -88,9 +92,20 @@ public class IdeasAdapter extends RecyclerView.Adapter<IdeasAdapter.ViewHolder> 
 
         if (weightTotal != null && position== 0) {
 
+            //print kg with decimal up comma
+            DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols( Locale.getDefault()  );
+            otherSymbols.setDecimalSeparator('\'');
+            otherSymbols.setGroupingSeparator(',');
+            DecimalFormat df = new DecimalFormat("#.##", otherSymbols);
+
+            df.setRoundingMode(RoundingMode.CEILING);
+            String sWeight = df.format(weightTotal);
+
+            String strWeight = sWeight + " Kg";
+
             holder.cardView.setVisibility(View.VISIBLE);
             holder.body.setText("Son los kilos de comida que hemos evitado que acaben en la basura");
-            holder.title.setText(weightTotal.toString() + " Kg");
+            holder.title.setText( strWeight );
             holder.image.setVisibility(View.GONE);
             holder.category.setVisibility(View.GONE);
 //            holder.intro.setVisibility(View.GONE);
