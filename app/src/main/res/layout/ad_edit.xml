@@ -50,6 +50,7 @@
                     android:src="@drawable/food"
                     />
 
+
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -57,6 +58,7 @@
                     android:tint="@color/grey_500"
                     android:layout_gravity="center"
                 />
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -130,6 +132,7 @@
                         android:layout_weight="0.7"
                         style="@style/Base.Widget.AppCompat.Spinner.Underlined"
                         />
+
                     <!--<Spinner-->
                         <!--android:id="@+id/input_categoria"-->
                         <!--android:layout_width="0dp"-->
