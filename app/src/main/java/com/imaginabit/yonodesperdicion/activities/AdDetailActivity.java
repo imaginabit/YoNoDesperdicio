@@ -195,9 +195,14 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             mMapView.onCreate(savedInstanceState);
 
             // Gets to GoogleMap from the MapView and does initialization stuff
-            mMap = mMapView.getMap();
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            mMap.setMyLocationEnabled(true);
+            try {
+                mMap = mMapView.getMap();
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                mMap.setMyLocationEnabled(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
             try {
