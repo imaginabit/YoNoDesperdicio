@@ -189,7 +189,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         if (ad != null) {
             isEditing= true;
             getSupportActionBar().setTitle("Editar " + ad.getTitle());
-//            btnDeleteAd.setVisibility(View.VISIBLE);
+            btnDeleteAd.setVisibility(View.VISIBLE);
 
             try {
                 imageEditable.setImageDrawable(
@@ -235,6 +235,15 @@ public class AdCreateActivity extends NavigationBaseActivity
 
 
             //TODO: borrar anuncio
+            //mostrar boton de borrar debajo de todo
+            btnDeleteAd.setOnClickListener(
+                    new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           deleteAd();
+                       }
+                   }
+            );
         }
 
         // show calendar widget to select date
@@ -292,6 +301,52 @@ public class AdCreateActivity extends NavigationBaseActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteAd(){
+        Log.d(TAG, "deleteAd: called!");
+
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+
+        JSONObject jsonRequest = new JSONObject();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, Constants.ADS_API_URL + "/" + ad.getId(),
+                jsonRequest,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d( TAG, "deleteAd success");
+                        Toast.makeText(AdCreateActivity.this, "Anuncio borrado", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AdCreateActivity.this,MainActivity.class);
+                        startActivity(intent);
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d( TAG, "deleteAd error"  + error.getMessage() );
+                        //Toast.makeText(AdCreateActivity.this, "hubo un error al borrar", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AdCreateActivity.this,MainActivity.class);
+                        startActivity(intent);
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map headers = new HashMap();
+                String token = AppSession.getCurrentUser().authToken;
+                headers.put("Authorization", token);
+                Log.d(TAG, "getHeaders: authToken " + token);
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
+
+        queue.add(request);
+
+
+
     }
 
     private void sendAdData() {
