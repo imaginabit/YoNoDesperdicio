@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
@@ -545,6 +546,28 @@ public class MainActivity extends NavigationBaseActivity
                     //if dont get conection get location from phone
                     LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                    /*
+                    //check http://stackoverflow.com/questions/4745670/android-unable-to-get-the-gps-location-on-the-emulator
+                    //get form network provider
+                    LocationListener locationListener = new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            Log.i(TAG, "OnLocation Changed triggered");
+                            Toast msg = Toast.makeText(MainActivity.this, "Lon: " + Double.toString(location.getLongitude()) + " Lat: " + Double.toString(location.getLatitude()), Toast.LENGTH_SHORT);
+                            msg.show();
+                        }
+                        public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                        public void onProviderEnabled(String provider) {}
+
+                        public void onProviderDisabled(String provider) {}
+                    };
+
+                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, (android.location.LocationListener) locationListener);
+                    */
+
+
                     if (location!=null){
                         double longitude = location.getLongitude();
                         double latitude = location.getLatitude();
