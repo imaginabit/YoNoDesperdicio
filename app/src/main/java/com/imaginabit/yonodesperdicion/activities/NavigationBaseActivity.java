@@ -238,7 +238,9 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
                 Log.d(TAG, "setAvatarFromLocal: isAvatarFromLocal TRUE");
             }
         }else{
-            navUserImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.brick_avatar));
+            if(navUserImage!=null) {
+                navUserImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.brick_avatar));
+            }
             isAvatarFromLocal= false;
         }
     }
