@@ -791,7 +791,8 @@ public class MessagesUtils {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "getConversationMessagesInbox onErrorResponse: ");
-                        String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
+                        //String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
+                        String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.mCurrentActivity, error);
 
                         Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
                         callback.onError(errorMessage);
