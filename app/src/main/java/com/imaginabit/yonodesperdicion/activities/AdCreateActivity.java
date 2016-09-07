@@ -234,13 +234,30 @@ public class AdCreateActivity extends NavigationBaseActivity
             }
 
 
-            //TODO: borrar anuncio
-            //mostrar boton de borrar debajo de todo
+            //borrar anuncio
             btnDeleteAd.setOnClickListener(
                     new View.OnClickListener() {
                        @Override
                        public void onClick(View view) {
-                           deleteAd();
+
+                           AlertDialog.Builder builder = new AlertDialog.Builder( AdCreateActivity.this ,R.style.yndDialog );
+
+                           builder.setMessage(getString(R.string.are_you_sure))
+                                   .setCancelable(false)
+                                   .setMessage(getString(R.string.delete_ad_msg))
+                                   .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                       public void onClick(DialogInterface dialog, int id) {
+                                           deleteAd();
+                                           AdCreateActivity.this.finish();
+                                       }
+                                   })
+                                   .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                       public void onClick(DialogInterface dialog, int id) {
+                                           dialog.cancel();
+                                       }
+                                   });
+                           AlertDialog alert = builder.create();
+                           alert.show();
                        }
                    }
             );
