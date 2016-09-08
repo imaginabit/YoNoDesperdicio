@@ -56,12 +56,13 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.TimeZone;
 
 
 /**
@@ -784,6 +785,34 @@ public class Utils {
 			return collected;
 		}
 	}
+
+
+	//diferencia entre la timezone del telefono y hora del server
+	//public static int TIMEZONE_MILLIS_DIFERENCE = ( edtOffset - gmtOffset ) ;
+	public static int getTimezoneMillisDiference(){
+		long currentTime = System.currentTimeMillis();
+		int edtOffset = TimeZone.getTimeZone("GMT+1").getOffset(currentTime);//sever time in GMT
+		int gmtOffset = TimeZone.getDefault().getRawOffset();//device time
+		return ( edtOffset - gmtOffset );
+	}
+
+//	/**
+//	 * Convert form UTC to current time zone:
+//	 */
+//	private String dateUtcToUserTimeZone(Date d, String dateString) {
+//
+//		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+//		Date value = d;
+//		dateString = formatter.format(d);
+//
+//		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy hh:mmaa");
+//		dateFormatter.setTimeZone(TimeZone.getDefault());
+//		String dt = dateFormatter.format(value);
+//
+//		return dt;
+//	}
+
 
 
 }
