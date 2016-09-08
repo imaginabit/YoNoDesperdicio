@@ -126,6 +126,7 @@
 
     <string name="are_you_sure">¿Estas seguro?</string>
     <string name="lost_data">Si sales perderas los cambios</string>
+    <string name="delete_ad_msg">¿Quieres eliminar este anuncio?</string>
     <string name="about_prosalus">Prosalus es una organización no gubernamental de cooperación al
         desarrollo (ONGD) cuya misión es promover el respeto, protección y garantía de los derechos
         humanos a la alimentación, a la salud y al agua y saneamiento. Una de las líneas de trabajo
