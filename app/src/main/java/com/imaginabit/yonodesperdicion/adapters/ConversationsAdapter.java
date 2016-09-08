@@ -22,6 +22,7 @@ import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -111,7 +112,8 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
 
 
         long now = System.currentTimeMillis();
-        String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime(), now, DateUtils.HOUR_IN_MILLIS);
+
+        String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime() + Utils.getTimezoneMillisDiference(), now, DateUtils.HOUR_IN_MILLIS);
         holder.updatedAt.setText(d);
 
         //get image from website

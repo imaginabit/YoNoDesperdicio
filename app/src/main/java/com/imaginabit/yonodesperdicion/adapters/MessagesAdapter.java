@@ -14,13 +14,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.models.User;
+import com.imaginabit.yonodesperdicion.utils.Utils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by Fernando Ramírez on 18/01/16.
@@ -115,11 +120,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         }
         holder.chatMessage.setText(mMessages.get(position).getBody().toString());
 
+
+
         long now = System.currentTimeMillis();
         Date msgCreated = mMessages.get(position).getCreated_at();
+
         if ( msgCreated != null ) {
-            Log.d(TAG, "onBindViewHolder: msgCreated" + msgCreated.toString());
-            String d = (String) DateUtils.getRelativeTimeSpanString(msgCreated.getTime(), now, DateUtils.HOUR_IN_MILLIS);
+            Date dnow = new Date();
+            Log.d(TAG, "onBindViewHolder: msgCreated" + msgCreated.toString() + " now : " + dnow.toString() );
+//            Log.d(TAG, "onBindViewHolder: gmtoffset "+ gmtOffset );
+//            Log.d(TAG, "onBindViewHolder: millis diference "+ MillisDifference );
+
+            String d = (String) DateUtils.getRelativeTimeSpanString(msgCreated.getTime() + Utils.getTimezoneMillisDiference(), now, DateUtils.HOUR_IN_MILLIS);
+//            d = "tz: "+ TimeZone.getTimeZone() + d;
             Log.d(TAG, "onBindViewHolder: msgCreated relative: " + d);
 
             holder.time.setText(d);
