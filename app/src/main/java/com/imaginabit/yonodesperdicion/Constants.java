@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by fer2015julio on 20/11/15.
@@ -68,4 +69,5 @@ public class Constants {
 
     //Avatar standar image :
     public static final String DEFAULT_USER_AVATAR = "propias/avatar_original.png";
+
 }
