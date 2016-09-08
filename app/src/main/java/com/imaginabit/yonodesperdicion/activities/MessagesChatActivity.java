@@ -136,7 +136,12 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         chatInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recyclerView.smoothScrollToPosition(mMessages.size() - 1);
+                try {
+                    recyclerView.smoothScrollToPosition(mMessages.size() - 1);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         });
         chatInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
