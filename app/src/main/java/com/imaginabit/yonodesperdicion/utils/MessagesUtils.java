@@ -603,6 +603,11 @@ public class MessagesUtils {
         Date dateCreatedAt = null;
         dateCreatedAt = Constants.DATE_JSON_FORMAT.parse(item.optString("created_at", "2000-01-01T00:00:00.000Z"));
 
+        //TODO convert millis to date , ajust date to server date
+        // pero no tiene qu eser por que es solo cuando se muestra
+        //dateCreatedAt = dateCreatedAt.getTime() + Utils.getTimezoneMillisDiference();
+
+
         Date dateUpdateAt = null;
         dateUpdateAt = Constants.DATE_JSON_FORMAT.parse(item.optString("updated_at", "2000-01-01T00:00:00.000Z"));
         Log.d(TAG, "createMessageList: " + id + " " + dateCreatedAt);

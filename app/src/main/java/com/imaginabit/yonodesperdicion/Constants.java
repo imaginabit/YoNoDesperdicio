@@ -70,4 +70,7 @@ public class Constants {
     //Avatar standar image :
     public static final String DEFAULT_USER_AVATAR = "propias/avatar_original.png";
 
+    //sever timezone
+    public static final TimeZone SERVER_TIMEZONE= TimeZone.getTimeZone("GMT");
+
 }

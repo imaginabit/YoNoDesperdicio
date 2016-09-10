@@ -113,7 +113,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
 
         long now = System.currentTimeMillis();
 
-        String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime() + Utils.getTimezoneMillisDiference(), now, DateUtils.HOUR_IN_MILLIS);
+        String d = (String) DateUtils.getRelativeTimeSpanString(conversation.getUpdatedAt().getTime() - Utils.getTimezoneMillisDiference(), now, DateUtils.HOUR_IN_MILLIS);
         holder.updatedAt.setText(d);
 
         //get image from website

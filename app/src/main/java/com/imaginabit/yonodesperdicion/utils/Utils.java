@@ -790,10 +790,13 @@ public class Utils {
 	//diferencia entre la timezone del telefono y hora del server
 	//public static int TIMEZONE_MILLIS_DIFERENCE = ( edtOffset - gmtOffset ) ;
 	public static int getTimezoneMillisDiference(){
+		Log.d(TAG, "getTimezoneMillisDiference: called");
 		long currentTime = System.currentTimeMillis();
-		int edtOffset = TimeZone.getTimeZone("GMT+1").getOffset(currentTime);//sever time in GMT
-		int gmtOffset = TimeZone.getDefault().getRawOffset();//device time
-		return ( edtOffset - gmtOffset );
+		int edtOffset = Constants.SERVER_TIMEZONE.getOffset(currentTime);//sever time in GMT
+		int gmtOffset = TimeZone.getDefault().getOffset(currentTime);//device time
+		int diff  = edtOffset - gmtOffset;
+		Log.d(TAG, "getTimezoneMillisDiference: times diff: "+ diff );
+		return diff;
 	}
 
 //	/**
