@@ -624,6 +624,9 @@ public class AdCreateActivity extends NavigationBaseActivity
                     Toast.makeText(this, "No permission to read external storage.", Toast.LENGTH_SHORT).show();
                 }
             }
+            case Constants.PERMISSION_REQUEST_ACCESS_COARSE_LOCATION:{
+                Log.d(TAG, "onRequestPermissionsResult: PERMISSION_REQUEST_ACCESS_COARSE_LOCATION");
+            }
         }
     }
 

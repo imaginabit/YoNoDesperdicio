@@ -276,7 +276,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                     Log.d(TAG, "run: active!");
                     getMessages();
                 }
-                //checkMessages();
+                checkMessages();
             }
         }, 1 * Constants.MINUTE);
     }
