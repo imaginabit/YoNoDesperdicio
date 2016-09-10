@@ -93,7 +93,7 @@ public class MessagesActivity extends NavigationBaseActivity {
                     Log.d(TAG, "run: active!");
                     getConversationsFromApi();
                 }
-                //checkMessages();
+                checkMessages();
             }
         }, Constants.MINUTE); //1 * 60 * 1000 = 1minute
 
