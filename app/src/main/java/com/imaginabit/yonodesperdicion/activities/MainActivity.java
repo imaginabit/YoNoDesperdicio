@@ -471,6 +471,7 @@ public class MainActivity extends NavigationBaseActivity
             startIntentService();
         }
 
+        //check for location every 5 seconds if there is not any
         if (AppSession.lastLocation == null) {
             Log.d(TAG, "gps onConnected: LOCATION NULL - NO AppSession.lastLocation ");
             Handler handler = new Handler();
