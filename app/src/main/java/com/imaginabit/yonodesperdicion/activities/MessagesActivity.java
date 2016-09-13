@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.ConversationsAdapter;
 import com.imaginabit.yonodesperdicion.data.AdsContract;
@@ -85,15 +86,16 @@ public class MessagesActivity extends NavigationBaseActivity {
         new Handler().postDelayed(new RunnableCheckActive(this) {
             @Override
             public void run() {
-                Log.v(TAG, "checkMessages run() called");
+                Log.v(TAG, "checkMessages MessagesActity run() called");
                 MessagesActivity a = (MessagesActivity) mActivity;
+
                 if (a.isActive()) {
                     Log.d(TAG, "run: active!");
                     getConversationsFromApi();
                 }
                 checkMessages();
             }
-        }, 30 * 1000); //1 * 60 * 1000 = 1minute
+        }, Constants.MINUTE); //1 * 60 * 1000 = 1minute
 
     }
 

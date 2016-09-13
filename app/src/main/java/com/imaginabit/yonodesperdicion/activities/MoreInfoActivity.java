@@ -90,7 +90,7 @@ public class MoreInfoActivity extends NavigationBaseActivity {
                                         getIdeasFromWeb();
                                     }
                                 },
-                                5000
+                                Constants.SECOND * 5
                         );
                     }
                 }

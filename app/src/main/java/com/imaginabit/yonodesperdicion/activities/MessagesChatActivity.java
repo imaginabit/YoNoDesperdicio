@@ -45,6 +45,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -180,6 +181,11 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                     public void onFinished(List<Message> messages, Exception e) {
                         Log.d(TAG, "pushedSendMessageButton_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
                         //Add the new message
+                        Message mensajeUnico = messages.get(0);
+                        Date mensajeDate = mensajeUnico.getCreated_at();
+                        //show time with timezone diff resolved
+                        mensajeDate.setTime(mensajeDate.getTime() + Utils.getTimezoneMillisDiference());
+                        Log.d(TAG, "onFinished: time millis " + mensajeDate.getTime() + Utils.getTimezoneMillisDiference() );
                         mMessages.addAll(messages);
 
                         chatInput.setText("");
@@ -216,6 +222,12 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                         Log.d(TAG, "clickMessage_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
                         if (data != null && data.size() > 0) {
                             Conversation conversation = ((Conversation) data.get(0));
+                            Message mensajeUnico = messages.get(0);
+                            Date mensajeDate = mensajeUnico.getCreated_at();
+                            //show time with timezone diff resolved
+                            mensajeDate.setTime(mensajeDate.getTime() + Utils.getTimezoneMillisDiference());
+                            Log.d(TAG, "onFinished: time millis " + mensajeDate.getTime() + Utils.getTimezoneMillisDiference() );
+
                             int converId = conversation.getId();
                             mConversation.setId(converId);
                             
@@ -257,8 +269,10 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             @Override
             public void run() {
                 Log.v(TAG, "checkMessages run() called with: " + "");
+
                 NavigationBaseActivity a = (NavigationBaseActivity) mActivity;
-                if (a.isActive()) {
+                Log.d(TAG, "checkMessages: active:" + a.isActive() );
+                if (a.isActive() ) {
                     Log.d(TAG, "run: active!");
                     getMessages();
                 }

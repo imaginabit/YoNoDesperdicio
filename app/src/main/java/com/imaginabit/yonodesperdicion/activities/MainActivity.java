@@ -471,15 +471,16 @@ public class MainActivity extends NavigationBaseActivity
             startIntentService();
         }
 
+        //check for location every 5 seconds if there is not any
         if (AppSession.lastLocation == null) {
-            Log.d(TAG, "gps onConnected: LOCATION NULL");
+            Log.d(TAG, "gps onConnected: LOCATION NULL - NO AppSession.lastLocation ");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     fetchAddressButtonHandler(null);
                 }
-            }, 5000);
+            }, Constants.MINUTE * 5  );
         } else {
             Log.d(TAG, "onConnected: LOCATION GET !");
         }
@@ -624,10 +625,7 @@ public class MainActivity extends NavigationBaseActivity
     private void fetchAddressButtonHandler(View view) {
         String[] permis = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION};
 
-        ActivityCompat.requestPermissions(this,permis, 1);
-
-
-
+        ActivityCompat.requestPermissions(this,permis, Constants.PERMISSION_REQUEST_ACCESS_COARSE_LOCATION);
 
         checkGoogleApiClient();
 
