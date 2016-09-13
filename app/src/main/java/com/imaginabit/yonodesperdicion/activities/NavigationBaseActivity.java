@@ -201,19 +201,28 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart: called");
         super.onStart();
         active = true;
     }
 
     @Override
     public void onStop() {
+        Log.d(TAG, "onStop: called");
         super.onStop();
         active = false;
     }
 
     @Override
+    public void onPause() {
+        Log.d(TAG, "onPause: called");
+        super.onPause();
+        active = false;
+    }
+
+    @Override
     protected void onResume() {
-        Log.d(TAG, "onResume: ");
+        Log.d(TAG, "onResume: Called ");
         if (!isAvatarFromLocal){
             Log.d(TAG, "onResume: is avatar from local true");
             //if avatar is set to brickavatar them load avatar form disk

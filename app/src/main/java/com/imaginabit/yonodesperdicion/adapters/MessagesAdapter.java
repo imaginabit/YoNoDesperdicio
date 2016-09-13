@@ -131,7 +131,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 //            Log.d(TAG, "onBindViewHolder: gmtoffset "+ gmtOffset );
 //            Log.d(TAG, "onBindViewHolder: millis diference "+ MillisDifference );
 
-            String d = (String) DateUtils.getRelativeTimeSpanString(msgCreated.getTime() + Utils.getTimezoneMillisDiference(), now, DateUtils.HOUR_IN_MILLIS);
+            String d = (String) DateUtils.getRelativeTimeSpanString(msgCreated.getTime() - Utils.getTimezoneMillisDiference(), now, DateUtils.HOUR_IN_MILLIS);
 //            d = "tz: "+ TimeZone.getTimeZone() + d;
             Log.d(TAG, "onBindViewHolder: msgCreated relative: " + d);
 
