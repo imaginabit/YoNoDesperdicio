@@ -72,10 +72,10 @@ public class SearchForLocationTask extends AsyncTask<String, Void, LatLng> {
         if( (addressList != null) && (addressList.size() > 0)) {
             Log.d(TAG, "doInBackground: GET LOCATION BY GEOCODER");
             returnedLocation = new LatLng(addressList.get(0).getLatitude(), addressList.get(0).getLongitude());
-            //TODO Check this location thing
-            AppSession.lastLocation = new Location("");
-            AppSession.lastLocation.setLatitude(returnedLocation.latitude);
-            AppSession.lastLocation.setLongitude(returnedLocation.longitude);
+            //TODO Check this location thing , it made distanto set to 0
+//            AppSession.lastLocation = new Location("");
+//            AppSession.lastLocation.setLatitude(returnedLocation.latitude);
+//            AppSession.lastLocation.setLongitude(returnedLocation.longitude);
         }
         if(returnedLocation == null) {
             if(Log.isLoggable(TAG, Log.INFO))Log.i(TAG, "Using geocoder failed, try using google");
