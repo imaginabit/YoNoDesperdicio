@@ -15,8 +15,8 @@ android {
         applicationId "com.imaginabit.yonodesperdicion"
         minSdkVersion 10
         targetSdkVersion 23
-        versionCode 42
-        versionName "1.23"
+        versionCode 43
+        versionName "1.24"
     }
 
     compileOptions {
@@ -32,8 +32,7 @@ android {
             buildConfigField "String", "gcmdefaultSenderId", "\"${gcmdefaultSenderId}\""
             buildConfigField "String", "googlekey", "\"${googlekey}\""
             //resValue "string", "google_maps_key", "\"${google_maps_key}\""
-             resValue "string", "google_mapKey", "***REMOVED***"
-            //resValue "string", "GOOGLE_MAPS_ANDROID_API_KEY", "\"${google_maps_key2}\""
+            resValue "string", "GOOGLE_MAPS_ANDROID_API_KEY", "\"${google_maps_key2}\""
 
         }
         debug {
@@ -42,10 +41,8 @@ android {
             buildConfigField "String", "googleAppId", "\"${googleappid}\""
             buildConfigField "String", "gcmdefaultSenderId", "\"${gcmdefaultSenderId}\""
             buildConfigField "String", "googlekey", "\"${googlekey}\""
-            //resValue "string", "google_mapKey", "\"${google_maps_key}\""
-            resValue "string", "google_mapKey", "***REMOVED***"
-
-            //resValue "string", "GOOGLE_MAPS_ANDROID_API_KEY", "\"${google_maps_key2}\""
+//            resValue "string", "google_mapKey", "\"${google_maps_key}\""
+            resValue "string", "GOOGLE_MAPS_ANDROID_API_KEY", "\"${google_maps_key2}\""
         }
     }
 
