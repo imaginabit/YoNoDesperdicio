@@ -62,7 +62,7 @@ public class MessagesUtils {
      */
     public static void getConversations(final Context context, final ConversationsCallback callback, final Activity activity){
 
-        Log.d(TAG, "getConversations() called with: " + "context = [" + context.getPackageName() + "], activity = [" + activity.getLocalClassName() + "]");
+//        Log.d(TAG, "getConversations() called with: " + "context = [" + context.getPackageName() + "], activity = [" + activity.getLocalClassName() + "]");
         final List<Conversation> conversationsFinal;
         getConversationsInbox(context, new ConversationsCallback() {
             @Override
@@ -127,17 +127,17 @@ public class MessagesUtils {
     }
 
     public static void getConversationsSent(final Context c,final ConversationsCallback cb, Activity a){
-        Log.d(TAG, "--> getConversationsSent() called with: " + "c = [" + c.getPackageName() + "], cb = [" + cb.getClass().getSimpleName() + "], a = [" + a.getClass().getSimpleName() + "]");
+//        Log.d(TAG, "--> getConversationsSent() called with: " + "c = [" + c.getPackageName() + "], cb = [" + cb.getClass().getSimpleName() + "], a = [" + a.getClass().getSimpleName() + "]");
         getConversationsBase(Constants.CONVERSATIONS_SENT_API_URL, c, cb, a);
     }
 
     public static void getConversationsInbox(final Context c,final ConversationsCallback cb, Activity a){
-        Log.d(TAG, "<-- getConversationsInbox() called with: " + "c = [" + c.getPackageName() + "], cb = [" + cb.getClass().getSimpleName() + "], a = [" + a.getClass().getSimpleName() + "]");
+//        Log.d(TAG, "<-- getConversationsInbox() called with: " + "c = [" + c.getPackageName() + "], cb = [" + cb.getClass().getSimpleName() + "], a = [" + a.getClass().getSimpleName() + "]");
         getConversationsBase(Constants.CONVERSATIONS_API_URL, c, cb, a);
     }
 
     private static void getConversationsBase(String url, final Context context,final ConversationsCallback callback , Activity activity){
-        Log.d(TAG, "getConversationsBase() called with: " + "url = [" + url + "], context = [" + context.getPackageName() + "], callback = [" + callback.getClass().getSimpleName() + "], activity = [" + activity.getClass().getSimpleName() + "]");
+//        Log.d(TAG, "getConversationsBase() called with: " + "url = [" + url + "], context = [" + context.getPackageName() + "], callback = [" + callback.getClass().getSimpleName() + "], activity = [" + activity.getClass().getSimpleName() + "]");
         MessagesUtils.context = context;
         // Show Loading dialog
         // MessagesUtils.pd = ProgressDialog.show(MessagesUtils.context, "", context.getString(R.string.loading));
