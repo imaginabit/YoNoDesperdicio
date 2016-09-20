@@ -45,6 +45,7 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
+import com.imaginabit.yonodesperdicion.utils.OnLoadMoreListener;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
 import com.imaginabit.yonodesperdicion.utils.Utils;
@@ -75,6 +76,9 @@ public class MainActivity extends NavigationBaseActivity
 
     private List<Ad> mAds;
 
+    protected Handler handler;
+
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private GoogleApiClient mGoogleApiClient;
 
@@ -82,8 +86,10 @@ public class MainActivity extends NavigationBaseActivity
     private AddressResultReceiver mResultReceiver = new AddressResultReceiver(new Handler());
     private boolean mAddressRequested;
     private String mAddressOutput;
-    private int mPreLast;
-    private int mSrcollY;
+
+    private int page;
+//    private int mPreLast;
+//    private int mSrcollY;
 
     protected static final int LOCATION_REQUEST = 0;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -128,7 +134,7 @@ public class MainActivity extends NavigationBaseActivity
 
         final Activity mainActivity = this;
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,8 +159,6 @@ public class MainActivity extends NavigationBaseActivity
                     .introduceMyself();
         }
 
-
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 
 
@@ -168,25 +172,69 @@ public class MainActivity extends NavigationBaseActivity
 //        Log.d(TAG, "onCreate: ahora initialize data:");
 //        initializeData();
 
-        adapter = new AdsAdapter(context, mAds);
+        adapter = new AdsAdapter(context, mAds, recyclerView);
         recyclerView.setAdapter(adapter);
 
+//        if (mAds.isEmpty()){
+//            recyclerView.setVisibility(View.GONE);
+//            // empty view visible
+//        } else {
+//            recyclerView.setVisibility(View.VISIBLE);
+//            // empty view visible
+//        }
 
-        final EndlessRecyclerOnScrollListener scrollListener = new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
+
+        //comment to fix
+//        final EndlessRecyclerOnScrollListener scrollListener = new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
+//            @Override
+//            public void onLoadMore(int current_page, int current_scroll) {
+//                Log.d(TAG, "onLoadMore() called with: " + "current_page = [" + current_page + "], current_scroll = [" + current_scroll + "]");
+//                mSrcollY = current_scroll;
+//                Log.d(TAG, "onLoadMore: mSrcoll nau: " + mSrcollY);
+//                //page 1 is the same as page 0
+//                loadMoreData(current_page+1);
+//            }
+//        };
+
+
+        //Get Ads
+        getAdsFromWeb();
+
+        //infinite scroll!
+        handler = new Handler();
+
+        OnLoadMoreListener onLoadMoreListener =  new OnLoadMoreListener() {
             @Override
-            public void onLoadMore(int current_page, int current_scroll) {
-                Log.d(TAG, "onLoadMore() called with: " + "current_page = [" + current_page + "], current_scroll = [" + current_scroll + "]");
-                mSrcollY = current_scroll;
-                Log.d(TAG, "onLoadMore: mSrcoll nau: " + mSrcollY);
-                //page 1 is the same as page 0
-                loadMoreData(current_page+1);
+            public void onLoadMore() {
+                Log.d(TAG, "onLoadMore: called");
+                //add null , so the adapter will check view_type and show progress bar at bottom
+                mAds.add(null);
+                adapter.notifyItemInserted(mAds.size()-1);
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //remove progress item
+                        mAds.remove(mAds.size()-1);
+                        adapter.notifyItemRemoved(mAds.size());
+                        Log.d(TAG, "run: remove progress bar ");
+
+                        //add items
+                        int start = mAds.size();
+                        int end = start + 20;
+
+
+                        Log.d(TAG, "run: Load more Data : current_page+1 " + page+1 );
+                        loadMoreData(page + 1 );
+//                        ((AdsAdapter) adapter).setLoaded();
+//                        adapter.notifyDataSetChanged();
+                    }
+                },10);
             }
         };
 
-        recyclerView.addOnScrollListener(scrollListener);
-        //Get Ads
-        getAdsFromWeb();
-        //initializeData();
+        ((AdsAdapter)adapter).setOnLoadMoreListener( onLoadMoreListener  );
+
 
         /*
          * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
@@ -198,12 +246,14 @@ public class MainActivity extends NavigationBaseActivity
                     @Override
                     public void onRefresh() {
                         Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                        //scrollListener.setCurrent_page(1);
 
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
                         getAdsFromWeb();
-                        scrollListener.setCurrent_page(1);
-//                        initializeData();
+
+                        //layoutManager.scrollToPosition(300);
+                        // scrollListener.setCurrent_page(1);
                     }
                 }
         );
@@ -226,13 +276,13 @@ public class MainActivity extends NavigationBaseActivity
             public void done(List<Ad> ads, Exception e) {
                 if (e == null) {
                     if (ads != null) {
-                        Log.d(TAG, "loadMoreData_done() called with: " + "ads = [" + ads + "], e = [" + e + "]");
-                        mAds.addAll(ads);
-                        //adapter = new AdsAdapter(context, mAds);
-                        //recyclerView.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
 
-                        Log.d(TAG, "done: mScrollY " + mSrcollY);
+                        Log.d(TAG, "loadMoreData_done() called with: " + "ads = [" + ads + "], e = [" + e + "]");
+                        removeDeliveredAds(ads);
+                        mAds.addAll(ads);
+                        page = current_page;
+                        ((AdsAdapter) adapter).setLoaded();
+                        adapter.notifyDataSetChanged();
                         Log.d(TAG, "done: current scroll " + recyclerView.getScrollY());
 
 //                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -243,9 +293,9 @@ public class MainActivity extends NavigationBaseActivity
                         //recyclerView.scrollToPosition(mSrcollY);
 
                         Log.d(TAG, "done: LoadMore current scroll after scrollto " + recyclerView.getScrollY());
-//                        ((AdsAdapter)adapter).setData(mAds);
-//                        adapter.notifyDataSetChanged();
                         Log.d(TAG, "LoadMore Anuncios general : " + mAds.size());
+                    } else {
+                        Log.d(TAG, "done: current scroll, ads==null " );
                     }
                 } else {
                     Log.e(TAG, "error al obtener los Anuncios");
@@ -259,7 +309,7 @@ public class MainActivity extends NavigationBaseActivity
     private void initializeData() {
         Log.d(TAG, "initializeData: start");
 
-        mAds = new ArrayList<>();
+        mAds.clear();
         // String title, String id, String category, String image_url, String introduction
         //Ad(String title, String body, String imageUrl, int weightGrams, String expiration, String postalCode, int status, int userId, String userName)
 
@@ -284,10 +334,6 @@ public class MainActivity extends NavigationBaseActivity
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-//        mAdapter = new AdsAdapter(mContext, mAds);
-//        mRecyclerView.setAdapter(mAdapter);
-//        mAdapter.notifyDataSetChanged();
 
         Log.d(TAG, "ideas : " + mAds.size());
     }
@@ -337,29 +383,28 @@ public class MainActivity extends NavigationBaseActivity
                 public void done(List<Ad> ads, Exception e) {
                     if (e == null) {
                         Log.v(TAG, "---Ads get!");
-                        mSwipeRefreshLayout.setRefreshing(false);
+
+                        if (mSwipeRefreshLayout.isRefreshing()){
+                            Log.d(TAG, "done: stop refreshing");
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
 
                         if (ads != null) {
-                            //if status is delivered remove from list
-                            for(Iterator<Ad> i = ads.iterator(); i.hasNext(); ) {
-                                Ad item = i.next();
-                                if (item.getStatus() == Ad.Status.DELIVERED ) {
-                                    i.remove();
-                                }
-                            }
-                            mAds = ads;
-                            adapter = new AdsAdapter(context, mAds);
-                            recyclerView.setAdapter(adapter);
-                            //removeExpiredAds();
+                            Log.d(TAG, "done: current_page = 1 ");
+                            page = 1;
+                            removeDeliveredAds(ads);
+                            mAds.clear();
+                            mAds.addAll(ads);
+                            ((AdsAdapter)adapter).setLoaded();
 
                             adapter.notifyDataSetChanged();
                             Log.d(TAG, "Anuncios general : " + mAds.size());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    adapter.notifyDataSetChanged();
-                                }
-                            }, 1000);
+//                            handler.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    adapter.notifyDataSetChanged();
+//                                }
+//                            }, 1000);
                         }
                     } else {
                         Log.e(TAG, "error al obtener los Anuncios");
@@ -401,10 +446,7 @@ public class MainActivity extends NavigationBaseActivity
                 // Start the refresh background task.
                 // This method calls setRefreshing(false) when it's finished.
                 getAdsFromWeb();
-//                adapter.notifyDataSetChanged();
-
                 return true;
-
             case R.id.menu_order_distance:
                 sortAdsByDistance(mAds);
                 return true;
@@ -706,33 +748,33 @@ public class MainActivity extends NavigationBaseActivity
         adapter.notifyDataSetChanged();
     }
 
-    private void removeExpiredAds(){
-        Log.d(TAG, "removeExpiredAds: ads size before: " + mAds.size());
-
-        for (int i=0;i<mAds.size();i++){
-            Date adExpiration= mAds.get(i).getExpiration();
-            Date today =new Date();
-
-            if (adExpiration!=null  ){
-                Date adExpirationPlus1 = null;
-                Calendar c = Calendar.getInstance();
-                c.setTime(adExpiration);
-                c.add(Calendar.DAY_OF_MONTH, 1);
-                adExpirationPlus1 = c.getTime();
-
-                if (today.after(adExpirationPlus1)) {
-                    String strAdExpiration = Constants.DATE_LOCAL_FORMAT.format(adExpiration);
-                    String strAdExpirationPlus = Constants.DATE_LOCAL_FORMAT.format(adExpirationPlus1);
-                    Log.d(TAG, "removeExpiredAds: strAdExpiration " + mAds.get(i).getTitle() + " " + strAdExpiration + " " + strAdExpirationPlus);
-
-                    mAds.remove(i);
-                }
-            }
-        }
-        Log.d(TAG, "removeExpiredAds: ads size after: " + mAds.size());
-
-//        adapter.notifyDataSetChanged();
-    }
+//    private void removeExpiredAds(){
+//        Log.d(TAG, "removeExpiredAds: ads size before: " + mAds.size());
+//
+//        for (int i=0;i<mAds.size();i++){
+//            Date adExpiration= mAds.get(i).getExpiration();
+//            Date today =new Date();
+//
+//            if (adExpiration!=null  ){
+//                Date adExpirationPlus1 = null;
+//                Calendar c = Calendar.getInstance();
+//                c.setTime(adExpiration);
+//                c.add(Calendar.DAY_OF_MONTH, 1);
+//                adExpirationPlus1 = c.getTime();
+//
+//                if (today.after(adExpirationPlus1)) {
+//                    String strAdExpiration = Constants.DATE_LOCAL_FORMAT.format(adExpiration);
+//                    String strAdExpirationPlus = Constants.DATE_LOCAL_FORMAT.format(adExpirationPlus1);
+//                    Log.d(TAG, "removeExpiredAds: strAdExpiration " + mAds.get(i).getTitle() + " " + strAdExpiration + " " + strAdExpirationPlus);
+//
+//                    mAds.remove(i);
+//                }
+//            }
+//        }
+//        Log.d(TAG, "removeExpiredAds: ads size after: " + mAds.size());
+//
+////        adapter.notifyDataSetChanged();
+//    }
 
     /**
      * Check the device to make sure it has the Google Play Services APK. If
@@ -753,6 +795,21 @@ public class MainActivity extends NavigationBaseActivity
             return false;
         }
         return true;
+    }
+
+    private void removeDeliveredAds(List<Ad> ads){
+        //if status is delivered remove from list
+
+        //do nothing
+
+
+//        for(Iterator<Ad> i = ads.iterator(); i.hasNext(); ) {
+//            Ad item = i.next();
+//            if (item.getStatus() == Ad.Status.DELIVERED ) {
+//                i.remove();
+//                Log.d(TAG, "done: removido rollito");
+//            }
+//        }
     }
 
 }
