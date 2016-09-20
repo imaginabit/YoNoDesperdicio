@@ -73,7 +73,7 @@ public class FavoritesActivity extends NavigationBaseActivity{
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new AdsAdapter(context, mAds);
+        adapter = new AdsAdapter(context, mAds, recyclerView);
         recyclerView.setAdapter(adapter);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.GONE);

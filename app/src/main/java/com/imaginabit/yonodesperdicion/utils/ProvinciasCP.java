@@ -84,10 +84,28 @@ public class ProvinciasCP {
     }
 
     public static String getNameFromCP(String  postalCode){
-        int code = Integer.parseInt(postalCode.substring(0, 2));
+
+        int code = Integer.parseInt(postalCode)/1000;
+//        code = Integer.parseInt(postalCode.substring(0, 2));
+//        if (postalCode.length()==2){
+//            code = Integer.parseInt(postalCode.substring(0, 2));
+//        }
+//        if (postalCode.length()==1) {
+//            code = Integer.parseInt(postalCode.substring(0, 1));
+//        }
+//        if (postalCode.length() < 2 ){
+//            Log.d(TAG, "getNameFromCP: fallo provincia cp: " + postalCode + " code " + code) ;
+//            return "";
+//        }
+
         Log.d(TAG, "getNameFromCP: code " + code);
         Log.d(TAG, "getNameFromCP: mprovincias size " + ProvinciasCP.mProvincias.size());
-        return ProvinciasCP.mProvincias.get(code-1).mProvincia;
+        if (code-1 > -1 && code < 53 ){
+            return "";
+        }
+        Log.d(TAG, "getNameFromCP: fallo provincia "+ code);
+        return  ProvinciasCP.mProvincias.get(code).mProvincia;
+
     }
 
     public static class Provincia {
