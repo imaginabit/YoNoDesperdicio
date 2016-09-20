@@ -136,7 +136,7 @@ public class ProfileActivity extends NavigationBaseActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new AdsAdapter(context, mAds);
+        adapter = new AdsAdapter(context, mAds, recyclerView);
         recyclerView.setAdapter(adapter);
 
         VolleySingleton.init(context);
@@ -271,7 +271,7 @@ public class ProfileActivity extends NavigationBaseActivity {
                 Log.d(TAG, "done");
                 if (ads != null) {
                     mAds = ads;
-                    adapter = new AdsAdapter(context, mAds);
+                    adapter = new AdsAdapter(context, mAds,recyclerView);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
 //                    Log.d(TAG, "done: recyclerview height " + recyclerView.getHeight());
