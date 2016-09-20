@@ -15,8 +15,8 @@ android {
         applicationId "com.imaginabit.yonodesperdicion"
         minSdkVersion 10
         targetSdkVersion 23
-        versionCode 45
-        versionName "1.26"
+        versionCode 46
+        versionName "1.27"
     }
 
     compileOptions {
