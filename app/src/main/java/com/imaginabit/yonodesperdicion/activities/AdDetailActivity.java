@@ -718,7 +718,9 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
         if (adLocation!= null) {
             // Updates the location and zoom of the MapView
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(adLocation.getLatitude(), adLocation.getLongitude()), 13);
+            LatLng latLng = new LatLng(adLocation.getLatitude(), adLocation.getLongitude());
+            //Log.d(TAG, "zoomLocation: latlng: " + latLng.toString() );
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom( latLng , 13);
             mMap.animateCamera(cameraUpdate);
         }
     }

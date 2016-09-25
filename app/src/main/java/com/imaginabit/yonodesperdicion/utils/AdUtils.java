@@ -267,9 +267,12 @@ public class AdUtils {
         //final Address adAddress = Utils.getGPSfromZip( App.appContext , ad.getPostalCode());
 
 
-        Utils.getGPSfromZipGmaps(String.valueOf(ad.getPostalCode()) + " "+ ad.getProvince(), new SearchForLocationTask.SearchForLocationTaskEventListener() {
+        final String searchgps = ad.getPostalCodeString() + " "+ ad.getProvince();
+        Log.d(TAG, "getGPSfromZipGmaps : calculateLocation: "+ searchgps + " " + ad.getPostalCode());
+        Utils.getGPSfromZipGmaps(searchgps, new SearchForLocationTask.SearchForLocationTaskEventListener() {
             @Override
             public void onFinish(LatLng result) {
+                Log.d(TAG, "onFinish: getGPSfromZipGmaps, String: " + searchgps);
                 Log.d(TAG, "calculateLocation searchforlocationTask onFinish() called with: " + "ad = [" + ad.getTitle() + "]" + "result = [" + result + "]" );
                 adLocation.setLatitude(result.latitude);
                 adLocation.setLongitude(result.longitude);
