@@ -15,6 +15,7 @@ import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.SearchForLocationTask;
+import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
@@ -247,7 +248,7 @@ public class AdUtils {
                     ) {
                 //Ad(String title, String body, String imageUrl, int weightGrams, Date expiration, int postalCode, Status status, int userId, String userName)
                 ad = new Ad(ad_id,title,body,image_url,grams,pick_up_date,zipcode,status,user_id,"Usuario");
-                ad.setLocation(calculateLocation(ad));
+                //ad.setLocation(calculateLocation(ad));
 //                ad.setLastDistance(calculateDistance(ad));
                 ad.setCategoria(categoria);
 
@@ -260,43 +261,35 @@ public class AdUtils {
             return null;
         }
     }
+    public static Location calculateLocation(final Ad ad) {
+        return calculateLocation(ad, null, 0);
+    }
 
-    public static Location calculateLocation(final Ad ad){
+    public static Location calculateLocation(final Ad ad, final AdsAdapter adapter, final int pos){
         Log.d(TAG, "calculateLocation() called with: " + "ad = [" + ad.getTitle() + "]");
         final Location adLocation = new Location(ad.getTitle());
         //final Address adAddress = Utils.getGPSfromZip( App.appContext , ad.getPostalCode());
 
 
-        Utils.getGPSfromZipGmaps(String.valueOf(ad.getPostalCode()) + " "+ ad.getProvince(), new SearchForLocationTask.SearchForLocationTaskEventListener() {
+        final String searchgps = ad.getPostalCodeString() + " "+ ad.getProvince();
+        Log.d(TAG, "getGPSfromZipGmaps : calculateLocation: "+ searchgps + " " + ad.getPostalCode());
+        Utils.getGPSfromZipGmaps(searchgps, new SearchForLocationTask.SearchForLocationTaskEventListener() {
             @Override
             public void onFinish(LatLng result) {
+                Log.d(TAG, "onFinish: getGPSfromZipGmaps, String: " + searchgps);
                 Log.d(TAG, "calculateLocation searchforlocationTask onFinish() called with: " + "ad = [" + ad.getTitle() + "]" + "result = [" + result + "]" );
                 adLocation.setLatitude(result.latitude);
                 adLocation.setLongitude(result.longitude);
                 ad.setLocation(adLocation);
 
                 ad.setLastDistance(calculateDistance(ad));
+                //tell de adapter to refersh view
+                if (adapter!= null){
+                    adapter.notifyItemChanged(pos);
+                }
             }
         });
 
-
-
-//        if (adAddress!= null ) {
-//            Log.d(TAG, "calculateLocation: Address" + ad.getPostalCode() + " " + adAddress.getAddressLine(0));
-//            String countryCode = adAddress.getCountryName();
-//            Log.d(TAG, "calculateLocation: COUNTRY CODE " + countryCode );
-//
-//            try {
-//                adLocation.setLatitude(adAddress.getLatitude());
-//                adLocation.setLongitude(adAddress.getLongitude());
-//
-//                return adLocation;
-//            } catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        } else {
-//            Log.d(TAG, "calculateLocation: No se pudo determinar la localizacion");
-//        }
         return null;
     }
 
@@ -356,8 +349,6 @@ public class AdUtils {
 
 
         //Address userAddress = Utils.getGPSfromZip(App.appContext, Integer.parseInt( AppSession.getCurrentUser().zipCode ) );
-
-
 
         return -1;
     }

@@ -288,7 +288,20 @@ public class Ad extends Observable implements Parcelable {
     }
 
     public int getPostalCode() {
-        return postalCode;
+        return  postalCode;
+    }
+
+    public String getPostalCodeString(){
+
+        String pc =  String.valueOf( postalCode );
+        Log.d(TAG, "getPostalCodeString:  -"+ pc + "-" );
+        //pc = String.format( "%05d",  pc );
+        if (pc.length()== 4 ) {
+            pc = "0" + pc;
+        }
+        Log.d(TAG, "getPostalCodeString formated:  "+ pc );
+
+        return pc;
     }
 
     public void setPostalCode(int postalCode) {
