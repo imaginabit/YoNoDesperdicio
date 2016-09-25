@@ -98,7 +98,7 @@ public class ProvinciasCP {
 //            return "";
 //        }
 
-        Log.d(TAG, "getNameFromCP: code " + code);
+        Log.d(TAG, "getNameFromCP: code " + code + " " + ProvinciasCP.mProvincias.get(code).mProvincia ) ;
         Log.d(TAG, "getNameFromCP: mprovincias size " + ProvinciasCP.mProvincias.size());
         if (code-1 > -1 && code < 53 ){
             return "";

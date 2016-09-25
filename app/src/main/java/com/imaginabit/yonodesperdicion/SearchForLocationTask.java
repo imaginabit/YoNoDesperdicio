@@ -57,7 +57,7 @@ public class SearchForLocationTask extends AsyncTask<String, Void, LatLng> {
     @Override
     protected LatLng doInBackground(String... params) {
         if(Log.isLoggable(TAG, Log.INFO))Log.i(TAG, "doInBackground");
-        mAddress = params[0];
+        mAddress = params[0] + "Spain";
         LatLng returnedLocation = null;
         Geocoder geocoder = new Geocoder(mContext);
         List<Address> addressList = null;
@@ -71,6 +71,7 @@ public class SearchForLocationTask extends AsyncTask<String, Void, LatLng> {
 
         if( (addressList != null) && (addressList.size() > 0)) {
             Log.d(TAG, "doInBackground: GET LOCATION BY GEOCODER");
+            Log.d(TAG, "doInBackground: addresList " + addressList.toString() );
             returnedLocation = new LatLng(addressList.get(0).getLatitude(), addressList.get(0).getLongitude());
             //TODO Check this location thing , it made distanto set to 0
 //            AppSession.lastLocation = new Location("");
