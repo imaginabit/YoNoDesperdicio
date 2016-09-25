@@ -290,24 +290,6 @@ public class AdUtils {
             }
         });
 
-
-
-//        if (adAddress!= null ) {
-//            Log.d(TAG, "calculateLocation: Address" + ad.getPostalCode() + " " + adAddress.getAddressLine(0));
-//            String countryCode = adAddress.getCountryName();
-//            Log.d(TAG, "calculateLocation: COUNTRY CODE " + countryCode );
-//
-//            try {
-//                adLocation.setLatitude(adAddress.getLatitude());
-//                adLocation.setLongitude(adAddress.getLongitude());
-//
-//                return adLocation;
-//            } catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        } else {
-//            Log.d(TAG, "calculateLocation: No se pudo determinar la localizacion");
-//        }
         return null;
     }
 
