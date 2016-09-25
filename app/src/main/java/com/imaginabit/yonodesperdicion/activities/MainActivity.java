@@ -66,6 +66,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.imaginabit.yonodesperdicion.utils.AdUtils.calculateLocation;
+
 public class MainActivity extends NavigationBaseActivity
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
     private final String TAG = getClass().getSimpleName();
@@ -393,6 +395,12 @@ public class MainActivity extends NavigationBaseActivity
                             Log.d(TAG, "done: current_page = 1 ");
                             page = 1;
                             removeDeliveredAds(ads);
+
+                            for (int i = 0; i < ads.size(); i++) {
+                                Ad ad = ads.get(i);
+                                ad.setLocation(calculateLocation(ad, (AdsAdapter) adapter,i));
+                            }
+
                             mAds.clear();
                             mAds.addAll(ads);
                             ((AdsAdapter)adapter).setLoaded();
