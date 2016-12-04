@@ -33,13 +33,14 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
-import com.imaginabit.yonodesperdicion.gcm.RegistrationIntentService;
+//import com.imaginabit.yonodesperdicion.gcm.RegistrationIntentService;
 import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener;
@@ -264,11 +265,16 @@ public class MainActivity extends NavigationBaseActivity
         // Create an instance of GoogleAPIClient.
         checkGoogleApiClient();
 
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }
+//        if (checkPlayServices()) {
+//            // Start IntentService to register this application with GCM.
+//            Intent intent = new Intent(this, RegistrationIntentService.class);
+//            startService(intent);
+//        }
+
+        String mToken = FirebaseInstanceId.getInstance().getToken();
+
+        Log.d(TAG, "onCreate: token : "+ mToken);
+
     }
 
     private void loadMoreData(final int current_page) {
