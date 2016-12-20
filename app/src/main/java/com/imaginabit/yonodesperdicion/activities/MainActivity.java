@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -34,6 +35,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
@@ -41,6 +43,7 @@ import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
 import com.imaginabit.yonodesperdicion.data.UserData;
 //import com.imaginabit.yonodesperdicion.gcm.RegistrationIntentService;
+import com.imaginabit.yonodesperdicion.gcm.MyFirebaseInstanceService;
 import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener;
@@ -49,6 +52,7 @@ import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.OnLoadMoreListener;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.ProvinciasCP;
+import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -271,9 +275,43 @@ public class MainActivity extends NavigationBaseActivity
 //            startService(intent);
 //        }
 
-        String mToken = FirebaseInstanceId.getInstance().getToken();
 
-        Log.d(TAG, "onCreate: token : "+ mToken);
+        SharedPreferences sharedPref =  this.getPreferences(Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.preference_fbt), "");
+        editor.commit();
+
+        if (AppSession.getCurrentUser()!= null ) {
+            String mToken = FirebaseInstanceId.getInstance().getToken();
+            saveToken(mToken);
+            Log.d(TAG, "onCreate: token : " + mToken);
+        }
+
+    }
+
+    /*
+    comprueba que el token esta guardado en las preferencias
+
+    */
+    private void saveToken(String token){
+        Log.d(TAG, "saveToken: called");
+        SharedPreferences sharedPref =  this.getPreferences(Context.MODE_PRIVATE);
+
+        String defaultValue_fbt = "";
+        String saved_fbt = sharedPref.getString(getString(R.string.preference_fbt), defaultValue_fbt);
+        Log.d(TAG, "saveToken: token " + token);
+        Log.d(TAG, "saveToken: saved_fbt " + saved_fbt);
+        if ( ! saved_fbt.equals(token) ) {
+            Log.d(TAG, "saveToken: not equal, sending");
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.preference_fbt), token);
+            editor.commit();
+
+            //envia el token al server
+            UserUtils.sendTokenToServer( AppSession.getCurrentUser(), token);
+
+        }
 
     }
 
