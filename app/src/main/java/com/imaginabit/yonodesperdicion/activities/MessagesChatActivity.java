@@ -128,7 +128,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         recyclerView.setAdapter(adapter);
 
         getMessages();
-        checkMessages();
+        //checkMessages();
         pushed= false;
 
         chatInput = (EditText) findViewById(R.id.chat_input_text);
@@ -168,7 +168,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     }
 
     private void pushedSendMessageButton(final String msg){
-        Log.d(TAG, "pushedSendMessageButton() called with: " + "msg = [" + msg + "]");
+        Log.d(TAG, "pushedSendMessageButton() called with: " + "msg = [" + msg + "]" + " pushed: '" + pushed + "'");
         if(pushed==false && Utils.isNotEmptyOrNull(msg)) {
             pushed=true;//avoid accidental double tapping
             Log.d(TAG, "pushedSendMessageButton: mConversation id "+ mConversation.getId() );
@@ -261,6 +261,11 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             }
 
             //save info in database
+        } else { // if pushed==true
+            //si es igual que el ultimo mensaje lo borra de
+            if ( mMessages.get( mMessages.size()-1 ).getBody().equals(msg) ){
+                chatInput.setText("");
+            }
         }
     }
 

@@ -178,6 +178,11 @@
             </intent-filter>
         </service>
 
+        <intent-filter>
+            <action android:name="OPEN_ACTIVITY_1" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+
     </application>
 
 </manifest>

@@ -739,6 +739,7 @@ public class MessagesUtils {
                 jsonMessage.put("body", body );
             else
             jsonMessage.put("body", NEW_MESSAGE );
+            Log.d(TAG, "createConversation: jsonMessage: '" + jsonMessage.toString() + "'");
         } catch (JSONException e) {
             e.printStackTrace();
         }
