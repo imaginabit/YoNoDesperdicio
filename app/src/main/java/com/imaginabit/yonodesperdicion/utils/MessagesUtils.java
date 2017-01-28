@@ -1,4 +1,4 @@
-package com.imaginabit.yonodesperdicion.utils;
+ package com.imaginabit.yonodesperdicion.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -689,9 +689,16 @@ public class MessagesUtils {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.v(TAG, "reply_onErrorResponse() called with: " + "error = [" + error + "]");
+
+                        //Log.v(TAG, "reply_onErrorResponse() called with: " + "error = [" + error + "]"); //crash
                         //TODO: on android 2.3.3 app crashed here :(
-                        String errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
+                        String errorMessage = "";
+                        try {
+                            errorMessage = VolleyErrorHelper.getMessage(MessagesUtils.context, error);
+                        } catch (Exception e ){
+                            e.printStackTrace();
+                        }
+
                         //String errorDialogMsg = Utils.showErrorsJson(errorMessage, (Activity) MessagesUtils.context);
 
                         Log.d(TAG, "onErrorResponse: error message:" + errorMessage);

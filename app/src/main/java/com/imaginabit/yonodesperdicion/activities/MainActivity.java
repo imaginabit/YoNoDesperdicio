@@ -286,14 +286,17 @@ public class MainActivity extends NavigationBaseActivity
             String mToken = FirebaseInstanceId.getInstance().getToken();
             saveToken(mToken);
             Log.d(TAG, "onCreate: token : " + mToken);
+        } else {
+            saveToken("");
         }
 
     }
 
     /*
     comprueba que el token esta guardado en las preferencias
-
     */
+
+
     private void saveToken(String token){
         Log.d(TAG, "saveToken: called");
         SharedPreferences sharedPref =  this.getPreferences(Context.MODE_PRIVATE);
@@ -314,6 +317,7 @@ public class MainActivity extends NavigationBaseActivity
         }
 
     }
+
 
     private void loadMoreData(final int current_page) {
         Log.d(TAG, "loadMoreData() called with: " + "current_page = [" + current_page + "]");

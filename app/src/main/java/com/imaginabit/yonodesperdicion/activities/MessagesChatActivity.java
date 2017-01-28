@@ -262,7 +262,10 @@ public class MessagesChatActivity extends NavigationBaseActivity {
 
             //save info in database
         } else { // if pushed==true
+            Log.d(TAG, "pushedSendMessageButton: ya se habia pulsado el boton");
             //si es igual que el ultimo mensaje lo borra de
+            Log.d(TAG, "pushedSendMessageButton: " + mMessages.get( mMessages.size()-1 ).getBody() );
+
             if ( mMessages.get( mMessages.size()-1 ).getBody().equals(msg) ){
                 chatInput.setText("");
             }

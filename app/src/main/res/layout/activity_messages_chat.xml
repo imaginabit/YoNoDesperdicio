@@ -64,9 +64,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/chat_input_hint"
-                        android:singleLine="false"
                         android:imeOptions="actionSend"
-
                         />
 
                 </android.support.design.widget.TextInputLayout>
