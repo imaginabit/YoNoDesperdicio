@@ -79,7 +79,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         if (data.size() > 0) {
                             Conversation cs  = (Conversation) data.get(0);
                             List<Message> ms = (ArrayList<Message>) cs.getMessages();
-                            notificationText[0] = ms.get(ms.size()).getBody();
+                            notificationText[0] = ms.get(ms.size()-1).getBody();
                         }
                     }
 

@@ -3,6 +3,7 @@ package com.imaginabit.yonodesperdicion.utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,6 +19,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.activities.MainActivity;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
@@ -297,6 +300,35 @@ public class UserUtils {
             e.printStackTrace();
         }
     }
+
+    /*
+comprueba que el token esta guardado en las preferencias
+
+    public static void saveToken(String token){
+        Log.d(TAG, "saveToken: called");
+        SharedPreferences sharedPref;
+        sharedPref = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
+        App.appContext.getSharedPreferences()
+
+        //SharedPreferences sharedPref =  this.getPreferences(Context.MODE_PRIVATE);
+
+        String defaultValue_fbt = "";
+        String saved_fbt = sharedPref.getString(context.getString(R.string.preference_fbt), defaultValue_fbt);
+        Log.d(TAG, "saveToken: token " + token);
+        Log.d(TAG, "saveToken: saved_fbt " + saved_fbt);
+        if ( ! saved_fbt.equals(token) ) {
+            Log.d(TAG, "saveToken: not equal, sending");
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(context.getString(R.string.preference_fbt), token);
+            editor.commit();
+
+            //envia el token al server
+            UserUtils.sendTokenToServer( AppSession.getCurrentUser(), token);
+
+        }
+
+    }
+    */
 
 
 
