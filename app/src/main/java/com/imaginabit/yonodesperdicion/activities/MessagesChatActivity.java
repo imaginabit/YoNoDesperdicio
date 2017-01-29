@@ -188,8 +188,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                         Log.d(TAG, "onFinished: time millis " + mensajeDate.getTime() + Utils.getTimezoneMillisDiference() );
                         mMessages.addAll(messages);
 
-                        chatInput.setText("");
-                        pushed = false;
+                        clearInText();
                         updateScreen();
 
                         Log.d(TAG, "pushedSendMessageButton_onFinished: message size " + messages.size());
@@ -199,12 +198,17 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                     @Override
                     public void onFinished(List<Message> messages, Exception e, ArrayList data) {
                         Log.d(TAG, "pushedSendMessageButton_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+                        Toast.makeText(MessagesChatActivity.this, "Error enviando mensaje", Toast.LENGTH_SHORT).show();
+                        clearInText();
                         //do nothing
+
                     }
 
                     @Override
                     public void onError(String errorMessage) {
                         Log.d(TAG, "pushedSendMessageButton_onError() called with: " + "errorMessage = [" + errorMessage + "]");
+                        Toast.makeText(MessagesChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        clearInText();
                     }
                 });
             } else {
@@ -244,8 +248,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                             //mMessages.add(new Message(0,msg, (int) AppSession.getCurrentUser().id,new Date() ));
 
                             //update messages show in screen
-                            chatInput.setText("");
-                            pushed = false;
+                            clearInText();
                             getMessages();
                         }
                     }
@@ -267,9 +270,17 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             Log.d(TAG, "pushedSendMessageButton: " + mMessages.get( mMessages.size()-1 ).getBody() );
 
             if ( mMessages.get( mMessages.size()-1 ).getBody().equals(msg) ){
-                chatInput.setText("");
+                clearInText();
+            } else {
+
             }
         }
+    }
+
+    //clear input text
+    private void clearInText(){
+        chatInput.setText("");
+        pushed = false;
     }
 
     private void checkMessages(){
