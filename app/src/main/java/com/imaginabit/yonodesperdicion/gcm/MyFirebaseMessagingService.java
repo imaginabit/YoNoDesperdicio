@@ -29,6 +29,7 @@ import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
+    private Bitmap largeicon;
 
     public MyFirebaseMessagingService() {
     }
@@ -55,17 +56,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // Check if message contains a notification payload.
             if (remoteMessage.getNotification() != null) {
                 Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-
                 //data in indent extra
             }
 
 
-            Bitmap largeicon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+            largeicon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
                     R.drawable.brick_avatar);
 
             //if is a conversation notification get the info
             String conversation_id = data.get("conversation");
             final String[] notificationText = new String[1];
+            String notificationBody = "";
             if (Utils.isNotEmptyOrNull( conversation_id )){
                 //get data from conversation
                 List<Conversation> conversations = new ArrayList<>();
@@ -75,17 +76,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 MessagesUtils.getConversationMessagesInbox(conversations, new MessagesUtils.MessagesCallback() {
                     @Override
                     public void onFinished(List<Message> messages, Exception e, ArrayList data) {
-                        Log.d(TAG, "MessagesCB onFinished() called with: messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
+                        Log.d(TAG, "MessagesCB onFinished() called with: messages = [" + messages.size() + "], e = [" + e + "], data = [" + data.size() + "]");
                         if (data.size() > 0) {
+
+                            Log.d(TAG, "onFinished: last messages "+ messages.get(messages.size()-1) );
+
                             Conversation cs  = (Conversation) data.get(0);
                             List<Message> ms = (ArrayList<Message>) cs.getMessages();
-                            notificationText[0] = ms.get(ms.size()-1).getBody();
+
+                            Log.d(TAG, "ms size  "+ ms.size() + " body last msg " + ms.get(ms.size()-1).getBody() );
+                            Log.d(TAG, "ms size  msg string "+  ms.get(ms.size()-1).toString() );
+                            Message lastMs = ms.get(ms.size()-1);
+                            showNotification(lastMs.getBody(), lastMs.getSubject());
                         }
                     }
 
                     @Override
                     public void onFinished(List<Message> messages, Exception e) {
-                        Log.d(TAG, "MessagesCB onFinished() called with: messages = [" + messages + "], e = [" + e + "]");
+                        Log.d(TAG, "MessagesCB onFinished() called with: messages  = [" + messages.size() + "], e = [" + e + "]");
                     }
 
                     @Override
@@ -94,45 +102,41 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 });
             }
-
-            if (data.get("message")!= null) {
-                notificationText[0] = data.get("message");
-            };
-
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
-                    .setSmallIcon(R.drawable.ic_stat_brick_notif)
-                    .setLargeIcon(largeicon)
-                    .setContentTitle("Yo No Desperdicio")
-                    .setContentText(" "+ notificationText[0]);
-
-            // Creates an explicit intent for an Activity in your app
-            //Intent resultIntent = new Intent(this, ResultActivity.class);
-
-            // Creates an explicit intent for an Activity in your app
-            Intent resultIntent = new Intent(this, MainActivity.class);
-
-            // The stack builder object will contain an artificial back stack for the
-            // started Activity.
-            // This ensures that navigating backward from the Activity leads out of
-            // your application to the Home screen.
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-// Adds the back stack for the Intent (but not the Intent itself)
-            stackBuilder.addParentStack(MainActivity.class);
-// Adds the Intent that starts the Activity to the top of the stack
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            0,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-            mBuilder.setContentIntent(resultPendingIntent);
-            NotificationManager mNotificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-            int mId = 1234;
-            mNotificationManager.notify(mId, mBuilder.build());
-
         }
+    }
 
+
+    private void showNotification(String notificationBody, String title){
+//        Log.d(TAG, "onMessageReceived: notificationText: lenght " + notificationBody  );
+//        Log.d(TAG, "onMessageReceived: notificationText: body:  " + notificationText[0]  );
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.ic_stat_brick_notif)
+                .setLargeIcon(largeicon)
+                .setContentTitle("Yo No Desperdicio - " + title)
+                .setContentText( notificationBody );
+
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// mId allows you to update the notification later on.
+        int mId = 1234;
+        mNotificationManager.notify(mId, mBuilder.build());
     }
 }
