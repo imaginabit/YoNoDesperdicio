@@ -3,10 +3,12 @@ package com.imaginabit.yonodesperdicion.utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -17,6 +19,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
+import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.activities.MainActivity;
+import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -28,6 +34,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -65,7 +72,7 @@ public class UserUtils {
                 try {
                     jObj = new JSONObject(json);
                 } catch (JSONException e) {
-                    Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+                    Log.e(TAG + "JSONParse", "Error parsing data " + e.toString());
                 } catch (Throwable t) {
                     Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
                 }
@@ -234,6 +241,94 @@ public class UserUtils {
         File file = new File(App.appContext.getFilesDir(), fname);
         if (file.exists()) file.delete();
     }
+
+    public static void sendTokenToServer(UserData mUser, String refreshedToken){
+        Log.d(TAG, "sendTokenToServer: called");
+        try {
+            if ( mUser!= null ) {
+
+                JSONObject jsonUser = new JSONObject();
+                jsonUser.put("id", mUser.id);
+                jsonUser.put("fcm_registration_token", refreshedToken);
+
+                Log.d(TAG, "sendRegistrationToServer: jsonuser : " + jsonUser.toString(2));
+                JSONObject jsonRequest = new JSONObject();
+                jsonRequest.put("user", jsonUser);
+
+                //send data request
+                RequestQueue queue = VolleySingleton.getRequestQueue();
+
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.PUT,
+                        Constants.USERS_API_URL + "/" + mUser.id,
+                        jsonRequest,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Log.d(TAG, "onResponse() called with: " + "response = [" + response + "]");
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "onErrorResponse() called with: " + "error = [" + error + "]");
+                                Log.d(TAG, "onError: Hubo algun problema al actualizando");
+                                String errorMessage = VolleyErrorHelper.getMessage( App.appContext, error);
+                                //String errorDialogMsg = Utils.showErrorsJson(errorMessage, ProfileActivity );
+                                Toast.makeText( App.appContext, errorMessage, Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "onErrorResponse: error message:" + errorMessage);
+                            }
+                        }
+                ) {
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Log.d(TAG, "getHeaders() called");
+                        Map headers = new HashMap();
+                        String token = AppSession.getCurrentUser().authToken;
+                        headers.put("Authorization", token);
+                        headers.put("Content-Type", "application/json; charset=utf-8");
+
+                        return headers;
+                    }
+                };
+
+                queue.add(request);
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+comprueba que el token esta guardado en las preferencias
+
+    public static void saveToken(String token){
+        Log.d(TAG, "saveToken: called");
+        SharedPreferences sharedPref;
+        sharedPref = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
+        App.appContext.getSharedPreferences()
+
+        //SharedPreferences sharedPref =  this.getPreferences(Context.MODE_PRIVATE);
+
+        String defaultValue_fbt = "";
+        String saved_fbt = sharedPref.getString(context.getString(R.string.preference_fbt), defaultValue_fbt);
+        Log.d(TAG, "saveToken: token " + token);
+        Log.d(TAG, "saveToken: saved_fbt " + saved_fbt);
+        if ( ! saved_fbt.equals(token) ) {
+            Log.d(TAG, "saveToken: not equal, sending");
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(context.getString(R.string.preference_fbt), token);
+            editor.commit();
+
+            //envia el token al server
+            UserUtils.sendTokenToServer( AppSession.getCurrentUser(), token);
+
+        }
+
+    }
+    */
 
 
 

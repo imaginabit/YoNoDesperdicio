@@ -73,7 +73,7 @@ public class MessagesActivity extends NavigationBaseActivity {
             VolleySingleton.init(this);
             getConversationAppData();
             getConversationsFromApi();
-            checkMessages();
+            //checkMessages();
         } else {
             finish();
         }
@@ -81,6 +81,7 @@ public class MessagesActivity extends NavigationBaseActivity {
 
     /**
      * Check for conversation info every 2 minutes
+     * Disabled when push notification was configure
      */
     private void checkMessages(){
         new Handler().postDelayed(new RunnableCheckActive(this) {

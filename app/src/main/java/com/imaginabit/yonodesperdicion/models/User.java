@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.imaginabit.yonodesperdicion.utils.Utils;
+
 /**
  * Created by Fernando on 29/11/15.
  * User Model
@@ -103,7 +105,11 @@ public class User implements Parcelable {
     }
 
     public String getAvatar() {
-        return mAvatar;
+        if (Utils.isNotEmptyOrNull(mAvatar)){
+            return mAvatar;
+        } else {
+            return "";
+        }
     }
 
     public void setAvatar(String avatar) {

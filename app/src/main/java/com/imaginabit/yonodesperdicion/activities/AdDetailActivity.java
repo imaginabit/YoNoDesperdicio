@@ -16,7 +16,10 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ActionProvider;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -90,6 +93,8 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
     private GoogleMap mMap;
     private MapView mMapView;
+
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -478,6 +483,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             getMenuInflater().inflate(R.menu.ad, menu);
         }
 
+
         return true;
     }
 
@@ -538,8 +544,14 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_booked));
                 Toast.makeText(AdDetailActivity.this, "Marcado como entregado", Toast.LENGTH_SHORT).show();
             }
+        } else if (id == R.id.action_share_button) {
+            Log.d(TAG, "onOptionsItemSelected: Compratir");
+            startActivity( Intent.createChooser(createShareIntent(),"Compartir") ); //createChooser() need to show directshare icons!
         }
-        if (isBooked == false && isDelivered == false) {
+
+
+
+        if (isBooked == false && isDelivered == false && id != R.id.action_share_button  ) {
             Log.d(TAG, "onOptionsItemSelected: avalaible ");
             statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_available));
             statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_disponible));
@@ -660,7 +672,6 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         return super.onPrepareOptionsMenu(menu);
 
     }
-
 /*    @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady() called with: " + "googleMap = [" + googleMap + "]");
@@ -750,7 +761,14 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         }
 
         mMap = googleMap;
+    }
 
-
+    //create and return share intent
+    private Intent createShareIntent(){
+        Log.d(TAG, "createShareIntent: ");
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Yo no desperdicio " + mAd.getTitle() + " " +Constants.HOME_URL + "ad/"+ mAd.getId() );
+        return shareIntent;
     }
 }

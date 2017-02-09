@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.imaginabit.yonodesperdicion"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.imaginabit.yonodesperdicion">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -31,14 +31,15 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <!--android:hardwareAccelerated="false"-->
+
+    <!-- android:hardwareAccelerated="false" -->
     <application
         android:allowBackup="true"
-
-        android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:supportsRtl="true"
+        android:name="android.support.multidex.MultiDexApplication"
         android:theme="@style/AppTheme">
 
         <!--
@@ -53,6 +54,17 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_MAPS_ANDROID_API_KEY" />
+
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+            See README(https://goo.gl/l4GJaQ) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_brick_notif" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/primary" />
 
         <activity
             android:name=".activities.MainActivity"
@@ -153,37 +165,24 @@
                 android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
         </activity>
 
-        <!-- for use GCM Deactivated for now... -->
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
+        <service android:name=".gcm.MyFirebaseInstanceService">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <category android:name="com.example.gcm" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name=".gcm.MyGcmListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".gcm.MyInstanceIDListenerService"
-            android:exported="false">
+            android:name=".gcm.MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-        <service
-            android:name=".gcm.RegistrationIntentService"
-            android:exported="false"></service>
 
-
+        <intent-filter>
+            <action android:name="OPEN_ACTIVITY_1" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
 
     </application>
 
