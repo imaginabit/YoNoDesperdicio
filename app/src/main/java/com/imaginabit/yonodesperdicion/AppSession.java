@@ -12,6 +12,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
@@ -117,7 +118,6 @@ public class AppSession {
 
         try {
             FirebaseInstanceId.getInstance().deleteInstanceId();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
