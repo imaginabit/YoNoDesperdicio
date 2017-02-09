@@ -484,25 +484,6 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         }
 
 
-        //get menu item
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-        Log.d(TAG, "onCreateOptionsMenu: menu item : " + menuItem);
-        // Get the provider and hold onto it to set/change the share intent. COMPAT
-        ActionProvider menuItemCompat = MenuItemCompat.getActionProvider(menuItem);
-
-        Log.d(TAG, "onCreateOptionsMenu: menuitemcompat " + menuItemCompat);
-        mShareActionProvider = (ShareActionProvider) menuItemCompat;
-
-        Log.d(TAG, "onCreateOptionsMenu: mshareactionprovider " + mShareActionProvider);
-
-        doShare(createShareIntent());
-
-        // Set history different from the default before getting the action
-        // view since a call to MenuItem.getActionView() calls
-        // onCreateActionView() which uses the backing file name. Omit this
-        // line if using the default share history file is desired.
-        //mShareActionProvider.setShareHistoryFileName("custom_share_history.xml");
-
         return true;
     }
 
@@ -780,24 +761,6 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         }
 
         mMap = googleMap;
-
-
-    }
-
-    public void doShare(Intent shareIntent) {
-        // When you want to share set the share intent.
-        Log.d(TAG, "doShare: ");
-        if(shareIntent!= null && mShareActionProvider != null ) {
-            Log.d(TAG, "doShare: " + shareIntent);
-            mShareActionProvider.setShareIntent(shareIntent);
-            mShareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
-                @Override
-                public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
-                    Log.d(TAG, "onShareTargetSelected: compartir picado");
-                    return false;
-                }
-            });
-        }
     }
 
     //create and return share intent

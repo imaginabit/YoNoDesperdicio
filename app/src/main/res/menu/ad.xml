@@ -15,11 +15,4 @@
         app:showAsAction="always"
         android:icon="@android:drawable/ic_menu_share"
         />
-    <item android:id="@+id/action_share"
-        android:title="@string/compartir"
-        android:orderInCategory="3"
-        app:showAsAction="always"
-        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        />
-
 </menu>
