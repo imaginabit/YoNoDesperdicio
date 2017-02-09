@@ -551,7 +551,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
 
 
-        if (isBooked == false && isDelivered == false && (id != R.id.action_share && id != R.id.action_share_button ) ) {
+        if (isBooked == false && isDelivered == false && id != R.id.action_share_button  ) {
             Log.d(TAG, "onOptionsItemSelected: avalaible ");
             statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_available));
             statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_disponible));
