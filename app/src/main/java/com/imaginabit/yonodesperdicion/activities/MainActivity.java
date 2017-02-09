@@ -34,6 +34,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.imaginabit.yonodesperdicion.App;
@@ -282,8 +283,9 @@ public class MainActivity extends NavigationBaseActivity
         editor.putString(getString(R.string.preference_fbt), "");
         editor.commit();
 
+        String mToken = FirebaseInstanceId.getInstance().getToken();
+
         if (AppSession.getCurrentUser()!= null ) {
-            String mToken = FirebaseInstanceId.getInstance().getToken();
             saveToken(mToken);
             Log.d(TAG, "onCreate: token : " + mToken);
         } else {
@@ -315,7 +317,6 @@ public class MainActivity extends NavigationBaseActivity
             UserUtils.sendTokenToServer( AppSession.getCurrentUser(), token);
 
         }
-
     }
 
 
