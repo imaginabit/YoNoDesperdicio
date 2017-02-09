@@ -278,14 +278,20 @@ public class AdUtils {
             public void onFinish(LatLng result) {
                 Log.d(TAG, "onFinish: getGPSfromZipGmaps, String: " + searchgps);
                 Log.d(TAG, "calculateLocation searchforlocationTask onFinish() called with: " + "ad = [" + ad.getTitle() + "]" + "result = [" + result + "]" );
-                adLocation.setLatitude(result.latitude);
-                adLocation.setLongitude(result.longitude);
-                ad.setLocation(adLocation);
+                try {
 
-                ad.setLastDistance(calculateDistance(ad));
-                //tell de adapter to refersh view
-                if (adapter!= null){
-                    adapter.notifyItemChanged(pos);
+
+                    adLocation.setLatitude(result.latitude);
+                    adLocation.setLongitude(result.longitude);
+                    ad.setLocation(adLocation);
+
+                    ad.setLastDistance(calculateDistance(ad));
+                    //tell de adapter to refersh view
+                    if (adapter != null) {
+                        adapter.notifyItemChanged(pos);
+                    }
+                } catch (Exception e ){
+                    e.printStackTrace();
                 }
             }
         });
