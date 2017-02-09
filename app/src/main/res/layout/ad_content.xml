@@ -326,6 +326,7 @@
             app:layout_anchor="@id/appbar"
             app:layout_anchorGravity="bottom|right|end" />
 
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
@@ -335,7 +336,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        app:menu="@menu/activity_main_drawer"
+        android:visibility="gone" />
 
 
 </android.support.v4.widget.DrawerLayout>
