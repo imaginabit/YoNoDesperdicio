@@ -141,7 +141,8 @@
     </string>
     <string name="mark_booked">Reservado</string>
     <string name="mark_delivered">Entregado</string>
-    <string name="preference_fbt" >firebase_token</string>>
+    <string name="preference_fbt" >firebase_token</string>
+    <string name="compartir">Compartir</string>>
 
     <!--<string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/google_maps_key</string>-->
 

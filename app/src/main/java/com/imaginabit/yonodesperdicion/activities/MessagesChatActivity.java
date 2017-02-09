@@ -267,13 +267,16 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         } else { // if pushed==true
             Log.d(TAG, "pushedSendMessageButton: ya se habia pulsado el boton");
             //si es igual que el ultimo mensaje lo borra de
-            Log.d(TAG, "pushedSendMessageButton: " + mMessages.get( mMessages.size()-1 ).getBody() );
+            if ( mMessages != null && mMessages.size() > 0 ){
+                Log.d(TAG, "pushedSendMessageButton: " + mMessages.get( mMessages.size()-1 ).getBody() );
 
-            if ( mMessages.get( mMessages.size()-1 ).getBody().equals(msg) ){
-                clearInText();
-            } else {
-
+                if ( mMessages.get( mMessages.size()-1 ).getBody().equals(msg) ){
+                    clearInText();
+                } else {
+                    Log.d(TAG, "pushedSendMessageButton: mensaje diferente");
+                }
             }
+
         }
     }
 
