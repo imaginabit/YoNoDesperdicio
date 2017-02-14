@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
@@ -175,6 +176,15 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
                 AppSession.currentOtherUser = holder.user;
 
                 context.startActivity(intent);
+            }
+        });
+
+        holder.messageBox.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                Toast.makeText(context, "tap and hold " + conversation.getId() , Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
     }

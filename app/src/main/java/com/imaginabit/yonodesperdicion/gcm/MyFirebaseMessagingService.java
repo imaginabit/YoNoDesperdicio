@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -16,8 +17,12 @@ import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
+import com.imaginabit.yonodesperdicion.activities.MessagesActivity;
+import com.imaginabit.yonodesperdicion.activities.MessagesChatActivity;
+import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
@@ -30,6 +35,8 @@ import java.util.Map;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private Bitmap largeicon;
+
+    private Conversation mConversation; //conversacion acutal
 
     public MyFirebaseMessagingService() {
     }
@@ -80,14 +87,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         if (data.size() > 0) {
 
                             Log.d(TAG, "onFinished: last messages "+ messages.get(messages.size()-1) );
-
                             Conversation cs  = (Conversation) data.get(0);
+
+                            Log.d(TAG, "onFinished: conversation 0 : " + cs );
                             List<Message> ms = (ArrayList<Message>) cs.getMessages();
 
                             Log.d(TAG, "ms size  "+ ms.size() + " body last msg " + ms.get(ms.size()-1).getBody() );
                             Log.d(TAG, "ms size  msg string "+  ms.get(ms.size()-1).toString() );
                             Message lastMs = ms.get(ms.size()-1);
-                            showNotification(lastMs.getBody(), lastMs.getSubject());
+                            //update conversation info
+                            cs.setSubject(lastMs.getSubject());
+
+                            showNotification(lastMs, cs);
                         }
                     }
 
@@ -106,17 +117,82 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-    private void showNotification(String notificationBody, String title){
-//        Log.d(TAG, "onMessageReceived: notificationText: lenght " + notificationBody  );
-//        Log.d(TAG, "onMessageReceived: notificationText: body:  " + notificationText[0]  );
+    /**
+     * Crea y muestra la notificacion
+     * problems if manifest dont have the property "android:launchMode="singleInstance""
+     * @param ms Mensage info
+     * @param conversation Conversation info
+     */
+    private void showNotification(Message ms, Conversation conversation){
+        String notificationBody = ms.getBody();
+        String title = ms.getSubject();
+        int cID =  conversation.getId();
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
                 .setSmallIcon(R.drawable.ic_stat_brick_notif)
                 .setLargeIcon(largeicon)
-                .setContentTitle("Yo No Desperdicio - " + title)
-                .setContentText( notificationBody );
+                .setContentTitle( title )
+                .setContentText( notificationBody )
+                .setAutoCancel(true)
+                ;
 
-        // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, MainActivity.class);
+        //Intent open chat window
+        Intent resultIntent = new Intent(this, MessagesActivity.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // mId allows you to update the notification later on.
+        // mId == Conversation ID
+        int mId = cID;
+
+        mNotificationManager.notify(mId, mBuilder.build());
+    }
+
+    /**
+     * Esto deberia ser showNotification cuando se resive de tipo conversacion
+     * @param ms mesnaje
+     * @param conversation conversacion
+     */
+    private void showNotificationConversation(Message ms, Conversation conversation){
+        String notificationBody = ms.getBody();
+        String title = ms.getSubject();
+        int cID =  conversation.getId();
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.ic_stat_brick_notif)
+                .setLargeIcon(largeicon)
+                .setContentTitle( title )
+                .setContentText( notificationBody )
+                .setAutoCancel(true);
+
+        //Intent open chat window
+        Intent resultIntent = new Intent(this, MessagesChatActivity.class);
+
+        resultIntent.putExtra("conversationId", conversation.getId());
+        Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf( conversation.getDbId()  ));
+        resultIntent.putExtra("conversationUri", conversationUri);
+
+        AppSession.currentConversation = conversation;
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
@@ -135,8 +211,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-        int mId = 1234;
+
+        // mId allows you to update the notification later on.
+        // mId == Conversation ID
+        int mId = cID;
+
         mNotificationManager.notify(mId, mBuilder.build());
     }
 }

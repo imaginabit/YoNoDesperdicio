@@ -301,6 +301,20 @@ public class UserUtils {
         }
     }
 
+    /**
+     * put session on
+     */
+    public static void putUserSessionOn(Context context){
+
+            UserData user = UserData.prefsFetch(context);
+            if (user != null) {
+                AppSession.setCurrentUser(user);
+                AppSession.checkAuthCredentials((Activity) context);
+            }
+    }
+
+
+
     /*
 comprueba que el token esta guardado en las preferencias
 
