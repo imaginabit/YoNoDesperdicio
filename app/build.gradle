@@ -14,9 +14,10 @@ android {
     defaultConfig {
         applicationId "com.imaginabit.yonodesperdicion"
         minSdkVersion 10
-        targetSdkVersion 23
-        versionCode 51
-        versionName "1.28.3"
+        targetSdkVersion 25
+        versionCode 53
+        versionName "1.30"
+        multiDexEnabled true
     }
 
     compileOptions {

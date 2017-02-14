@@ -1,9 +1,11 @@
 package com.imaginabit.yonodesperdicion.activities;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
@@ -12,8 +14,12 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ActionProvider;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -37,7 +43,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
@@ -62,7 +70,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-public class AdDetailActivity extends NavigationBaseActivity implements Observer {
+public class AdDetailActivity extends NavigationBaseActivity implements Observer, OnMapReadyCallback {
     private static final String TAG = "AdDetailActivity";
     private Ad mAd;
     private boolean isFavorite;
@@ -86,6 +94,8 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
     private GoogleMap mMap;
     private MapView mMapView;
 
+    private ShareActionProvider mShareActionProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,32 +105,32 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
         // Retrieve args
         final Bundle data = getIntent().getExtras();
-        Log.d(TAG, "onCreate: data : " + data.toString() );
+        Log.d(TAG, "onCreate: data : " + data.toString());
         final Ad ad = (Ad) data.getParcelable("ad");
-        Log.d(TAG, "onCreate: ad: " + ad );
+        Log.d(TAG, "onCreate: ad: " + ad);
         isFavorite = false;
 
         if (ad == null) {
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
         } else {
             mAd = ad;
-            observe( mAd );
+            observe(mAd);
 
             projection = new String[]{AdsContract.FavoritesColumns.FAV_AD_ID};
             selectionClause = AdsContract.FavoritesColumns.FAV_AD_ID + " = ?";
             selectionArgs = new String[]{Integer.toString(mAd.getId())};
 
-            Cursor returned = contentResolver.query(AdsContract.URI_TABLE_FAVORITES,projection, selectionClause, selectionArgs, "");
+            Cursor returned = contentResolver.query(AdsContract.URI_TABLE_FAVORITES, projection, selectionClause, selectionArgs, "");
             Log.d(TAG, "onCreate: returned cursor " + returned);
             Log.d(TAG, "onCreate: returned cursor " + returned.getCount());
 
-            if (returned.getCount()>0) {
+            if (returned.getCount() > 0) {
                 isFavorite = true;
             }
             isBooked = (mAd.getStatus() == Ad.Status.BOOKED);
             isDelivered = (mAd.getStatus() == Ad.Status.DELIVERED);
 
-            Log.d(TAG, "onCreate: mAd = " +mAd.getId() );
+            Log.d(TAG, "onCreate: mAd = " + mAd.getId());
             // Fix action bar and drawer
             Toolbar toolbar = setSupportedActionBar();
             //toolbar.setTitle(ad.getTitle());
@@ -163,15 +173,15 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
             Log.d(TAG, "onCreate: " + ad.getStatusStr() + ad.getStatusColor());
 
-            if ( ad.getStatusStr()=="entregado" ) {
+            if (ad.getStatusStr() == "entregado") {
                 TableRow row = (TableRow) findViewById(R.id.row_status);
                 row.setVisibility(View.GONE);
             }
-            if (Utils.isEmptyOrNull(ad.getExpirationDateLong()) ){
+            if (Utils.isEmptyOrNull(ad.getExpirationDateLong())) {
                 TableRow row = (TableRow) findViewById(R.id.row_expiration);
                 row.setVisibility(View.GONE);
             }
-            if ( Utils.isEmptyOrNull(ad.getWeightKgStr()) ){
+            if (Utils.isEmptyOrNull(ad.getWeightKgStr())) {
                 TableRow row = (TableRow) findViewById(R.id.row_weight);
                 row.setVisibility(View.GONE);
             }
@@ -196,9 +206,9 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
             // Gets to GoogleMap from the MapView and does initialization stuff
             try {
-                mMap = mMapView.getMap();
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mMap.setMyLocationEnabled(true);
+                mMapView.getMapAsync(this);
+
+                //mMap.setMyLocationEnabled(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -207,13 +217,11 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
             try {
                 MapsInitializer.initialize(AdDetailActivity.this);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
 //            } catch (GooglePlayServicesNotAvailableException eMap) {
 //                eMap.printStackTrace();
             }
-
-            zoomLocation(ad);
 
             //actualy geting user info in ads api
             Log.d(TAG, "onCreate: Ad id :" + ad.getId());
@@ -236,13 +244,13 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                         userWeight.setText(Utils.gramsToKgStr(user.getGrams()));
 
                         //load avatar
-                        if ( ! user.getAvatar().equals(Constants.DEFAULT_USER_AVATAR) ){
-                            Log.d(TAG, "done: User Avatar: " + user.getAvatar() );
-                            Log.d(TAG, "done: Default Avatar: " + Constants.DEFAULT_USER_AVATAR );
+                        if (!user.getAvatar().equals(Constants.DEFAULT_USER_AVATAR)) {
+                            Log.d(TAG, "done: User Avatar: " + user.getAvatar());
+                            Log.d(TAG, "done: Default Avatar: " + Constants.DEFAULT_USER_AVATAR);
 //                            RoundedImageView userAvatar = (RoundedImageView) findViewById(R.id.user_avatar);
                             ImageView userAvatar = (ImageView) findViewById(R.id.user_avatar);
                             ImageLoader imageLoaderAvatar = ImageLoader.getInstance(); // Get singleton instance
-                            imageLoaderAvatar.displayImage(Constants.HOME_URL + user.getAvatar(),  userAvatar );
+                            imageLoaderAvatar.displayImage(Constants.HOME_URL + user.getAvatar(), userAvatar);
                         }
 
                         CardView cardView = (CardView) findViewById(R.id.perfil_mini);
@@ -269,7 +277,6 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             });
 
 
-
             //load user data form api with ad.getUserId()
 
             //        TextView userName = (TextView) findViewById(R.id.user_name);
@@ -285,7 +292,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-            if ( userIsOwner(ad) ){
+            if (userIsOwner(ad)) {
                 fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -308,11 +315,11 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
     }
 
-    private boolean userIsOwner(Ad ad){
-        return AppSession.getCurrentUser()!=null && AppSession.getCurrentUser().id == ad.getUserId();
+    private boolean userIsOwner(Ad ad) {
+        return AppSession.getCurrentUser() != null && AppSession.getCurrentUser().id == ad.getUserId();
     }
 
-    private void clickMessage(final Ad ad){
+    private void clickMessage(final Ad ad) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (Utils.checkLoginAndRedirect(AdDetailActivity.this)) {
@@ -323,10 +330,10 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             int converId = prefs.getInt(converForAd, 0);
             String converTitle = ad.getTitle();
 
-            Log.d(TAG, "clickMessage: converId "+ converId );
+            Log.d(TAG, "clickMessage: converId " + converId);
 
             //this if take old method conversation id saved in preferencies
-            if(converId == 0) {
+            if (converId == 0) {
                 Log.d(TAG, "clickMessage: convertId = 0");
                 //create a new conversation, new message for this ad and go to it
                 /*
@@ -373,28 +380,28 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 projection = new String[]{};
                 selectionClause = AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " = ?";
                 selectionArgs = new String[]{Integer.toString(mAd.getId())};
-                Cursor returnConversation =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+                Cursor returnConversation = contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS, projection, selectionClause, selectionArgs, "");
                 //if is in database take the existing conversation
                 if (returnConversation.moveToFirst()) {
-                    int paso=0;
+                    int paso = 0;
                     do {
                         int id = returnConversation.getInt(0);
                         int webId = returnConversation.getInt(1);
                         int adId = returnConversation.getInt(2);
                         int userId = returnConversation.getInt(3);
                         String title = returnConversation.getString(5);
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1) );
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2) );
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3) );
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
+                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
                         Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
                         Log.d(TAG, "Cursor recorriendo: CONVERSATION_TITLE 5: " + returnConversation.getString(5));
 
                         paso++;
-                        if (paso > 1) title = title + " "+ paso;
+                        if (paso > 1) title = title + " " + paso;
 
                         conversation = new Conversation(webId, title);
 
-                        Log.d(TAG, "clickMessage: paso "+paso);
+                        Log.d(TAG, "clickMessage: paso " + paso);
                         conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
                     } while (returnConversation.moveToNext());
                 } else {
@@ -402,7 +409,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                     projection = new String[]{};
                     selectionClause = AdsContract.ConversationsColumns.CONVERSATION_TITLE + " = ?";
                     selectionArgs = new String[]{mAd.getTitle()};
-                    Cursor returnConversationByTitle =  contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS,projection,selectionClause,selectionArgs,"" );
+                    Cursor returnConversationByTitle = contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS, projection, selectionClause, selectionArgs, "");
                     if (returnConversationByTitle.moveToFirst()) {
                         do {
 
@@ -416,7 +423,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                         } while (returnConversationByTitle.moveToNext());
                     }
                     //if there is no conversation create a new one
-                    if ( conversation == null) {
+                    if (conversation == null) {
                         //db create new record in conversation table
                         valuesConversation = new ContentValues();
                         conversation = new Conversation(0, ad.getTitle());
@@ -435,7 +442,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 Intent intent = new Intent(context, MessagesChatActivity.class);
 //                intent.putExtra("conversationId", conversation.getId());
                 intent.putExtra("conversationUri", conversationUri);
-                intent.putExtra("adName", ad.getTitle() );
+                intent.putExtra("adName", ad.getTitle());
                 intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
                 AppSession.currentConversation = conversation;
                 context.startActivity(intent);
@@ -444,7 +451,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 Conversation conversation = new Conversation(converId, converTitle);
 
                 Intent intent = new Intent(context, MessagesChatActivity.class);
-                intent.putExtra("conversationId", converId );
+                intent.putExtra("conversationId", converId);
                 AppSession.currentConversation = conversation;
                 intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
@@ -457,7 +464,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
      * When click on edit Ad, send all data to add edit on
      * @param ad
      */
-    private void clickEdidAd(Ad ad){
+    private void clickEdidAd(Ad ad) {
         Log.d(TAG, "clickEdidAd() called with: " + "ad = [" + ad + "]");
 
         Intent intent = new Intent(context, AdCreateActivity.class);
@@ -470,11 +477,12 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
     public boolean onCreateOptionsMenu(Menu menu) {
         //return super.onCreateOptionsMenu(menu);
 
-        if(userIsOwner(mAd)) {
+        if (userIsOwner(mAd)) {
             getMenuInflater().inflate(R.menu.ad_owner, menu);
         } else {
             getMenuInflater().inflate(R.menu.ad, menu);
         }
+
 
         return true;
     }
@@ -486,10 +494,10 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         // as you specify a parent activity in AndroidManifest.xml.
 
         int id = item.getItemId();
-        if (id == R.id.action_favorite ) {
+        if (id == R.id.action_favorite) {
             if (mAd != null) {
                 Log.d(TAG, "onOptionsItemSelected: mAd " + mAd.getId());
-                if (!isFavorite){
+                if (!isFavorite) {
                     valuesFavorite.put(AdsContract.FavoritesColumns.FAV_AD_ID, mAd.getId());
                     Uri returned = contentResolver.insert(AdsContract.URI_TABLE_FAVORITES, valuesFavorite);
                     Log.d(TAG, "onOptionsItemSelected: Record Id returned is " + returned.toString());
@@ -500,12 +508,12 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                     Log.d(TAG, "onOptionsItemSelected: is favorited and going to remove it ");
 //                    String where = AdsContract.FavoritesColumns.FAV_AD_ID + " = ?";
 
-                    Uri favorited_ad = Uri.parse(AdsContract.URI_TABLE_FAVORITES +"/ad/" + mAd.getId());
-                    Log.d(TAG, "onOptionsItemSelected: favorited ad id uri= " + favorited_ad );
+                    Uri favorited_ad = Uri.parse(AdsContract.URI_TABLE_FAVORITES + "/ad/" + mAd.getId());
+                    Log.d(TAG, "onOptionsItemSelected: favorited ad id uri= " + favorited_ad);
 
                     int deleteReturned = contentResolver.delete(favorited_ad, emptyWhere, emptyArgs);
 
-                    if (deleteReturned>0) {
+                    if (deleteReturned > 0) {
                         Toast.makeText(AdDetailActivity.this, "Eliminado de favoritos", Toast.LENGTH_SHORT).show();
                         isFavorite = false;
                     }
@@ -513,22 +521,22 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             }
             invalidateOptionsMenu();
             return true;
-        } else if(id== R.id.action_booked ){
-            if (isBooked){
+        } else if (id == R.id.action_booked) {
+            if (isBooked) {
                 isBooked = false;
                 Toast.makeText(AdDetailActivity.this, "Quitada la reserva", Toast.LENGTH_SHORT).show();
-            }else {
+            } else {
                 isBooked = true;
                 isDelivered = false;//they can be both
                 statusView.setText("reservado");
                 statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_reservado));
-                statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_booked ));
+                statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_booked));
                 Toast.makeText(AdDetailActivity.this, "Marcado como reservado", Toast.LENGTH_SHORT).show();
             }
-        }else if(id== R.id.action_deliver ){
-            if (isDelivered){
+        } else if (id == R.id.action_deliver) {
+            if (isDelivered) {
                 isDelivered = false;
-            }else {
+            } else {
                 isDelivered = true;
                 isBooked = false;//they can be both
                 statusView.setText("entregado");
@@ -536,8 +544,14 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_booked));
                 Toast.makeText(AdDetailActivity.this, "Marcado como entregado", Toast.LENGTH_SHORT).show();
             }
+        } else if (id == R.id.action_share_button) {
+            Log.d(TAG, "onOptionsItemSelected: Compratir");
+            startActivity( Intent.createChooser(createShareIntent(),"Compartir") ); //createChooser() need to show directshare icons!
         }
-        if( isBooked == false && isDelivered == false){
+
+
+
+        if (isBooked == false && isDelivered == false && id != R.id.action_share_button  ) {
             Log.d(TAG, "onOptionsItemSelected: avalaible ");
             statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_available));
             statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_disponible));
@@ -568,10 +582,10 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         RequestQueue queue = VolleySingleton.getRequestQueue();
         JSONObject jsonAd = new JSONObject();
         jsonAd.put("status", "1");
-        if (status == Ad.Status.BOOKED){
+        if (status == Ad.Status.BOOKED) {
             jsonAd.put("status", "2");
         }
-        if (status == Ad.Status.DELIVERED){
+        if (status == Ad.Status.DELIVERED) {
             jsonAd.put("status", "3");
         }
         JSONObject jsonRequest = new JSONObject().put("ad", jsonAd);
@@ -621,23 +635,22 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         int favPosition = 0;
 
 
-        if(isFavorite){
+        if (isFavorite) {
             menu.getItem(favPosition).setIcon(R.drawable.ic_favorite_white);
 //            add icon on runtime
             MenuItem mi = menu.add("Favorito");
 //            mi.setIcon(R.drawable.zanahoria);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 mi.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                Log.d(TAG, "onPrepareOptionsMenu: mi id : " + mi.getItemId() );
+                Log.d(TAG, "onPrepareOptionsMenu: mi id : " + mi.getItemId());
             }
 //            isFavorite = false;
-            }
-        else{
+        } else {
             menu.getItem(favPosition).setIcon(R.drawable.ic_favorite_border);
 //            isFavorite = true;
         }
 
-        if (mAd!=null && userIsOwner(mAd)) {
+        if (mAd != null && userIsOwner(mAd)) {
 
             if (isBooked) {
                 Log.d(TAG, "onPrepareOptionsMenu: is booked");
@@ -659,7 +672,6 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         return super.onPrepareOptionsMenu(menu);
 
     }
-
 /*    @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady() called with: " + "googleMap = [" + googleMap + "]");
@@ -713,16 +725,50 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
      * Center the map on ad location
      * @param ad
      */
-    private void zoomLocation(Ad ad){
+    private void zoomLocation(Ad ad) {
         Location adLocation = ad.getLocation();
 
-        if (adLocation!= null) {
+        if (adLocation != null && mMap != null) {
             // Updates the location and zoom of the MapView
             LatLng latLng = new LatLng(adLocation.getLatitude(), adLocation.getLongitude());
             //Log.d(TAG, "zoomLocation: latlng: " + latLng.toString() );
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom( latLng , 13);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 13);
             mMap.animateCamera(cameraUpdate);
         }
     }
 
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        //DO WHATEVER YOU WANT WITH GOOGLEMAP
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            googleMap.setMyLocationEnabled(true);
+            //googleMap.setTrafficEnabled(true);
+            //googleMap.setIndoorEnabled(true);
+            //googleMap.setBuildingsEnabled(true);
+            //googleMap.getUiSettings().setZoomControlsEnabled(true);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            zoomLocation(mAd);
+        }
+
+        mMap = googleMap;
+    }
+
+    //create and return share intent
+    private Intent createShareIntent(){
+        Log.d(TAG, "createShareIntent: ");
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Yo no desperdicio " + mAd.getTitle() + " " +Constants.HOME_URL + "ad/"+ mAd.getId() );
+        return shareIntent;
+    }
 }

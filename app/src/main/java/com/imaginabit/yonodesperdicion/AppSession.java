@@ -12,9 +12,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
 import com.imaginabit.yonodesperdicion.data.AdsDatabase;
 import com.imaginabit.yonodesperdicion.data.UserData;
+import com.imaginabit.yonodesperdicion.gcm.MyFirebaseInstanceService;
 import com.imaginabit.yonodesperdicion.helpers.UsersHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
@@ -27,6 +31,7 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +39,16 @@ import java.util.Map;
  * AppSession Control and store session Status
  */
 public class AppSession {
+
     private static final String TAG = "AppSession";
     private static UserData user;
+
+    public static Conversation currentConversation;
+    public static User currentOtherUser;
+    //public static Ad currentAd;
+    public static Location lastLocation;
+    public static RequestQueue requestQueue;
+    //public List<Ad> userAds;
 
     // User
     public static void setCurrentUser(UserData user) {
@@ -66,13 +79,6 @@ public class AppSession {
             release();
         }
     }
-
-    public static Conversation currentConversation;
-    public static User currentOtherUser;
-    //public static Ad currentAd;
-    public static Location lastLocation;
-    public static RequestQueue requestQueue;
-    //public List<Ad> userAds;
 
 
     /**
@@ -109,6 +115,13 @@ public class AppSession {
                 restartIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
+
+
+        try {
+            FirebaseInstanceId.getInstance().deleteInstanceId();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Release session
         AppSession.release();
@@ -188,5 +201,9 @@ public class AppSession {
                     }
                 }
         );
+    }
+
+    public static boolean isSessionOn(){
+        return user != null;
     }
 }

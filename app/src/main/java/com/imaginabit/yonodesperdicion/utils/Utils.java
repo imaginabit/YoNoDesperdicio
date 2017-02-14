@@ -430,7 +430,7 @@ public class Utils {
 			JSONObject jObj = null;
 			public Double wTotal = null;
 			private Exception e = null;
-            String TAG = "Utils fetchWeightTotalTask";
+            String TAG = "fetchWeightTotalTask";
 
 			@Override
 			protected Void doInBackground(Void... params) {
