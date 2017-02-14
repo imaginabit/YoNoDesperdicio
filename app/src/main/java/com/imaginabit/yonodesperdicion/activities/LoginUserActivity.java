@@ -168,6 +168,7 @@ public class LoginUserActivity extends AppCompatActivity {
                                             } else {
                                                 user.prefsRemove(getActivity());
                                                 user.prefsCommit(getActivity());
+                                                //TODO: Refresh token for push notifications
                                                 AppSession.restart(getActivity());
                                             }
                                         }

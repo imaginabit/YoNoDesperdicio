@@ -76,7 +76,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         int UserID = mMessages.get(position).getSender_id();
         //String username = mMessages.get(position)
-        if (UserID == AppSession.getCurrentUser().id ){
+        if ( (AppSession.getCurrentUser() != null) && (UserID == AppSession.getCurrentUser().id)){
             holder.userName.setText(AppSession.getCurrentUser().username);
         } else {
             if (mOtherUser != null && UserID==mOtherUser.getUserId()){
@@ -183,9 +183,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     @Override
     public int getItemViewType(int position) {
+        Log.d(TAG, "getItemViewType() called with: position = [" + position + "]");
+        Log.d(TAG, "getItemViewType: message = [" + mMessages.get(position) +"]");
         int UserID = mMessages.get(position).getSender_id();
 
-        if (UserID == AppSession.getCurrentUser().id){
+        if (AppSession.getCurrentUser()!= null && UserID == AppSession.getCurrentUser().id){
             return MYSELF;
         }
         return OTHER;
