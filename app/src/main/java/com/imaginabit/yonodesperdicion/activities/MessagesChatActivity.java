@@ -86,7 +86,8 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             mUri = (Uri) data.get("conversationUri");
             adName = (String) data.get("adName");
 
-            if (mUri!= null){
+            if (mUri!= null && AppSession.currentConversation != null){
+                Log.d(TAG, "onCreate: mUri: " + mUri);
                 mConversation = AppSession.currentConversation;
                 Log.d(TAG, "onCreate: AppSession current conversation: "+AppSession.currentConversation.toString());
             }
@@ -114,7 +115,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(mConversation.getSubject());
+        getSupportActionBar().setTitle( (mConversation==null)? "" : mConversation.getSubject() );
         if(AppSession.currentOtherUser!= null) {
             getSupportActionBar().setSubtitle(AppSession.currentOtherUser.getUserName());
         }
@@ -304,11 +305,11 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     }
 
     private void getMessages(){
-        Log.v(TAG, "getMessages: from conversation " + mConversation.getId());
-//        mMessages = mConversation.getMessages();
+
         MessagesUtils.mCurrentActivity = this;
         List<Conversation> conversations = new ArrayList<>();
-        conversations.add(mConversation);
+
+        if(mConversation!= null)  conversations.add(mConversation);
 
         MessagesUtils.getConversationMessages(conversations, new MessagesUtils.MessagesCallback() {
             @Override
@@ -324,7 +325,8 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                         for (Message m : messages) {
                             Log.d(TAG, "getUserWeb onFinished: recorriendo mensajes ");
                             Log.d(TAG, "getUserWeb onFinished: message : " + m.toString());
-                            if (m.getSender_id() != AppSession.getCurrentUser().id) {
+
+                            if ( m.getSender_id() != AppSession.getCurrentUser().id ) {
                                 int otherUserId = m.getSender_id();
 
                                 Log.d(TAG, "onFinished: getUserWeb get user from message " + otherUserId);
@@ -389,7 +391,7 @@ public class MessagesChatActivity extends NavigationBaseActivity {
     }
 
     private void updateScreen() {
-        Log.d(TAG, "updateScreen: " + ((MessagesAdapter) adapter).getItemCount());
+        Log.d(TAG, "updateScreen: " + adapter.getItemCount());
 //        TODO: this is wrong, notifyDataSetChanged must update the adapter but no working!
         adapter = new MessagesAdapter(mMessages,otherUser,avatarBm);
         recyclerView.setAdapter(adapter);
@@ -570,8 +572,8 @@ public class MessagesChatActivity extends NavigationBaseActivity {
                 public void done(Ad ad, User user, Exception e) {
                     Log.d(TAG, "ongoto_ad_done called with: " + "ad = [" + ad + "], user = [" + user + "], e = [" + e + "]");
                     Intent intent = new Intent(MessagesChatActivity.this, AdDetailActivity.class);
-                    intent.putExtra("ad", (Parcelable) ad);
-                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("ad", ad);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     Utils.dismissProgressDialog(pd);
                 }
@@ -580,5 +582,11 @@ public class MessagesChatActivity extends NavigationBaseActivity {
             bindAdToConversation();
             //Toast.makeText(MessagesChatActivity.this, "no encontramos a que anuncio pertenece esta conversacion, escoge la que corresponda", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        getMessages();
+        super.onResume();
     }
 }

@@ -22,6 +22,7 @@ import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
+import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
 import java.util.ArrayList;
@@ -46,6 +47,12 @@ public class MessagesActivity extends NavigationBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Put on session
+//        if ( AppSession.isSessionOn() ) {
+//            UserUtils.putUserSessionOn(this);
+//        }
+
 
         if (Utils.checkLoginAndRedirect(MessagesActivity.this)) {
             mContentValues = new ContentValues();
@@ -330,7 +337,9 @@ public class MessagesActivity extends NavigationBaseActivity {
     protected void onRestart() {
         Log.d(TAG, "onRestart: ");
         super.onRestart();
+        Log.d(TAG, "onRestart: -----------------------------");
         getConversationAppData();
+        Log.d(TAG, "onRestart: -----------------------------");
         getConversationsFromApi();
 
     }

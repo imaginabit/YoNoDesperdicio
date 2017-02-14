@@ -39,8 +39,16 @@ import java.util.Map;
  * AppSession Control and store session Status
  */
 public class AppSession {
+
     private static final String TAG = "AppSession";
     private static UserData user;
+
+    public static Conversation currentConversation;
+    public static User currentOtherUser;
+    //public static Ad currentAd;
+    public static Location lastLocation;
+    public static RequestQueue requestQueue;
+    //public List<Ad> userAds;
 
     // User
     public static void setCurrentUser(UserData user) {
@@ -71,13 +79,6 @@ public class AppSession {
             release();
         }
     }
-
-    public static Conversation currentConversation;
-    public static User currentOtherUser;
-    //public static Ad currentAd;
-    public static Location lastLocation;
-    public static RequestQueue requestQueue;
-    //public List<Ad> userAds;
 
 
     /**
@@ -200,5 +201,9 @@ public class AppSession {
                     }
                 }
         );
+    }
+
+    public static boolean isSessionOn(){
+        return user != null;
     }
 }

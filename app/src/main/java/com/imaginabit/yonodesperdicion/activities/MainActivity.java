@@ -129,11 +129,8 @@ public class MainActivity extends NavigationBaseActivity
 
 
         // Put on session
-        UserData user = UserData.prefsFetch(this);
-        if (user != null) {
-            AppSession.setCurrentUser(user);
-            AppSession.checkAuthCredentials(this);
-        }
+        UserUtils.putUserSessionOn(this);
+
         mAds = new ArrayList<>();
 
         // Fix action bar and drawer

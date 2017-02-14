@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
@@ -31,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -867,6 +869,68 @@ public class MessagesUtils {
         Integer count = contentResolver.update(uri, contentValues, where, args);
         return count;
     }
+
+    /**
+     * retur local app db information about conversations
+     * @return
+
+    public static HashMap<Integer,Conversation> getDBConversations(){
+        HashMap<Integer, Conversation> mapDbConversations = new HashMap<>();
+
+    }
+    */
+
+
+    /**
+     * get conversation info from internal app database
+
+    private void getConversationAppData(){
+        String[] projection = new String[]{};
+        String selectionClause = "";
+        String[] selectionArgs = new String[]{};
+        ContentResolver contentResolver = getContentResolver();
+
+        Cursor returnConversation = contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS, projection, selectionClause, selectionArgs, "");
+        List<Conversation> conversationList = new ArrayList<Conversation>();
+        //if is in database take the existing conversation
+        if (returnConversation.moveToFirst()) {
+            int paso = 0;
+            do {
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
+
+                int id = returnConversation.getInt(0);
+                int webId = 0;
+                webId = returnConversation.getInt(1);
+                int adId = returnConversation.getInt(2);
+                int userId = returnConversation.getInt(3);
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
+
+                String title = returnConversation.getString(5);
+                Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 5: " + title );
+
+                paso++;
+                Log.d(TAG, "clickMessage: paso " + paso);
+                Conversation conversation;
+
+                title = id +" "+ title + " wid"+ webId + " ad "+ adId;
+
+                conversation = new Conversation(webId, title);
+                conversation.setDbId(id);
+                conversation.setOtherUserId(userId);
+                conversationList.add(conversation);
+                Log.d(TAG, "getConversationAppData: conversation " +  conversation.toString());
+
+
+
+                //Uri conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
+            } while (returnConversation.moveToNext());
+        }
+
+    }
+*/
+
 
 
 }
