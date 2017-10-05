@@ -16,6 +16,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
+import com.imaginabit.yonodesperdicion.activities.ProfileActivity;
 import com.imaginabit.yonodesperdicion.data.AdsDatabase;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.gcm.MyFirebaseInstanceService;
@@ -28,6 +29,7 @@ import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.UiUtils;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.jakewharton.processphoenix.ProcessPhoenix;
 
 import org.json.JSONObject;
 
@@ -106,15 +108,18 @@ public class AppSession {
         //final ProgressDialog pd = ProgressDialog.show(this, "a", "b");
 
         // Restart Intent
+
         Intent restartIntent = new Intent(activity, MainActivity.class);
         restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+        /*
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 activity,
                 0,
                 restartIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
+        */
 
 
         try {
@@ -134,9 +139,16 @@ public class AppSession {
 //        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 //        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
 
+        /*
         activity.startActivity(restartIntent);
-
         activity.finish();
+        */
+
+//        ProcessPhoenix.triggerRebirth(activity.getApplicationContext());
+        ProcessPhoenix.triggerRebirth(activity , restartIntent);
+
+
+
     }
 
     public static void checkAuthCredentials(final Activity activity){
