@@ -185,7 +185,7 @@ public class AdsAdapter extends RecyclerView.Adapter {
 
             Log.i(TAG, "onBindViewHolder:" + imageUri);
 
-            ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
+//            ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             try {
                 imageLoader.displayImage(imageUri, ((AdsViewHolder) holder).image );
             } catch ( Exception e){
