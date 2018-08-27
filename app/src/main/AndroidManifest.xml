@@ -159,7 +159,7 @@
         <provider
             android:name=".data.AdsProvider"
             android:authorities="com.imaginabit.yonodesperdicion.ads.provider"
-            android:exported="true"
+            android:exported="false"
             android:readPermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE"
             android:writePermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
 
