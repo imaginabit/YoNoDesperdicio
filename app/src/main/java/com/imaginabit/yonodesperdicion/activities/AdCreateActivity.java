@@ -174,7 +174,8 @@ public class AdCreateActivity extends NavigationBaseActivity
         frameImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDialogAddImage();
+                addImageFromGalley();
+//                startDialogAddImage();
             }
         });
 
@@ -532,8 +533,38 @@ public class AdCreateActivity extends NavigationBaseActivity
         };
     }
 
+    private void addImageFromGalley(){
+        Log.d(TAG, "addImageFromGalley() called");
+
+
+        Intent pictureActionIntent = null;
+
+        //permision check android 6
+        int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            pictureActionIntent = new Intent(
+                    Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pictureActionIntent, STORAGE_PERMISSION_RC);
+        } else {
+            //Muestra el dialogo de pedir permisos
+            ActivityCompat.requestPermissions(AdCreateActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_RC);
+            //luego va a OnRequestPermissionResult
+
+        }
+
+    }
+
+
+
 
     private void startDialogAddImage() {
+        Log.d(TAG, "startDialogAddImage() called");
+;
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
 
         myAlertDialog.setTitle(getString(R.string.Picture));
@@ -571,16 +602,24 @@ public class AdCreateActivity extends NavigationBaseActivity
 
                         Intent intent = new Intent(
                                 MediaStore.ACTION_IMAGE_CAPTURE);
+
+//                        File imagePath = new File(getApplicationContext().getFilesDir(), "images");
+//                        File file = new File(imagePath, "temp.jpg");
+//                        Uri contentUri = getUriForFile(getApplicationContext(), "com.imaginabit.yonodesperdicion.GenericFileProvider", file);
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
                         File f = new File(android.os.Environment
                                 .getExternalStorageDirectory(), "temp.jpg");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                                Uri.fromFile(f));
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
 
                         //permision check android 6
                         int permissionCheck = ContextCompat.checkSelfPermission(AdCreateActivity.this,
                                 Manifest.permission.CAMERA);
 
                         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+
                             startActivityForResult(intent, CAMERA_REQUEST);
                         } else {
                             ActivityCompat.requestPermissions(AdCreateActivity.this, new String[]{Manifest.permission.CAMERA},
@@ -593,40 +632,62 @@ public class AdCreateActivity extends NavigationBaseActivity
         myAlertDialog.show();
     }
 
+
+    //esto esta en onRequestPermissionsResult y  startDialogAddImage creo que se usa el de arriba la mayoria de las veces
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+
+        Log.d(TAG, "onRequestPermissionsResult() called with: requestCode = [" + requestCode + "], permissions = [" + permissions + "], grantResults = [" + grantResults + "]");
+
         switch (requestCode) {
             case CAMERA_REQUEST: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent intent = new Intent(
-                            MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    Intent intent = new Intent( MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+//                    File imagePath = new File(getApplicationContext().getFilesDir(), "images");
+//                    File f = new File(imagePath, "temp.jpg");
+//                    Uri contentUri = getUriForFile(getApplicationContext(), "com.imaginabit.yonodesperdicion.GenericFileProvider", f);
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+//                    Metodo antiguo:
                     File f = new File(android.os.Environment
                             .getExternalStorageDirectory(), "temp.jpg");
                     intent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(f));
+
+
                     startActivityForResult(intent, CAMERA_REQUEST);
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
+                    Log.d(TAG, "onRequestPermissionResult: CAMERA_REQUEST false" );
                 }
                 return;
             }
             case STORAGE_PERMISSION_RC:{
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
                     File f = new File(Environment.getExternalStorageDirectory()
                             .toString());
                     setPhoto(f);
+
+
                 } else {
-                    Toast.makeText(this, "No permission to read external storage.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.No_permission_files, Toast.LENGTH_SHORT).show();
                 }
             }
             case Constants.PERMISSION_REQUEST_ACCESS_COARSE_LOCATION:{
                 Log.d(TAG, "onRequestPermissionsResult: PERMISSION_REQUEST_ACCESS_COARSE_LOCATION");
             }
+
         }
     }
 
@@ -634,16 +695,22 @@ public class AdCreateActivity extends NavigationBaseActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d(TAG, "onActivityResult() called with: requestCode = [" + requestCode + "], resultCode = [" + resultCode + "], data = [" + data + "]");
+
         bitmap = null;
         selectedImagePath = null;
 
         if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
-//            Toast.makeText(this, "Image saved to:\n" +
-//                    data.getExtras().get("data"), Toast.LENGTH_LONG).show();
+            Log.d(TAG, "onActivityResult: camera request ");
+            Toast.makeText(this, "Image saved to:\n" +
+                    data.getExtras().get("data"), Toast.LENGTH_LONG).show();
 
 
             File f = new File(Environment.getExternalStorageDirectory()
                     .toString());
+
+            File imagePath = new File(getApplicationContext().getFilesDir(), "images");
+            File newFile = new File(imagePath, "temp.jpg");
 
             Log.d(TAG, "onActivityResult: file: " + f.toString());
             if(f.exists()) {
@@ -680,7 +747,7 @@ public class AdCreateActivity extends NavigationBaseActivity
 
             setPhoto(f);
 
-        } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
+        } else if (resultCode == RESULT_OK && requestCode == STORAGE_PERMISSION_RC) {
             if (data != null) {
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
@@ -805,3 +872,6 @@ public class AdCreateActivity extends NavigationBaseActivity
         alert.show();
     }
 }
+
+
+

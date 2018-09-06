@@ -144,6 +144,7 @@
     <string name="preference_fbt" >firebase_token</string>
     <string name="compartir">Compartir</string>
     <string name="accept" >Aceptar</string>
+    <string name="No_permission_files">No se ha permitido cargar archivos</string>
 
     <!--<string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/google_maps_key</string>-->
 

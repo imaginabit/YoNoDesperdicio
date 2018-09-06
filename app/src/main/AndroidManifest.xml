@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <permission android:name="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
 
@@ -162,6 +163,18 @@
             android:exported="false"
             android:readPermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE"
             android:writePermission="com.imaginabit.yonodesperdicion.ads.provider.READWRITE" />
+
+        <!--generic file provider para que vuelva a funcionar sacar imagenes de la camara -->
+        <provider
+            android:name="com.imaginabit.yonodesperdicion.GenericFileProvider"
+            android:authorities="com.imaginabit.yonodesperdicion.GenericFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
 
         <activity
             android:name=".activities.FavoritesActivity"
