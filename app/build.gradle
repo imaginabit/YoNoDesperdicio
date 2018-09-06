@@ -44,6 +44,7 @@ android {
             buildConfigField "String", "googlekey", "\"${googlekey}\""
             resValue "string", "google_mapKey", "\"${google_maps_key}\""
             resValue "string", "GOOGLE_MAPS_ANDROID_API_KEY", "\"${google_maps_key2}\""
+            debuggable true
         }
     }
 
