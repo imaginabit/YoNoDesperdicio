@@ -345,50 +345,70 @@ public class ProfileActivity extends NavigationBaseActivity {
 
 
     private void startSetAvatarDialog() {
-        AlertDialog.Builder avatarDialog = new AlertDialog.Builder(this, R.style.yndDialog);
+//        AlertDialog.Builder avatarDialog = new AlertDialog.Builder(this, R.style.yndDialog);
 
-        avatarDialog.setTitle(getString(R.string.Picture));
-        avatarDialog.setMessage(getString(R.string.pic_from_where));
-        avatarDialog.setIcon(R.drawable.ic_face_white);
+//        avatarDialog.setTitle(getString(R.string.Picture));
+//        avatarDialog.setMessage(getString(R.string.pic_from_where));
+//        avatarDialog.setIcon(R.drawable.ic_face_white);
 
-        avatarDialog.setPositiveButton(getString(R.string.gallery),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        Intent pictureActionIntent = null;
+//        avatarDialog.setPositiveButton(getString(R.string.gallery),
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface arg0, int arg1) {
 
-                        pictureActionIntent = new Intent(
-                                Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(
-                                pictureActionIntent,
-                                GALLERY_PICTURE);
-                    }
-                });
+//        TODO: falta permissions request
+        int permissionCheck = ContextCompat.checkSelfPermission(ProfileActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        avatarDialog.setNegativeButton(getString(R.string.camera),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            pictureActionIntent = new Intent(
+                    Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pictureActionIntent, GALLERY_PICTURE);
+        } else {
+            ActivityCompat.requestPermissions(ProfileActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    GALLERY_PICTURE);
 
-                        Intent intent = new Intent(
-                                MediaStore.ACTION_IMAGE_CAPTURE);
-                        File f = new File(android.os.Environment
-                                .getExternalStorageDirectory(), "temp.jpg");
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                                Uri.fromFile(f));
+            Intent pictureActionIntent = null;
+            pictureActionIntent = new Intent(
+                    Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(
+                    pictureActionIntent,
+                    GALLERY_PICTURE);
 
-                        int permissionCheck = ContextCompat.checkSelfPermission(ProfileActivity.this,
-                                Manifest.permission.CAMERA);
 
-                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                            startActivityForResult(intent, CAMERA_REQUEST);
-                        } else {
-                            ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.CAMERA},
-                                    CAMERA_REQUEST);
-                            //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-        avatarDialog.show();
+        }
+
+
+//                    }
+//                });
+//
+        // Eliminado temporalmente, la aplicacion se cuelga al intetar abrir la camara
+//        avatarDialog.setNegativeButton(getString(R.string.camera),
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface arg0, int arg1) {
+//
+//                        Intent intent = new Intent(
+//                                MediaStore.ACTION_IMAGE_CAPTURE);
+//                        File f = new File(android.os.Environment
+//                                .getExternalStorageDirectory(), "temp.jpg");
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+//                                Uri.fromFile(f));
+//
+//                        int permissionCheck = ContextCompat.checkSelfPermission(ProfileActivity.this,
+//                                Manifest.permission.CAMERA);
+//
+//                        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+//                            startActivityForResult(intent, CAMERA_REQUEST);
+//                        } else {
+//                            ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.CAMERA},
+//                                    CAMERA_REQUEST);
+//                            //Toast.makeText(AdCreateActivity.this, "Cant use camera", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//        avatarDialog.show();
     }
 
 
