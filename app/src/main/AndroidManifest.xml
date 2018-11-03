@@ -192,6 +192,7 @@
         </service>
         <service
             android:name=".gcm.MyFirebaseMessagingService"
+            android:stopWithTask="false"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
