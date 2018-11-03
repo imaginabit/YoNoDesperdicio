@@ -1,19 +1,18 @@
 package com.imaginabit.yonodesperdicion.gcm;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
-import android.os.IBinder;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.graphics.BitmapCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -75,6 +74,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             final String[] notificationText = new String[1];
             String notificationBody = "";
             if (Utils.isNotEmptyOrNull( conversation_id )){
+                Log.d(TAG, "onMessageReceived: " + "no null");
                 //get data from conversation
                 List<Conversation> conversations = new ArrayList<>();
                 Conversation c;
@@ -124,17 +124,48 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param conversation Conversation info
      */
     private void showNotification(Message ms, Conversation conversation){
+        Log.d(TAG, "showNotification() called");// with: ms = [" + ms + "], conversation = [" + conversation + "]");
         String notificationBody = ms.getBody();
         String title = ms.getSubject();
         int cID =  conversation.getId();
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
+        Log.d(TAG, "showNotification: title:"+ title+ ", notificationBody:"+ notificationBody+".");
+
+
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        String CHANNEL_ID = "my_channel_01";
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+            CHANNEL_ID = "channel_ynd_1";
+            CharSequence name = "ynd";
+            String Description = "Yo no desperdicio";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.BLUE);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mChannel.setShowBadge(false);
+            mNotificationManager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_brick_notif)
                 .setLargeIcon(largeicon)
-                .setContentTitle( title )
-                .setContentText( notificationBody )
-                .setAutoCancel(true)
-                ;
+                .setContentTitle(title)
+                .setContentText(notificationBody)
+                .setAutoCancel(true);
+
+//        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
+//                .setSmallIcon(R.drawable.ic_stat_brick_notif)
+//                .setLargeIcon(largeicon)
+//                .setContentTitle( title )
+//                .setContentText( notificationBody )
+//                .setAutoCancel(true)
+//                ;
 
         //Intent open chat window
         Intent resultIntent = new Intent(this, MessagesActivity.class);
@@ -158,8 +189,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 );
         mBuilder.setContentIntent(resultPendingIntent);
 
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 
         // mId allows you to update the notification later on.
         // mId == Conversation ID
