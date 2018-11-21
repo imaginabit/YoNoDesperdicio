@@ -46,7 +46,7 @@
         android:supportsRtl="true"
         android:name="android.support.multidex.MultiDexApplication"
         android:theme="@style/AppTheme"
-        >
+        android:fullBackupContent="@xml/backup_descriptor">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
