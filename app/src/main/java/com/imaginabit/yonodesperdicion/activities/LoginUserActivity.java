@@ -21,7 +21,6 @@ import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.UsersHelper;
 import com.imaginabit.yonodesperdicion.utils.UiUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
-import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
@@ -33,9 +32,6 @@ import java.io.FileOutputStream;
  */
 public class LoginUserActivity extends AppCompatActivity {
     private static final String TAG = "LoginUserActivity";
-
-    private AppCompatButton buttonIniciar;
-    private AppCompatButton buttonCrearCuenta;
 
     private TextInputLayout userNameWrapper;
     private EditText userNameEdit;
@@ -52,7 +48,7 @@ public class LoginUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_user_activity);
 
-        buttonIniciar = (AppCompatButton) findViewById( R.id.login_confirm_button );
+        AppCompatButton buttonIniciar = (AppCompatButton) findViewById(R.id.login_confirm_button);
         buttonIniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +58,7 @@ public class LoginUserActivity extends AppCompatActivity {
             }
         });
 
-        buttonCrearCuenta = (AppCompatButton) findViewById(R.id.login_create_button);
+        AppCompatButton buttonCrearCuenta = (AppCompatButton) findViewById(R.id.login_create_button);
         buttonCrearCuenta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
