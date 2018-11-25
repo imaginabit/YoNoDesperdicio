@@ -145,12 +145,12 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             startActivity(itntMain);
         }
 
-//        else if (id == R.id.nav_offers) {
-//            Intent itntOffers = new Intent(context, OffersActivity.class);
-////            itntOffers.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//            startActivity(itntOffers);
-//        }
-//
+        else if (id == R.id.nav_offers) {
+            Intent itntOffers = new Intent(context, OffersOldActivity.class);
+//            itntOffers.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(itntOffers);
+        }
+
         else if (id == R.id.nav_perfil) {
             if (Utils.checkLoginAndRedirect(this)){
                 Intent itntPerfil = new Intent(context, ProfileActivity.class);
