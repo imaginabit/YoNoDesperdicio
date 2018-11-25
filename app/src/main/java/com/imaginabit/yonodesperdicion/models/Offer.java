@@ -3,6 +3,13 @@ package com.imaginabit.yonodesperdicion.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.imaginabit.yonodesperdicion.utils.Utils;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class Offer {
 
@@ -27,6 +34,8 @@ public class Offer {
     @SerializedName("image")
     @Expose
     private Image image;
+
+    private Date expiration;
 
     public Integer getId() {
         return id;
@@ -83,5 +92,47 @@ public class Offer {
     public void setImage(Image image) {
         this.image = image;
     }
+
+    public String getExpirationDateLong() {
+        return getExpirationDate("hasta el ");
+    }
+
+    public String getExpirationDate() {
+        return getExpirationDate("");
+    }
+
+    public String getExpirationDate(String prefix) {
+        if (this.getExpiration() != null) {
+            // Default prefix
+            if (Utils.isEmptyOrNull(prefix)) {
+                prefix = "";
+            }
+            // Format expiration date
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            return prefix + df.format(this.expiration);
+        }
+        return "";
+    }
+
+    public Date getExpiration() {
+
+        if (Utils.isNotEmptyOrNull(until) && ! "null".equals(until)) {
+//            DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+            try {
+                this.expiration = format.parse( until );
+            } catch (ParseException e) {
+                e.printStackTrace();
+                this.expiration = null;
+            }
+        } else {
+            // if there is no date (this must not happends! but...) set date to now
+            this.expiration = null;
+        }
+
+        return expiration;
+    }
+
 
 }
