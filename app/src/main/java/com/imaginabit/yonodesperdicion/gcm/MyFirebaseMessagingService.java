@@ -17,7 +17,6 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.imaginabit.yonodesperdicion.AppSession;
-import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
 import com.imaginabit.yonodesperdicion.activities.MessagesActivity;
 import com.imaginabit.yonodesperdicion.activities.MessagesChatActivity;
