@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.imaginabit.yonodesperdicion">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -81,9 +82,20 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="http"
+                    android:host="yonodesperdicio.org"
+                    android:pathPattern="/messages/" />
+            </intent-filter>
             <!--<intent-filter>-->
-                <!--<action android:name="OPEN_ACTIVITY_1" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--<action android:name="OPEN_ACTIVITY_1" />-->
+            <!--<category android:name="android.intent.category.DEFAULT" />-->
             <!--</intent-filter>-->
         </activity>
         <activity
@@ -102,7 +114,8 @@
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settigns"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -110,11 +123,25 @@
         <activity
             android:name=".activities.AdDetailActivity"
             android:label="Anuncio Titulo"
-            android:parentActivityName=".activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="yonodesperdicio.org"
+                    android:pathPattern="/ad/" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.ProfileActivity"
             android:label=""
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -122,11 +149,13 @@
         <activity
             android:name=".activities.AdCreateActivity"
             android:label="Nuevo Anuncio"
-            android:parentActivityName=".activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute" />
         <activity
             android:name=".activities.MoreInfoActivity"
             android:label="Mas Información"
-            android:parentActivityName=".activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute" />
         <activity
             android:name=".activities.GoogleSignInActivity"
             android:label="CONTINUAR CON GOOGLE"
@@ -142,7 +171,8 @@
         <activity
             android:name=".activities.MessagesActivity"
             android:label="@string/title_activity_messages"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
@@ -150,7 +180,8 @@
         <activity
             android:name=".activities.MessagesChatActivity"
             android:label="@string/title_activity_messages_chat"
-            android:parentActivityName=".activities.MessagesActivity">
+            android:parentActivityName=".activities.MessagesActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MessagesActivity" />
@@ -175,20 +206,22 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
 
         <activity
             android:name=".activities.FavoritesActivity"
             android:label="@string/title_activity_favorites"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.MainActivity" />
         </activity>
 
-        <service android:name=".gcm.MyFirebaseInstanceService">
+        <service android:name=".gcm.MyFirebaseInstanceService"
+            android:permission="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -197,14 +230,13 @@
             android:name=".gcm.MyFirebaseMessagingService"
             android:stopWithTask="false"
             android:enabled="true"
-            android:exported="true">
-
+            android:exported="true"
+            android:permission="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>
