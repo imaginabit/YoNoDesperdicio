@@ -81,7 +81,7 @@ public class OffersAdapter extends RecyclerView.Adapter {
         private TextView title;
         private ImageView status;
         private TextView expiration;
-        private TextView weight;
+        private TextView store;
         private TextView distance;
         private ImageView image;
 
@@ -95,7 +95,7 @@ public class OffersAdapter extends RecyclerView.Adapter {
             status = (ImageView) view.findViewById(R.id.status_image);
             expiration = (TextView) view.findViewById(R.id.ad_expiration);
             distance = (TextView) view.findViewById(R.id.ad_distance);
-            weight = (TextView) view.findViewById(R.id.ad_weight);
+            store = (TextView) view.findViewById(R.id.offer_store);
             image = (ImageView) view.findViewById(R.id.ad_image);
 
             Log.d(TAG, "ViewHolder: ");
@@ -111,7 +111,7 @@ public class OffersAdapter extends RecyclerView.Adapter {
 
         if (viewType == VIEW_ITEM) {
             View v = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.ad_mini  , parent, false);
+                    R.layout.offer_mini , parent, false);
 
             vh = new ViewHolder(v);
         } else {
@@ -133,11 +133,13 @@ public class OffersAdapter extends RecyclerView.Adapter {
             Offer offer = offersList.get(position);
 
             ((ViewHolder) holder).title.setText( offer.getTitle() );
+            ((ViewHolder) holder).store.setText( offer.getStore() );
             // holder.status.setText(ad.getStatus());
 //            ((ViewHolder) holder).status.getDrawable().setColorFilter(ContextCompat.getColor(context, ad.getStatusColor()), android.graphics.PorterDuff.Mode.MULTIPLY);
-//            ((ViewHolder) holder).weight.setText(ad.getWeightKgStr());
+
             ((ViewHolder) holder).expiration.setText( offer.getExpirationDateLong() );
             ((ViewHolder) holder).status.setVisibility( View.GONE );
+
 
 //            int intDistance = ad.getLastDistance();
 //            Log.d(TAG, "onBindViewHolder: calculateDistance ad.getlastdistance: " + intDistance);
@@ -156,11 +158,12 @@ public class OffersAdapter extends RecyclerView.Adapter {
             }
 
             // CardView click listener
+
 //            ((ViewHolder) holder).cardView.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
 //                    Intent intent = new Intent(context, AdDetailActivity.class);
-//                    intent.putExtra("ad", (Parcelable) adsList.get(position));
+//                    intent.putExtra("offer", (Serializable) offersList.get(position));
 //                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
 //                    context.startActivity(intent);
 //                }

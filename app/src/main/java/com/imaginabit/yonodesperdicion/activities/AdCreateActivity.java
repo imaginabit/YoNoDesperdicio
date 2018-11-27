@@ -413,7 +413,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                 //scale image max 400px width
                 float aspectRatio = bitmap.getWidth() /
                         (float) bitmap.getHeight();
-                int width = 400;
+                int width = 500;
                 int height = Math.round(width / aspectRatio);
                 bitmap = Bitmap.createScaledBitmap(
                         bitmap, width, height, false);
@@ -691,6 +691,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         }
     }
 
+    // On activity result:
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
