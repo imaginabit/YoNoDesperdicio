@@ -3,6 +3,7 @@ package com.imaginabit.yonodesperdicion.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
@@ -20,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -89,7 +91,16 @@ public class OffersOldActivity extends NavigationBaseActivity
         final Activity offersActivity = this;
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.hide();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: CHECK
+                if (Utils.checkLoginAndRedirect( OffersOldActivity.this )) {
+                    Intent intent = new Intent(context, OfferCreateActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 

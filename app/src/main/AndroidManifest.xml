@@ -166,11 +166,31 @@
             android:parentActivityName=".activities.MainActivity"
             tools:ignore="UnusedAttribute" />
         <!-- Kotlin version for testing new Reciclerview jetpack -->
-        <!--<activity-->
-            <!--android:name=".activities.OffersActivity"-->
-            <!--android:label="Ofertas"-->
-            <!--android:parentActivityName=".activities.MainActivity"-->
-            <!--tools:ignore="UnusedAttribute" />-->
+        <!-- <activity -->
+        <!-- android:name=".activities.OffersActivity" -->
+        <!-- android:label="Ofertas" -->
+        <!-- android:parentActivityName=".activities.MainActivity" -->
+        <!-- tools:ignore="UnusedAttribute" /> -->
+        <!-- <activity -->
+        <!-- android:name=".activities.OfferDetailActivity" -->
+        <!-- android:label="Oferta" -->
+        <!-- android:parentActivityName=".activities.OffersOldActivity" -->
+        <!-- tools:ignore="UnusedAttribute"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.VIEW" /> -->
+
+
+        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+        <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
+
+
+        <!-- <data -->
+        <!-- android:host="yonodesperdicio.org" -->
+        <!-- android:pathPattern="/offers/" -->
+        <!-- android:scheme="https" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
+
         <activity
             android:name=".activities.GoogleSignInActivity"
             android:label="CONTINUAR CON GOOGLE"
@@ -253,7 +273,14 @@
             </intent-filter>
         </service>
 
-
+        <activity
+            android:name=".activities.OfferCreateActivity"
+            android:label="@string/title_activity_offer_create"
+            android:parentActivityName=".activities.OffersOldActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imaginabit.yonodesperdicion.activities.OffersOldActivity" />
+        </activity>
     </application>
 
 </manifest>

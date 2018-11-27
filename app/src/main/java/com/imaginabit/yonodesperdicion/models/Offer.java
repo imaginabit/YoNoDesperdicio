@@ -13,6 +13,7 @@ import java.util.Locale;
 
 public class Offer {
 
+
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -135,4 +136,26 @@ public class Offer {
     }
 
 
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeInt(this.id);
+//        dest.writeString(this.title);
+//        dest.writeString(this.address);
+//        dest.writeString(this.store);
+//        dest.writeString(this.until);
+//        dest.writeString(this.status);
+//
+//
+//        @SerializedName("image")
+//        @Expose
+//        private Image image;
+//
+//        private Date expiration;
+//
+//    }
 }
