@@ -165,6 +165,7 @@
             android:label="Ofertas"
             android:parentActivityName=".activities.MainActivity"
             tools:ignore="UnusedAttribute" />
+
         <!-- Kotlin version for testing new Reciclerview jetpack -->
         <!-- <activity -->
         <!-- android:name=".activities.OffersActivity" -->
@@ -275,8 +276,9 @@
 
         <activity
             android:name=".activities.OfferCreateActivity"
-            android:label="@string/title_activity_offer_create"
-            android:parentActivityName=".activities.OffersOldActivity">
+            android:label="Añadir nueva oferta"
+            android:parentActivityName=".activities.OffersOldActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.imaginabit.yonodesperdicion.activities.OffersOldActivity" />

@@ -4,7 +4,10 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -20,7 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -75,8 +77,8 @@ public class OfferCreateActivity extends NavigationBaseActivity
     private boolean isEditing = false;
 
     public interface CreatedCallback {
-        public void onFinished();
-        public void onError(String errorMessage);
+        void onFinished();
+        void onError(String errorMessage);
     }
 
     private CreatedCallback createdCallback;
@@ -95,21 +97,21 @@ public class OfferCreateActivity extends NavigationBaseActivity
         setSupportedActionBar(R.drawable.ic_arrow_back_black);
         context = getApplicationContext();
 
-        image =  (ImageView) findViewById(R.id.ad_image);
+        image = findViewById(R.id.ad_image);
         image.setVisibility(View.INVISIBLE);
 
-        imageEditable =  (ImageView) findViewById(R.id.ad_image_editable);
+        imageEditable = findViewById(R.id.ad_image_editable);
         imageEditable.setVisibility(View.INVISIBLE);
 
-        title = (EditText) findViewById( R.id.title);
-        until = (EditText) findViewById( R.id.expiration_date);
-        description = (EditText) findViewById(R.id.ad_description);
-        store = (EditText) findViewById(R.id.store);
+        title = findViewById( R.id.title);
+        until = findViewById( R.id.expiration_date);
+        description = findViewById(R.id.ad_description);
+        store = findViewById(R.id.store);
         address = findViewById(R.id.offer_address);
 
         VolleySingleton.init(this);
 
-        FrameLayout frameImage = (FrameLayout) findViewById(R.id.frame_image);
+        FrameLayout frameImage = findViewById(R.id.frame_image);
         frameImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,10 +239,8 @@ public class OfferCreateActivity extends NavigationBaseActivity
 //        if (isEditing)
 //            request = sendDataEditAd(jsonRequest);
 //        else
-
-
+//            Log.d(TAG, "sendData: jsonReuest" + jsonRequest );
             request = sendDataNew(jsonRequest);
-
             queue.add(request);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -292,7 +292,7 @@ public class OfferCreateActivity extends NavigationBaseActivity
                 }
                 ){
                     @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
+                    public Map<String, String> getHeaders() {
                         Map headers = new HashMap();
                         String token = AppSession.getCurrentUser().authToken;
                         headers.put("Authorization", token);
@@ -318,4 +318,47 @@ public class OfferCreateActivity extends NavigationBaseActivity
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+    private Bitmap reziseBitMap(Bitmap bitmap) {
+        Log.d(TAG, "reziseBitMap() called with: " + "bitmap = [" + bitmap + "]");
+        final int maxSize = 400;
+        return Utils.reziseBitMap(bitmap, maxSize);
+    }
+
+
+    // On activity result:
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(TAG, "onActivityResult() called with: requestCode = [" + requestCode + "], resultCode = [" + resultCode + "], data = [" + data + "]");
+
+        bitmap = null;
+        selectedImagePath = null;
+
+        if (resultCode == RESULT_OK && requestCode == STORAGE_PERMISSION_RC) {
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                String[] filePath = {MediaStore.Images.Media.DATA};
+                Cursor c = getContentResolver().query(selectedImage, filePath,
+                        null, null, null);
+                c.moveToFirst();
+                int columnIndex = c.getColumnIndex(filePath[0]);
+                selectedImagePath = c.getString(columnIndex);
+                c.close();
+
+                bitmap = BitmapFactory.decodeFile(selectedImagePath); // load
+                bitmap = reziseBitMap(bitmap);
+                // preview image
+                image.setImageBitmap(bitmap);
+                image.setVisibility(View.VISIBLE);
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Cancelado",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
 }
