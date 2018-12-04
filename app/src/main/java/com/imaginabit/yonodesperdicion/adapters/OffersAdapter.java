@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.models.Offer;
@@ -77,6 +78,7 @@ public class OffersAdapter extends RecyclerView.Adapter {
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView description;
         private CardView cardView;
         private TextView title;
         private ImageView status;
@@ -90,13 +92,14 @@ public class OffersAdapter extends RecyclerView.Adapter {
 
             Log.d(TAG, "ViewHolder: view" + view.toString());
 
-            cardView = (CardView) view.findViewById(R.id.ad_item);
-            title = (TextView) view.findViewById(R.id.ad_title);
-            status = (ImageView) view.findViewById(R.id.status_image);
-            expiration = (TextView) view.findViewById(R.id.ad_expiration);
-            distance = (TextView) view.findViewById(R.id.ad_distance);
-            store = (TextView) view.findViewById(R.id.offer_store);
-            image = (ImageView) view.findViewById(R.id.ad_image);
+            cardView = view.findViewById(R.id.ad_item);
+            title = view.findViewById(R.id.ad_title);
+            status = view.findViewById(R.id.status_image);
+            expiration = view.findViewById(R.id.ad_expiration);
+            distance = view.findViewById(R.id.ad_distance);
+            store = view.findViewById(R.id.offer_store);
+            image = view.findViewById(R.id.ad_image);
+            description = view.findViewById(R.id.offer_description);
 
             Log.d(TAG, "ViewHolder: ");
         }
@@ -130,13 +133,13 @@ public class OffersAdapter extends RecyclerView.Adapter {
 
 
         if ( holder instanceof ViewHolder ){
-            Offer offer = offersList.get(position);
+            final Offer offer = offersList.get(position);
 
             ((ViewHolder) holder).title.setText( offer.getTitle() );
             ((ViewHolder) holder).store.setText( offer.getStore() );
+            ((ViewHolder) holder).description.setText( offer.getDescription() );
             // holder.status.setText(ad.getStatus());
 //            ((ViewHolder) holder).status.getDrawable().setColorFilter(ContextCompat.getColor(context, ad.getStatusColor()), android.graphics.PorterDuff.Mode.MULTIPLY);
-
             ((ViewHolder) holder).expiration.setText( offer.getExpirationDateLong() );
             ((ViewHolder) holder).status.setVisibility( View.GONE );
 
@@ -158,16 +161,17 @@ public class OffersAdapter extends RecyclerView.Adapter {
             }
 
             // CardView click listener
+            ((ViewHolder) holder).cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, "oferta: " + offer, Toast.LENGTH_LONG).show();
 
-//            ((ViewHolder) holder).cardView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
 //                    Intent intent = new Intent(context, AdDetailActivity.class);
 //                    intent.putExtra("offer", (Serializable) offersList.get(position));
 //                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
 //                    context.startActivity(intent);
-//                }
-//            });
+                }
+            });
 
         } else{
             ((AdsAdapter.ProgressViewHolder) holder).progressBar.setIndeterminate(true);
