@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Offer {
+    private static final String TAG = "Offer Model";
 
 
     @SerializedName("id")
@@ -47,6 +48,51 @@ public class Offer {
     }
 
     private Date expiration;
+
+//    public Offer(Parcel in) {
+//        if (in.readByte() == 0) {
+//            id = null;
+//        } else {
+//            id = in.readInt();
+//        }
+//        title = in.readString();
+//        address = in.readString();
+//        store = in.readString();
+//        until = in.readString();
+//        status = in.readString();
+//    }
+
+//    public static final Creator<Offer> CREATOR = new Creator<Offer>() {
+//        @Override
+//        public Offer createFromParcel(Parcel in) {
+//            return new Offer(in);
+//        }
+//
+//        @Override
+//        public Offer[] newArray(int size) {
+//            return new Offer[size];
+//        }
+//    };
+
+    public Offer(){
+
+    }
+
+    public Offer(
+        String title,
+        String address,
+        String store,
+        String until,
+        String status,
+        Date expiration
+    ) {
+        this.title = title;
+        this.address = address;
+        this.store = store;
+        this.until = until;
+        this.expiration = expiration;
+        this.status = status;
+    }
 
     public Integer getId() {
         return id;
@@ -135,7 +181,7 @@ public class Offer {
 
         if (Utils.isNotEmptyOrNull(until) && ! "null".equals(until)) {
 //            DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
 
             try {
                 this.expiration = format.parse( until );
@@ -151,12 +197,28 @@ public class Offer {
         return expiration;
     }
 
-
 //    @Override
 //    public int describeContents() {
 //        return 0;
 //    }
-//
+
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        if (id == null) {
+//            dest.writeByte((byte) 0);
+//        } else {
+//            dest.writeByte((byte) 1);
+//            dest.writeInt(id);
+//        }
+//        dest.writeString(title);
+//        dest.writeString(address);
+//        dest.writeString(store);
+//        dest.writeString(until);
+//        dest.writeString(status);
+//    }
+
+
+
 //    @Override
 //    public void writeToParcel(Parcel dest, int flags) {
 //        dest.writeInt(this.id);
