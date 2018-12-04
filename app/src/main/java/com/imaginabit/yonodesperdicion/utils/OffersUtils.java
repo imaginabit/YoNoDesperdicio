@@ -110,8 +110,8 @@ public class OffersUtils {
 
 
     public interface FetchOffersCallback {
-        public void done(List<Offer> ads);
-        public void error(Exception e);
+        void done(List<Offer> ads);
+        void error(Exception e);
     }
 
     private static class ResultOffers {
@@ -161,6 +161,7 @@ public class OffersUtils {
         offer.setStore(jsonItem.optString("store"));
         offer.setUntil(jsonItem.optString("until"));
         offer.setStatus(jsonItem.optString("status"));
+        offer.setDescription(jsonItem.optString("description"));
 
         Image image = new Image();
         image.setLarge(jsonItem.optJSONObject("image").optString("large"));

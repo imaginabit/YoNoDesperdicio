@@ -29,12 +29,22 @@ public class Offer {
     @SerializedName("until")
     @Expose
     private String until;
+
     @SerializedName("status")
     @Expose
     private String status;
+
+    @SerializedName("description")
+    @Expose
+    private String description;
+
     @SerializedName("image")
     @Expose
     private Image image;
+
+    public void setExpiration(Date expiration) {
+        this.expiration = expiration;
+    }
 
     private Date expiration;
 
@@ -85,6 +95,12 @@ public class Offer {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) { this.description = description; }
 
     public Image getImage() {
         return image;
