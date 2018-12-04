@@ -140,6 +140,7 @@ public class OffersAdapter extends RecyclerView.Adapter {
             ((ViewHolder) holder).description.setText( offer.getDescription() );
             // holder.status.setText(ad.getStatus());
 //            ((ViewHolder) holder).status.getDrawable().setColorFilter(ContextCompat.getColor(context, ad.getStatusColor()), android.graphics.PorterDuff.Mode.MULTIPLY);
+
             ((ViewHolder) holder).expiration.setText( offer.getExpirationDateLong() );
             ((ViewHolder) holder).status.setVisibility( View.GONE );
 
@@ -166,7 +167,7 @@ public class OffersAdapter extends RecyclerView.Adapter {
                 public void onClick(View view) {
                     Toast.makeText(context, "oferta: " + offer, Toast.LENGTH_LONG).show();
 
-//                    Intent intent = new Intent(context, AdDetailActivity.class);
+//                    Intent intent = new Intent(context, OfferDetailActivity.class);
 //                    intent.putExtra("offer", (Serializable) offersList.get(position));
 //                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
 //                    context.startActivity(intent);

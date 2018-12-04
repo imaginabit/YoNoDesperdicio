@@ -90,7 +90,7 @@ public class AdsDatabase extends SQLiteOpenHelper {
             //add fields
             db.execSQL("CREATE TABLE " + Tables.FAVORITES + " ("
                             + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + AdsContract.FavoritesColumns.FAV_AD_ID + " INTEGER NOT NULL,"
+                            + AdsContract.FavoritesColumns.FAV_AD_ID + " INTEGER NOT NULL "
                             + ")"
             );
             version = 2;
