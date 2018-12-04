@@ -1,29 +1,24 @@
 package com.imaginabit.yonodesperdicion;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.location.Location;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
-import com.imaginabit.yonodesperdicion.activities.ProfileActivity;
 import com.imaginabit.yonodesperdicion.data.AdsDatabase;
 import com.imaginabit.yonodesperdicion.data.UserData;
-import com.imaginabit.yonodesperdicion.gcm.MyFirebaseInstanceService;
 import com.imaginabit.yonodesperdicion.helpers.UsersHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Conversation;
+import com.imaginabit.yonodesperdicion.models.Offer;
 import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.UiUtils;
@@ -46,6 +41,7 @@ public class AppSession {
     private static UserData user;
 
     public static Conversation currentConversation;
+    public static Offer currentOffer;
     public static User currentOtherUser;
     //public static Ad currentAd;
     public static Location lastLocation;
@@ -177,7 +173,7 @@ public class AppSession {
                     }
                 }){
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 return AppSession.authHeaders();
             }
         };

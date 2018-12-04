@@ -172,25 +172,25 @@
         <!-- android:label="Ofertas" -->
         <!-- android:parentActivityName=".activities.MainActivity" -->
         <!-- tools:ignore="UnusedAttribute" /> -->
-        <!-- <activity -->
-        <!-- android:name=".activities.OfferDetailActivity" -->
-        <!-- android:label="Oferta" -->
-        <!-- android:parentActivityName=".activities.OffersOldActivity" -->
-        <!-- tools:ignore="UnusedAttribute"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.VIEW" /> -->
+         <activity
+         android:name=".activities.OfferDetailActivity"
+         android:label="Oferta"
+         android:parentActivityName=".activities.OffersOldActivity"
+         tools:ignore="UnusedAttribute">
+         <intent-filter>
+         <action android:name="android.intent.action.VIEW" />
 
 
-        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
-        <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
+         <category android:name="android.intent.category.DEFAULT" />
+         <category android:name="android.intent.category.BROWSABLE" />
 
 
-        <!-- <data -->
-        <!-- android:host="yonodesperdicio.org" -->
-        <!-- android:pathPattern="/offers/" -->
-        <!-- android:scheme="https" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
+         <data
+         android:host="yonodesperdicio.org"
+         android:pathPattern="/offers/"
+         android:scheme="https" />
+         </intent-filter>
+         </activity>
 
         <activity
             android:name=".activities.GoogleSignInActivity"
