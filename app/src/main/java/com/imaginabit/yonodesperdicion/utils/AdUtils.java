@@ -90,7 +90,7 @@ public class AdUtils {
     }
 
     public static void fetchAds(final User u,final Activity activity, final FetchAdsCallback callback ){
-        final String TAG= AdUtils.TAG + " fetchAds filter user";
+        final String TAG= AdUtils.TAG + "fetchAds filter user";
         AsyncTask<Void, Void, Void> fetchAdsTask = new AsyncTask<Void, Void, Void>() {
             JSONObject jObj = null;
             public List<Ad> ads = null;
@@ -299,6 +299,7 @@ public class AdUtils {
         return null;
     }
 
+
     /**
      * Calculate last distance from ad and the user in Kilometers and set it in Ad
      * @param ad
@@ -448,11 +449,11 @@ public class AdUtils {
 
 
     public interface FetchAdsCallback {
-        public void done(List<Ad> ads, Exception e);
+        void done(List<Ad> ads, Exception e);
     }
 
     public interface FetchAdCallback {
-        public void done(Ad ad,User user, Exception e);
+        void done(Ad ad, User user, Exception e);
     }
 
     public static void fetchAd(final int adId, final FetchAdCallback callback ){
@@ -564,7 +565,7 @@ public class AdUtils {
                                     for (int i = 0; i < jsonItems.length(); i++) {
                                         String item = jsonItems.getString(i);
                                         Log.d(TAG, "onResponse: "+ item);
-                                        categories.add(item.toString());
+                                        categories.add(item);
 
                                     }
                                     callback.done(categories);
@@ -590,8 +591,8 @@ public class AdUtils {
 
 
     public interface categoriesCallback {
-        public void done(List<String> categories);
-        public void error(Exception e);
+        void done(List<String> categories);
+        void error(Exception e);
     }
 
 }

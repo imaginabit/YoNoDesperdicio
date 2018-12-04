@@ -255,7 +255,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     /**
-     * Esto deberia ser showNotification cuando se resive de tipo conversacion
+     * Esto deberia ser showNotification cuando se recibe de tipo conversacion
      * @param ms mesnaje
      * @param conversation conversacion
      */
