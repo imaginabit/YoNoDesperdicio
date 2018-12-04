@@ -1,6 +1,7 @@
 package com.imaginabit.yonodesperdicion.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
+import com.imaginabit.yonodesperdicion.activities.OfferDetailActivity;
 import com.imaginabit.yonodesperdicion.models.Offer;
 import com.imaginabit.yonodesperdicion.utils.OnLoadMoreListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -166,11 +169,13 @@ public class OffersAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(context, "oferta: " + offer, Toast.LENGTH_LONG).show();
+                    AppSession.currentOffer = offer;
 
-//                    Intent intent = new Intent(context, OfferDetailActivity.class);
+
+                    Intent intent = new Intent( context, OfferDetailActivity.class  );
 //                    intent.putExtra("offer", (Serializable) offersList.get(position));
-//                    intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-//                    context.startActivity(intent);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 }
             });
 
