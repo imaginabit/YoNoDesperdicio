@@ -6,15 +6,15 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
@@ -46,9 +48,11 @@ import com.imaginabit.yonodesperdicion.data.AdsContract;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
-import com.imaginabit.yonodesperdicion.models.Conversation;
 import com.imaginabit.yonodesperdicion.models.Offer;
+import com.imaginabit.yonodesperdicion.models.User;
+import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
+import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -56,7 +60,9 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -92,10 +98,12 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.ad_content);
+
+
         contentResolver = getContentResolver();
         valuesFavorite = new ContentValues();
-
 
         Offer offer = null;
         if (AppSession.currentOffer != null) {
@@ -112,46 +120,32 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
             Toast.makeText(this, "No se ha pasado el argumento", Toast.LENGTH_LONG).show();
         } else {
             myOffer = offer;
-//            observe(myOffer);
-
-//            projection = new String[]{AdsContract.FavoritesColumns.FAV_AD_ID};
-//            selectionClause = AdsContract.FavoritesColumns.FAV_AD_ID + " = ?";
-            selectionArgs = new String[]{Integer.toString(myOffer.getId())};
-
-//            Cursor returned = contentResolver.query(AdsContract.URI_TABLE_FAVORITES, projection, selectionClause, selectionArgs, "");
-//            Log.d(TAG, "onCreate: returned cursor " + returned);
-//            Log.d(TAG, "onCreate: returned cursor " + returned.getCount());
-
-//            if (returned.getCount() > 0) {
-//                isFavorite = true;
-//            }
-//            isBooked = (myOffer.getStatus() == Ad.Status.BOOKED);
-//            isDelivered = (myOffer.getStatus() == Ad.Status.DELIVERED);
 
             Log.d(TAG, "onCreate: myOffer = " + myOffer.getId());
             // Fix action bar and drawer
+
             Toolbar toolbar = setSupportedActionBar();
             toolbar.setTitle(offer.getTitle());
             setDrawerLayout(toolbar);
             getSupportActionBar().setTitle(offer.getTitle());
 
+            setSupportedActionBar(R.drawable.ic_arrow_back_black);
+
             VolleySingleton.init(this);
 
             // Content
             TextView bodyView = findViewById(R.id.ad_body);
-//            bodyView.setText(offer.get());
-
-
+            bodyView.setText(offer.getDescription());
             TextView expirationText = findViewById(R.id.ad_expiration);
             expirationText.setText(offer.getExpirationDateLong());
 
-            TextView weightText = findViewById(R.id.ad_weight);
-//            weightText.setText(offer.getWeightKgStr());
+//            TextView weightText = findViewById(R.id.ad_weight);
+//            weightText.setVisibility(View.GONE);
 
             final ImageView image = findViewById(R.id.backdrop);
 
             ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
-            final String imageUri = Constants.HOME_URL + offer.getImage().getMedium();
+            final String imageUri = offer.getImage().getMedium();
 
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, image);
@@ -161,6 +155,13 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
                 row.setVisibility(View.GONE);
             }
 
+            // Remove  rows unused in offers
+            TableRow row_weight = findViewById(R.id.row_weight);
+            TableRow row_cat = findViewById(R.id.row_categoria);
+            TableRow row_status = findViewById(R.id.row_status);
+            row_weight.setVisibility(View.GONE);
+            row_cat.setVisibility(View.GONE);
+            row_status.setVisibility(View.GONE);
 
             image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -199,56 +200,33 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
 //                eMap.printStackTrace();
             }
 
-            //actualy geting user info in ads api
-            Log.d(TAG, "onCreate: Ad id :" + offer.getId());
 
-//            OffersUtils.fetchOffer(offer.getId(), this, new OffersUtils.FetchOfferCallback() {
-//                @Override
-//                public void done(Offer offer) {
-//                    Log.d(TAG, "done() called with: offer = [" + offer + "]");
-//                        myOffer = offer;
-//
-//                        CardView cardView = (CardView) findViewById(R.id.perfil_mini);
-//                        cardView.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                Intent itntPerfil = new Intent(context, ProfileActivity.class);
-//                                itntPerfil.setFlags(itntPerfil.FLAG_ACTIVITY_NEW_TASK);
-//                                itntPerfil.putExtra("ad", (Parcelable) ad);
-//                                itntPerfil.putExtra("user", (Parcelable) user);
-//                                startActivity(itntPerfil);
-//                                //Toast.makeText(AdDetailActivity.this, "Usuario "+ user.getUserId(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//
-//                        observe(myOffer);
-//
-//
-//
-//                }
-//
-//                @Override
-//                public void error(Exception e) {
-//                    Log.d(TAG, "error() called with: e = [" + e + "]");
-//                }
-//            });
+            //load user data form api with offer.getUserId()
+            //Need save current activity for auth
+            MessagesUtils.mCurrentActivity = this;
+
+            if ( offer.getUserID() != null  ){
+                UserUtils.getUser(offer.getUserID(), this, new UserUtils.FetchUserCallback() {
+                    @Override
+                    public void done(User user, Exception e) {
+                        if (user != null) {
+                            TextView userName = findViewById(R.id.user_name);
+                            userName.setText(user.getName());
+                            TextView userLocation = findViewById(R.id.user_location);
+                            userLocation.setText(user.getUserName());
+                            RatingBar userRatting = findViewById(R.id.user_ratting);
+                            userRatting.setRating(user.getRatting());
+                        }
+
+                    }
+                });
+            }
 
 
-            //load user data form api with ad.getUserId()
 
-            //        TextView userName = (TextView) findViewById(R.id.user_name);
-            //        userName.setText(ad.getUserName());
-            //        TextView userLocation = (TextView) findViewById(R.id.user_location);
-            //        userLocation.setText(ad.getUserName());
-            //
-            //        TextView userRatting= (TextView) findViewById(R.id.user_ratting);
-            //        userRatting.setText(ad.getUserName());
-            //
-            //        RatingBar userWeight = (RatingBar) findViewById(R.id.user_weight);
-            //        userWeight.setRating();
 
             FloatingActionButton fab = findViewById(R.id.fab);
-            fab.hide();
+//            fab.hide();
 
 //            if (userIsOwner(offer)) {
 //                fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
@@ -273,150 +251,11 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
 
     }
 
-    private boolean userIsOwner(Ad ad) {
-        return AppSession.getCurrentUser() != null && AppSession.getCurrentUser().id == ad.getUserId();
+    private boolean userIsOwner(Offer offer) {
+        return AppSession.getCurrentUser() != null && AppSession.getCurrentUser().id == offer.getUserID();
     }
 
-    private void clickMessage(final Ad ad) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (Utils.checkLoginAndRedirect(OfferDetailActivity.this)) {
-            Log.v(TAG, "onClick: is logged!");
-
-            //check if there is a conversation created for this ad
-            final String converForAd = "conversationForAd" + ad.getId();
-            int converId = prefs.getInt(converForAd, 0);
-            String converTitle = ad.getTitle();
-
-            Log.d(TAG, "clickMessage: converId " + converId);
-
-            //this if take old method conversation id saved in preferencies
-            if (converId == 0) {
-                Log.d(TAG, "clickMessage: convertId = 0");
-                //create a new conversation, new message for this ad and go to it
-                /*
-                MessagesUtils.createConversation(converTitle, ad.getUserId(), new MessagesUtils.MessagesCallback() {
-                    @Override
-                    public void onFinished(List<Message> messages, Exception e) {
-                        Log.d(TAG, "clickMessage_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "]");
-                        //do nothing
-                    }
-
-                    @Override
-                    public void onFinished(List<Message> messages, Exception e, ArrayList data) {
-                        Log.d(TAG, "clickMessage_onFinished() called with: " + "messages = [" + messages + "], e = [" + e + "], data = [" + data + "]");
-                        if (data != null && data.size() > 0) {
-                            Conversation conversation = ((Conversation) data.get(0));
-                            int converId = conversation.getId();
-                            //Toast.makeText(AdDetailActivity.this, "" + conversation.getId(), Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "------------------------onFinished: converforad " + converForAd + " cid " + converId);
-
-                            prefsEdit.putInt(converForAd, conversation.getId());
-                            prefsEdit.commit();
-                            Intent intent = new Intent(context, MessagesChatActivity.class);
-                            intent.putExtra("conversationId", conversation.getId());
-                            intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
-                            AppSession.currentConversation = conversation;
-                            context.startActivity(intent);
-                        }
-                    }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        Log.d(TAG, "clickMesPsage_onError() called with: " + "errorMessage = [" + errorMessage + "]");
-                        //if (errorMessage=="{\"errors\":\"Not authenticated\"}");
-                        //TODO: onError
-                    }
-                });
-                */
-
-                Conversation conversation = null;
-                Uri conversationUri = null;
-
-                //search if this ad is in conversations table
-//                projection = new String[]{AdsContract.ConversationsColumns.CONVERSATION_ID};
-                projection = new String[]{};
-                selectionClause = AdsContract.ConversationsColumns.CONVERSATION_AD_ID + " = ?";
-                selectionArgs = new String[]{Integer.toString(myOffer.getId())};
-                Cursor returnConversation = contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS, projection, selectionClause, selectionArgs, "");
-                //if is in database take the existing conversation
-                if (returnConversation.moveToFirst()) {
-                    int paso = 0;
-                    do {
-                        int id = returnConversation.getInt(0);
-                        int webId = returnConversation.getInt(1);
-                        int adId = returnConversation.getInt(2);
-                        int userId = returnConversation.getInt(3);
-                        String title = returnConversation.getString(5);
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_WEB_ID 1: " + returnConversation.getString(1));
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_AD_ID 2: " + returnConversation.getString(2));
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_USER 3: " + returnConversation.getString(3));
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_STATUS 4: " + returnConversation.getString(4));
-                        Log.d(TAG, "Cursor recorriendo: CONVERSATION_TITLE 5: " + returnConversation.getString(5));
-
-                        paso++;
-                        if (paso > 1) title = title + " " + paso;
-
-                        conversation = new Conversation(webId, title);
-
-                        Log.d(TAG, "clickMessage: paso " + paso);
-                        conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
-                    } while (returnConversation.moveToNext());
-                } else {
-                    //search if there is other conversation in database with the same name
-                    projection = new String[]{};
-                    selectionClause = AdsContract.ConversationsColumns.CONVERSATION_TITLE + " = ?";
-                    selectionArgs = new String[]{myOffer.getTitle()};
-                    Cursor returnConversationByTitle = contentResolver.query(AdsContract.URI_TABLE_CONVERSATIONS, projection, selectionClause, selectionArgs, "");
-                    if (returnConversationByTitle.moveToFirst()) {
-                        do {
-
-                            int id = returnConversationByTitle.getInt(0);
-                            int webId = returnConversationByTitle.getInt(1);
-                            int adId = returnConversationByTitle.getInt(2);
-                            int userId = returnConversationByTitle.getInt(3);
-                            String title = returnConversationByTitle.getString(5);
-                            conversation = new Conversation(webId, title);
-                            conversationUri = AdsContract.Conversations.buildConversationUri(String.valueOf(id));
-                        } while (returnConversationByTitle.moveToNext());
-                    }
-                    //if there is no conversation create a new one
-                    if (conversation == null) {
-                        //db create new record in conversation table
-                        valuesConversation = new ContentValues();
-                        conversation = new Conversation(0, ad.getTitle());
-                        //save conversation in database
-                        valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_USER, ad.getUserId());
-                        valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_AD_ID, ad.getId());
-                        valuesConversation.put(AdsContract.ConversationsColumns.CONVERSATION_TITLE, ad.getTitle());
-                        conversationUri = contentResolver.insert(AdsContract.URI_TABLE_CONVERSATIONS, valuesConversation);
-                    }
-                    Log.d(TAG, "clickMessage: Record Id returned is " + conversationUri.toString());
-                }
-
-                //prefsEdit.putInt(converForAd, conversation.getId());
-                //prefsEdit.commit();
-
-                Intent intent = new Intent(context, MessagesChatActivity.class);
-//                intent.putExtra("conversationId", conversation.getId());
-                intent.putExtra("conversationUri", conversationUri);
-                intent.putExtra("adName", ad.getTitle());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                AppSession.currentConversation = conversation;
-                context.startActivity(intent);
-
-            } else {
-                Conversation conversation = new Conversation(converId, converTitle);
-
-                Intent intent = new Intent(context, MessagesChatActivity.class);
-                intent.putExtra("conversationId", converId);
-                AppSession.currentConversation = conversation;
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-
-            }
-        }
-    }
 
     /**
      * When click on edit Ad, send all data to add edit on
@@ -433,16 +272,12 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //return super.onCreateOptionsMenu(menu);
 
-//        if (userIsOwner(myOffer)) {
-//            getMenuInflater().inflate(R.menu.ad_owner, menu);
-//        } else {
-//            getMenuInflater().inflate(R.menu.ad, menu);
-//        }
-        getMenuInflater().inflate(R.menu.ad, menu);
 
-        return true;
+        getMenuInflater().inflate(R.menu.offer, menu);
+        return super.onCreateOptionsMenu(menu);
+
+//        return true;
     }
 
     @Override
@@ -461,7 +296,7 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
                     Log.d(TAG, "onOptionsItemSelected: Record Id returned is " + returned.toString());
                     isFavorite = true;
 
-                    Toast.makeText(OfferDetailActivity.this, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(OfferDetailActivity.this, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.d(TAG, "onOptionsItemSelected: is favorited and going to remove it ");
 //                    String where = AdsContract.FavoritesColumns.FAV_AD_ID + " = ?";
@@ -587,60 +422,28 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.d(TAG, "onPrepareOptionsMenu() called with: " + "menu = [" + menu + "]");
-
-        int favPosition = 0;
-
-
-        if (isFavorite) {
-            menu.getItem(favPosition).setIcon(R.drawable.ic_favorite_white);
-//            add icon on runtime
-            MenuItem mi = menu.add("Favorito");
-//            mi.setIcon(R.drawable.zanahoria);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                mi.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                Log.d(TAG, "onPrepareOptionsMenu: mi id : " + mi.getItemId());
-            }
-//            isFavorite = false;
-        } else {
-            menu.getItem(favPosition).setIcon(R.drawable.ic_favorite_border);
-//            isFavorite = true;
-        }
-
-//        if (myOffer != null && userIsOwner(myOffer)) {
-//
-//            if (isBooked) {
-//                Log.d(TAG, "onPrepareOptionsMenu: is booked");
-//                menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer_black);
-//            } else {
-//                Log.d(TAG, "onPrepareOptionsMenu: is not booked");
-//                menu.findItem(R.id.action_booked).setIcon(R.drawable.ic_local_offer);
-//            }
-//
-//            if (isDelivered) {
-//                Log.d(TAG, "onPrepareOptionsMenu: is delivered");
-//                menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied_black);
-//            } else {
-//                Log.d(TAG, "onPrepareOptionsMenu: is not delivered");
-//                menu.findItem(R.id.action_deliver).setIcon(R.drawable.ic_sentiment_very_satisfied);
-//            }
-//        }
-
-        return super.onPrepareOptionsMenu(menu);
-
-    }
-/*    @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady() called with: " + "googleMap = [" + googleMap + "]");
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-    }*/
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Add a marker in Sydney and move the camera
+            LatLng sydney = new LatLng(-34, 151);
+            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            //        Utils.getGPSfromZip(this, )
+            Geocoder geocoder = new Geocoder(this);
+            List<Address> addressList = null;
+            try {
+                addressList = geocoder.getFromLocationName(myOffer.getAddress(), 1);
+                Address location = addressList.get(0);
+                zoomLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+            mMap = googleMap;
+        }
+    }
 
     @Override
     public void onResume() {
@@ -683,41 +486,11 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
      * Center the map on ad location
      * @param location
      */
-    private void zoomLocation(Location location) {
+    private void zoomLocation(LatLng location) {
         if (location != null && mMap != null) {
-            // Updates the location and zoom of the MapView
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            //Log.d(TAG, "zoomLocation: latlng: " + latLng.toString() );
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 13);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, 13);
             mMap.animateCamera(cameraUpdate);
         }
-    }
-
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        //DO WHATEVER YOU WANT WITH GOOGLEMAP
-
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-//            googleMap.setMyLocationEnabled(true);
-//            //googleMap.setTrafficEnabled(true);
-//            //googleMap.setIndoorEnabled(true);
-//            //googleMap.setBuildingsEnabled(true);
-//            //googleMap.getUiSettings().setZoomControlsEnabled(true);
-//            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-//            zoomLocation(myOffer.getAddress());
-        }
-
-        mMap = googleMap;
     }
 
     //create and return share intent
@@ -727,6 +500,13 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, "Yo no desperdicio " + myOffer.getTitle() + " " +Constants.HOME_URL + "ad/"+ myOffer.getId() );
         return shareIntent;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this ,R.style.yndDialog );
+        OfferDetailActivity.this.finish();
     }
 
 

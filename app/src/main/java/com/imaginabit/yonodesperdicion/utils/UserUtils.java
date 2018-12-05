@@ -3,14 +3,12 @@ package com.imaginabit.yonodesperdicion.utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,8 +17,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
-import com.imaginabit.yonodesperdicion.R;
-import com.imaginabit.yonodesperdicion.activities.MainActivity;
 import com.imaginabit.yonodesperdicion.data.UserData;
 import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
@@ -94,7 +90,7 @@ public class UserUtils {
     }
 
     public interface FetchUserCallback {
-        public void done(User user, Exception e);
+        void done(User user, Exception e);
     }
 
 
@@ -105,8 +101,6 @@ public class UserUtils {
 
         try{
             JSONObject jsonRequest = new JSONObject();
-
-//           Mailbox_id puede ser: “inbox”, “sent” o “trash”
             RequestQueue queue = VolleySingleton.getRequestQueue();
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
@@ -119,6 +113,7 @@ public class UserUtils {
                             //Utils.dismissProgressDialog(UserUtils.pd);
                             mUser = null;
                             Exception error = null;
+
 
 //                            {"session_user": {
 //                                "id": 43,
@@ -186,7 +181,7 @@ public class UserUtils {
                     }
             ){
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {return AppSession.authHeaders();}
+                public Map<String, String> getHeaders() {return AppSession.authHeaders();}
             };
             queue.add(request);
 
@@ -281,7 +276,7 @@ public class UserUtils {
                         }
                 ) {
                     @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
+                    public Map<String, String> getHeaders() {
                         Log.d(TAG, "getHeaders() called");
                         Map headers = new HashMap();
                         String token = AppSession.getCurrentUser().authToken;
