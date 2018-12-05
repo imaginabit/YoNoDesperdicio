@@ -224,7 +224,7 @@
         </activity>
 
         <service
-            android:name=".helpers.FetchAddressIntentService"
+            android:name=".helpers.FetchcodAddressIntentService"
             android:exported="false" />
 
         <provider

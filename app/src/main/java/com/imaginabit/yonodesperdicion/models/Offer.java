@@ -39,6 +39,10 @@ public class Offer {
     @Expose
     private String description;
 
+    @SerializedName("user_id")
+    @Expose
+    private Integer userID;
+
     @SerializedName("image")
     @Expose
     private Image image;
@@ -197,6 +201,14 @@ public class Offer {
         return expiration;
     }
 
+    public Integer getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer userID) {
+        this.userID = userID;
+    }
+
 //    @Override
 //    public int describeContents() {
 //        return 0;
@@ -236,4 +248,6 @@ public class Offer {
 //        private Date expiration;
 //
 //    }
+
+
 }

@@ -11,13 +11,10 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ActionProvider;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -31,7 +28,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -45,7 +41,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
@@ -58,7 +53,6 @@ import com.imaginabit.yonodesperdicion.models.User;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
-//import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -69,6 +63,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+
+//import com.imaginabit.yonodesperdicion.views.RoundedImageView;
 
 public class AdDetailActivity extends NavigationBaseActivity implements Observer, OnMapReadyCallback {
     private static final String TAG = "AdDetailActivity";
@@ -106,7 +102,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         // Retrieve args
         final Bundle data = getIntent().getExtras();
         Log.d(TAG, "onCreate: data : " + data.toString());
-        final Ad ad = (Ad) data.getParcelable("ad");
+        final Ad ad = data.getParcelable("ad");
         Log.d(TAG, "onCreate: ad: " + ad);
         isFavorite = false;
 
@@ -139,26 +135,26 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             VolleySingleton.init(this);
 
             // Content
-            TextView bodyView = (TextView) findViewById(R.id.ad_body);
+            TextView bodyView = findViewById(R.id.ad_body);
             bodyView.setText(ad.getBody());
 
 
-            statusView = (TextView) findViewById(R.id.ad_status);
+            statusView = findViewById(R.id.ad_status);
             statusView.setText(ad.getStatusStr());
             statusView.setTextColor(ContextCompat.getColor(context, ad.getStatusColor()));
 
 
-            statusImageView = (ImageView) findViewById(R.id.ad_image_status);
+            statusImageView = findViewById(R.id.ad_image_status);
             statusImageView.setImageDrawable(ContextCompat.getDrawable(context, ad.getStatusImage()));
 //            statusImageView.getDrawable().setColorFilter(ContextCompat.getColor(context, ad.getStatusColor()), android.graphics.PorterDuff.Mode.MULTIPLY);
 
-            TextView expirationText = (TextView) findViewById(R.id.ad_expiration);
+            TextView expirationText = findViewById(R.id.ad_expiration);
             expirationText.setText(ad.getExpirationDateLong());
 
-            TextView weightText = (TextView) findViewById(R.id.ad_weight);
+            TextView weightText = findViewById(R.id.ad_weight);
             weightText.setText(ad.getWeightKgStr());
 
-            final ImageView image = (ImageView) findViewById(R.id.backdrop);
+            final ImageView image = findViewById(R.id.backdrop);
 
             ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
             final String imageUri = Constants.HOME_URL + ad.getImageUrl();
@@ -167,22 +163,22 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             imageLoader.displayImage(imageUri, image);
 
 
-            TextView categoriaText = (TextView) findViewById(R.id.ad_category);
+            TextView categoriaText = findViewById(R.id.ad_category);
             categoriaText.setText(ad.getCategoria());
 
 
             Log.d(TAG, "onCreate: " + ad.getStatusStr() + ad.getStatusColor());
 
             if (ad.getStatusStr() == "entregado") {
-                TableRow row = (TableRow) findViewById(R.id.row_status);
+                TableRow row = findViewById(R.id.row_status);
                 row.setVisibility(View.GONE);
             }
             if (Utils.isEmptyOrNull(ad.getExpirationDateLong())) {
-                TableRow row = (TableRow) findViewById(R.id.row_expiration);
+                TableRow row = findViewById(R.id.row_expiration);
                 row.setVisibility(View.GONE);
             }
             if (Utils.isEmptyOrNull(ad.getWeightKgStr())) {
-                TableRow row = (TableRow) findViewById(R.id.row_weight);
+                TableRow row = findViewById(R.id.row_weight);
                 row.setVisibility(View.GONE);
             }
 
@@ -201,7 +197,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 }
             });
 
-            mMapView = (MapView) findViewById(R.id.mapview);
+            mMapView = findViewById(R.id.mapview);
             mMapView.onCreate(savedInstanceState);
 
             // Gets to GoogleMap from the MapView and does initialization stuff
@@ -232,15 +228,15 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                     Log.d(TAG, "done() called with: " + "ad = [" + ad + "], user = [" + user + "], e = [" + e + "]");
                     if (ad != null) {
                         mAd = ad;
-                        TextView userName = (TextView) findViewById(R.id.user_name);
+                        TextView userName = findViewById(R.id.user_name);
                         userName.setText(user.getUserName());
-                        TextView userLocation = (TextView) findViewById(R.id.user_location);
+                        TextView userLocation = findViewById(R.id.user_location);
                         userLocation.setText(user.getZipCode());
 
-                        RatingBar userRatting = (RatingBar) findViewById(R.id.user_ratting);
+                        RatingBar userRatting = findViewById(R.id.user_ratting);
                         userRatting.setRating(user.getRatting());
 
-                        TextView userWeight = (TextView) findViewById(R.id.user_weight);
+                        TextView userWeight = findViewById(R.id.user_weight);
                         userWeight.setText(Utils.gramsToKgStr(user.getGrams()));
 
                         //load avatar
@@ -248,19 +244,19 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                             Log.d(TAG, "done: User Avatar: " + user.getAvatar());
                             Log.d(TAG, "done: Default Avatar: " + Constants.DEFAULT_USER_AVATAR);
 //                            RoundedImageView userAvatar = (RoundedImageView) findViewById(R.id.user_avatar);
-                            ImageView userAvatar = (ImageView) findViewById(R.id.user_avatar);
+                            ImageView userAvatar = findViewById(R.id.user_avatar);
                             ImageLoader imageLoaderAvatar = ImageLoader.getInstance(); // Get singleton instance
                             imageLoaderAvatar.displayImage(Constants.HOME_URL + user.getAvatar(), userAvatar);
                         }
 
-                        CardView cardView = (CardView) findViewById(R.id.perfil_mini);
+                        CardView cardView = findViewById(R.id.perfil_mini);
                         cardView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Intent itntPerfil = new Intent(context, ProfileActivity.class);
-                                itntPerfil.setFlags(itntPerfil.FLAG_ACTIVITY_NEW_TASK);
-                                itntPerfil.putExtra("ad", (Parcelable) ad);
-                                itntPerfil.putExtra("user", (Parcelable) user);
+                                itntPerfil.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                itntPerfil.putExtra("ad", ad);
+                                itntPerfil.putExtra("user", user);
                                 startActivity(itntPerfil);
                                 //Toast.makeText(AdDetailActivity.this, "Usuario "+ user.getUserId(), Toast.LENGTH_SHORT).show();
                             }
@@ -290,7 +286,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
             //        RatingBar userWeight = (RatingBar) findViewById(R.id.user_weight);
             //        userWeight.setRating();
 
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            FloatingActionButton fab = findViewById(R.id.fab);
 
             if (userIsOwner(ad)) {
                 fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
@@ -443,7 +439,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 //                intent.putExtra("conversationId", conversation.getId());
                 intent.putExtra("conversationUri", conversationUri);
                 intent.putExtra("adName", ad.getTitle());
-                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 AppSession.currentConversation = conversation;
                 context.startActivity(intent);
 
@@ -453,7 +449,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 Intent intent = new Intent(context, MessagesChatActivity.class);
                 intent.putExtra("conversationId", converId);
                 AppSession.currentConversation = conversation;
-                intent.setFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
 
             }
@@ -468,7 +464,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         Log.d(TAG, "clickEdidAd() called with: " + "ad = [" + ad + "]");
 
         Intent intent = new Intent(context, AdCreateActivity.class);
-        intent.putExtra("ad", (Parcelable) ad);
+        intent.putExtra("ad", ad);
         startActivity(intent);
 
     }
@@ -613,7 +609,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
                 }
         ) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map headers = new HashMap();
                 String token = AppSession.getCurrentUser().authToken;
                 headers.put("Authorization", token);
@@ -672,17 +668,7 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         return super.onPrepareOptionsMenu(menu);
 
     }
-/*    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "onMapReady() called with: " + "googleMap = [" + googleMap + "]");
-        mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-    }*/
 
     @Override
     public void onResume() {

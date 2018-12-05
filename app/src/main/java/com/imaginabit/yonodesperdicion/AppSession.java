@@ -91,6 +91,7 @@ public class AppSession {
             Log.d(TAG, "getHeaders: authToken " + token);
             headers.put("Content-Type", "application/json; charset=utf-8");
         }  else {
+
             MessagesUtils.mCurrentActivity.finish();
             Utils.checkLoginAndRedirect(MessagesUtils.mCurrentActivity);
         }

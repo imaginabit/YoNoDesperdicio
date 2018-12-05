@@ -166,6 +166,7 @@ public class OffersUtils {
         offer.setUntil(jsonItem.optString("until"));
         offer.setStatus(jsonItem.optString("status"));
         offer.setDescription(jsonItem.optString("description"));
+        offer.setUserID(jsonItem.optInt( "user_id" ));
 
         Image image = new Image();
         image.setLarge(jsonItem.optJSONObject("image").optString("large"));
