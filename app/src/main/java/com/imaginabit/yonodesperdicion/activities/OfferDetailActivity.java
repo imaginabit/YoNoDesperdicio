@@ -338,32 +338,11 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
                 Toast.makeText(OfferDetailActivity.this, "Marcado como entregado", Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.action_share_button) {
-            Log.d(TAG, "onOptionsItemSelected: Compratir");
+            Log.d(TAG, "onOptionsItemSelected: Compartir");
             startActivity( Intent.createChooser(createShareIntent(),"Compartir") ); //createChooser() need to show directshare icons!
-        }
-
-
-
-        if (isBooked == false && isDelivered == false && id != R.id.action_share_button  ) {
-            Log.d(TAG, "onOptionsItemSelected: avalaible ");
-            statusImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.circle_available));
-            statusView.setTextColor(ContextCompat.getColor(context, R.color.ad_disponible));
-            statusView.setText("disponible");
-            try {
-                sendStatus(Ad.Status.AVAILABLE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        //send status
-        try {
-            if (isBooked)
-                sendStatus(Ad.Status.BOOKED);
-            if (isDelivered)
-                sendStatus(Ad.Status.DELIVERED);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else if (id == android.R.id.home ) {
+            finish();
+            return true;
         }
 
         invalidateOptionsMenu();
@@ -498,7 +477,7 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
         Log.d(TAG, "createShareIntent: ");
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "Yo no desperdicio " + myOffer.getTitle() + " " +Constants.HOME_URL + "ad/"+ myOffer.getId() );
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Yo no desperdicio " + myOffer.getTitle() + " " +Constants.HOME_URL + "offers/"+ myOffer.getId() );
         return shareIntent;
     }
 
