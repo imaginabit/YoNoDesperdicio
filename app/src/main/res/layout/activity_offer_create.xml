@@ -189,7 +189,22 @@
 
                 </LinearLayout>
 
+                <Button
+                    android:id="@+id/delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/cardview_light_background"
+                    android:paddingEnd="20dp"
+                    android:paddingStart="20dp"
+                    android:text="@string/borrar_oferta"
+                    android:textColor="@color/accent"
+                    />
+
             </LinearLayout>
+
+
 
         </android.support.v4.widget.NestedScrollView>
 

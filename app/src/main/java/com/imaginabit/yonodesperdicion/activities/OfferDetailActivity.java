@@ -95,6 +95,10 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
 
     private ShareActionProvider mShareActionProvider;
 
+    static final int OFFER_EDIT_REQUEST = 1;  // The request code
+    static final int OFFER_EDIT_OK = 2;  // The request code
+    static final int OFFER_EDIT_DELETE = 3;  // The request code
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -226,49 +230,59 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
 
 
             FloatingActionButton fab = findViewById(R.id.fab);
-//            fab.hide();
 
-//            if (userIsOwner(offer)) {
-//                fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
-//                fab.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        clickEdidAd(offer);
-////                        Toast.makeText(AdDetailActivity.this, "No disponible", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-//            } else {
-//                fab.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        clickMessage(offer);
-//                    }
-//                });
-//            }
+
+            if (userIsOwner(offer)) {
+                fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_mode_edit_white));
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickEdit();
+//                        Toast.makeText(AdDetailActivity.this, "No disponible", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
+                fab.hide();
+            }
         }
 
 
     }
 
     private boolean userIsOwner(Offer offer) {
-        return AppSession.getCurrentUser() != null && AppSession.getCurrentUser().id == offer.getUserID();
+        Log.d(TAG, "userIsOwner() called with: offer = [" + offer + "]");
+        Boolean isOwner = AppSession.getCurrentUser() != null && AppSession.getCurrentUser().id == offer.getUserID();
+        Log.d(TAG, "userIsOwner: Current User: " + AppSession.getCurrentUser().id + " offer user " + offer.getUserID() );
+        Log.d(TAG, "userIsOwner: is? " + isOwner );
+        return  isOwner;
     }
 
 
 
     /**
      * When click on edit Ad, send all data to add edit on
-     * @param ad
      */
-    private void clickEdidAd(Ad ad) {
-        Log.d(TAG, "clickEdidAd() called with: " + "ad = [" + ad + "]");
+    private void clickEdit() {
 
-        Intent intent = new Intent(context, AdCreateActivity.class);
-        intent.putExtra("ad", ad);
-        startActivity(intent);
+        AppSession.currentOffer = myOffer;
+        Intent intent = new Intent(context, OfferCreateActivity.class);
+        startActivityForResult( intent, OFFER_EDIT_REQUEST);
+//        startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode == OFFER_EDIT_DELETE ){
+            Intent itnt= new Intent(context, OffersOldActivity.class );
+            itnt.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT );
+            startActivity(itnt);
+            finish();
+        }
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -341,6 +355,7 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
             Log.d(TAG, "onOptionsItemSelected: Compartir");
             startActivity( Intent.createChooser(createShareIntent(),"Compartir") ); //createChooser() need to show directshare icons!
         } else if (id == android.R.id.home ) {
+            AppSession.currentOffer = null;
             finish();
             return true;
         }

@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
@@ -168,10 +167,8 @@ public class OffersAdapter extends RecyclerView.Adapter {
             ((ViewHolder) holder).cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "oferta: " + offer, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(context, "oferta: " + offer, Toast.LENGTH_LONG).show();
                     AppSession.currentOffer = offer;
-
-
                     Intent intent = new Intent( context, OfferDetailActivity.class  );
 //                    intent.putExtra("offer", (Serializable) offersList.get(position));
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

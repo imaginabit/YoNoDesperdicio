@@ -90,22 +90,23 @@ public class OffersOldActivity extends NavigationBaseActivity
 
         final Activity offersActivity = this;
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // TODO: CHECK
                 if (Utils.checkLoginAndRedirect( OffersOldActivity.this )) {
+                    AppSession.currentOffer = null;
                     Intent intent = new Intent(context, OfferCreateActivity.class);
                     startActivity(intent);
                 }
             }
         });
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout = findViewById(R.id.swiperefresh);
 
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_ads);
+        recyclerView = findViewById(R.id.recycler_ads);
         recyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
@@ -266,6 +267,7 @@ public class OffersOldActivity extends NavigationBaseActivity
     @Override
     public void onStart() {
         //mGoogleApiClient.connect();
+        getOffersFromWeb();
         checkGoogleApiClient();
         super.onStart();
     }
@@ -524,5 +526,12 @@ public class OffersOldActivity extends NavigationBaseActivity
 //            }
 //        }
     }
+
+    @Override
+    protected void onResume() {
+        getOffersFromWeb();
+        super.onResume();
+    }
+
 
 }
