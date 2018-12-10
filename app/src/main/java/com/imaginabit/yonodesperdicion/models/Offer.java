@@ -181,6 +181,22 @@ public class Offer {
         return "";
     }
 
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", address='" + address + '\'' +
+                ", store='" + store + '\'' +
+                ", until='" + until + '\'' +
+                ", status='" + status + '\'' +
+                ", description='" + description + '\'' +
+                ", userID=" + userID +
+                ", image=" + image +
+                ", expiration=" + expiration +
+                '}';
+    }
+
     public Date getExpiration() {
 
         if (Utils.isNotEmptyOrNull(until) && ! "null".equals(until)) {

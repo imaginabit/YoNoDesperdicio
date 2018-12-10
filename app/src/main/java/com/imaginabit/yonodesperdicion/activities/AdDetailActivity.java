@@ -68,6 +68,11 @@ import java.util.Observer;
 
 public class AdDetailActivity extends NavigationBaseActivity implements Observer, OnMapReadyCallback {
     private static final String TAG = "AdDetailActivity";
+    private static final int AD_EDIT_REQUEST = 1;
+
+    static final int AD_EDIT_OK = 2;
+    static final int AD_EDIT_DELETE = 3;
+
     private Ad mAd;
     private boolean isFavorite;
     private boolean isBooked;
@@ -465,7 +470,8 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
 
         Intent intent = new Intent(context, AdCreateActivity.class);
         intent.putExtra("ad", ad);
-        startActivity(intent);
+        startActivityForResult( intent, AD_EDIT_REQUEST);
+
 
     }
 
@@ -756,5 +762,17 @@ public class AdDetailActivity extends NavigationBaseActivity implements Observer
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, "Yo no desperdicio " + mAd.getTitle() + " " +Constants.HOME_URL + "ad/"+ mAd.getId() );
         return shareIntent;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode == AD_EDIT_DELETE ){
+            Intent itnt= new Intent(context, MainActivity.class);
+            itnt.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(itnt);
+            finish();
+        }
+
     }
 }
