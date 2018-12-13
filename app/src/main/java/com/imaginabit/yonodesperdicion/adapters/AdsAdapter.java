@@ -23,7 +23,6 @@ import com.imaginabit.yonodesperdicion.activities.AdDetailActivity;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.OnLoadMoreListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -234,9 +233,8 @@ public class AdsAdapter extends RecyclerView.Adapter {
      * @param ads Ad list
      */
     public void setData(List<Ad> ads) {
-        adsList.clear();
-
         if (ads != null) {
+            adsList.clear();
             for (Ad ad : ads) {
                 adsList.add(ad);
             }

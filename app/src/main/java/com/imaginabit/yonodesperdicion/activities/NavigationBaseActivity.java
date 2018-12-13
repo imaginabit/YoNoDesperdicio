@@ -39,7 +39,7 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Set the context
-        this.context = getApplicationContext();
+        context = getApplicationContext();
         App.appContext = context;
         isAvatarFromLocal=false;
     }
@@ -52,12 +52,17 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
     }
 
     public Toolbar setSupportedActionBar(int navIconRid) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+//        Toolbar toolbarCollapsing = (Toolbar) findViewById(R.id.collapsing_toolbar);
+
         // Set the navigation icon if passed
         if (navIconRid > 0) {
             toolbar.setNavigationIcon(navIconRid);
+//            toolbarCollapsing.setNavigationIcon(navIconRid);
         }
         setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbarCollapsing);
+
         return toolbar;
     }
 
@@ -65,21 +70,21 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
      * Fix the Drawer Layout to activity
      */
     public DrawerLayout setDrawerLayout(Toolbar toolbar) {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Current user data
         View headerNavView = navigationView.getHeaderView(0);
-        navUserImage = (ImageView) headerNavView.findViewById(R.id.nav_header_user_image);
-        TextView navUserFullname = (TextView) headerNavView.findViewById(R.id.nav_header_user_fullname);
+        navUserImage = headerNavView.findViewById(R.id.nav_header_user_image);
+        TextView navUserFullname = headerNavView.findViewById(R.id.nav_header_user_fullname);
 
         // User login panel
-        LinearLayout navHeaderLayout = (LinearLayout) headerNavView.findViewById(R.id.nav_header_layout);
+        LinearLayout navHeaderLayout = headerNavView.findViewById(R.id.nav_header_layout);
         UserData user = AppSession.getCurrentUser();
         if (user == null) {
             navUserFullname.setText("Inicia sesión");
@@ -144,6 +149,13 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             itntMain.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(itntMain);
         }
+
+        else if (id == R.id.nav_offers) {
+            Intent itntOffers = new Intent(context, OffersOldActivity.class);
+//            itntOffers.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(itntOffers);
+        }
+
         else if (id == R.id.nav_perfil) {
             if (Utils.checkLoginAndRedirect(this)){
                 Intent itntPerfil = new Intent(context, ProfileActivity.class);
@@ -178,14 +190,14 @@ public abstract class NavigationBaseActivity extends AppCompatActivity
             AppSession.restart(NavigationBaseActivity.this);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById( R.id.drawer_layout );
+        DrawerLayout drawer = findViewById( R.id.drawer_layout );
         try {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawer(GravityCompat.START);
