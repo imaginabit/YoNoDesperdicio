@@ -140,8 +140,22 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
             // Content
             TextView bodyView = findViewById(R.id.ad_body);
             bodyView.setText(offer.getDescription());
+
             TextView expirationText = findViewById(R.id.ad_expiration);
             expirationText.setText(offer.getExpirationDateLong());
+
+            TextView direccion = findViewById(R.id.ad_status);
+            direccion.setText(offer.getAddress());
+            direccion.setTextColor(getResources().getColor(R.color.black));
+            statusImageView = findViewById(R.id.ad_image_status);
+//            statusImageView.setVisibility(View.GONE);
+            statusImageView.setImageResource( android.R.drawable.ic_dialog_map );
+            statusImageView.setColorFilter(getResources().getColor(R.color.grey_500));
+
+
+
+
+
 
 //            TextView weightText = findViewById(R.id.ad_weight);
 //            weightText.setVisibility(View.GONE);
@@ -154,10 +168,11 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
             ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
             imageLoader.displayImage(imageUri, image);
 
+            TableRow row = findViewById(R.id.row_expiration);
             if (Utils.isEmptyOrNull(offer.getExpirationDateLong())) {
-                TableRow row = findViewById(R.id.row_expiration);
                 row.setVisibility(View.GONE);
             }
+
 
             // Remove  rows unused in offers
             TableRow row_weight = findViewById(R.id.row_weight);
@@ -165,7 +180,7 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
             TableRow row_status = findViewById(R.id.row_status);
             row_weight.setVisibility(View.GONE);
             row_cat.setVisibility(View.GONE);
-            row_status.setVisibility(View.GONE);
+//            row_status.setVisibility(View.GONE);
 
             image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,6 +199,7 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
 
             mMapView = findViewById(R.id.mapview);
             mMapView.onCreate(savedInstanceState);
+            mMapView.setVisibility(View.GONE);
 
             // Gets to GoogleMap from the MapView and does initialization stuff
             try {
@@ -418,7 +434,9 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady() called with: " + "googleMap = [" + googleMap + "]");
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && 
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "onMapReady: Permission granted! ");
             // Add a marker in Sydney and move the camera
             LatLng sydney = new LatLng(-34, 151);
             googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -427,10 +445,15 @@ public class OfferDetailActivity extends NavigationBaseActivity implements Obser
             //        Utils.getGPSfromZip(this, )
             Geocoder geocoder = new Geocoder(this);
             List<Address> addressList = null;
+
+            Log.d(TAG, "onMapReady: myoffer adress");
+            Toast.makeText(this, "addrss:" + myOffer.getAddress(), Toast.LENGTH_LONG).show();
+
             try {
                 addressList = geocoder.getFromLocationName(myOffer.getAddress(), 1);
                 Address location = addressList.get(0);
                 zoomLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+                Toast.makeText(this, "ZOOM TO LOCATION " + location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
