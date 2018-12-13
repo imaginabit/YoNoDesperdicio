@@ -17,6 +17,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
 import com.imaginabit.yonodesperdicion.activities.MessagesActivity;
 import com.imaginabit.yonodesperdicion.activities.MessagesChatActivity;
@@ -98,7 +99,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 Conversation cs  = (Conversation) data.get(0);
 
                                 Log.d(TAG, "onFinished: conversation 0 : " + cs );
-                                List<Message> ms = (ArrayList<Message>) cs.getMessages();
+                                List<Message> ms = cs.getMessages();
 
                                 Log.d(TAG, "ms size  "+ ms.size() + " body last msg " + ms.get(ms.size()-1).getBody() );
                                 Log.d(TAG, "ms size  msg string "+  ms.get(ms.size()-1).toString() );
@@ -254,7 +255,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     /**
-     * Esto deberia ser showNotification cuando se resive de tipo conversacion
+     * Esto deberia ser showNotification cuando se recibe de tipo conversacion
      * @param ms mesnaje
      * @param conversation conversacion
      */
