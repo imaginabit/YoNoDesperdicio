@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+android:id/secondaryProgress"
+    <item android:id="@android:id/secondaryProgress"
         android:gravity="left"
         android:width="90dp"
         android:height="35dp"
@@ -10,7 +10,7 @@
             android:tint="@color/activity_background"
             />
         </item>
-    <item android:id="@+android:id/background"
+    <item android:id="@android:id/background"
         android:width="90dp"
         android:height="16dp"
         android:gravity="left"
@@ -20,7 +20,7 @@
             android:tint="@color/primary"
             />
     </item>
-    <item android:id="@+android:id/progress"
+    <item android:id="@android:id/progress"
         android:width="90dp"
         android:height="48dp"
         android:gravity="left"
