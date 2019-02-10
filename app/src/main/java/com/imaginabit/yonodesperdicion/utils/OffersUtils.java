@@ -110,8 +110,12 @@ public class OffersUtils {
 
 
     public interface FetchOffersCallback {
-        public void done(List<Offer> ads);
-        public void error(Exception e);
+        void done(List<Offer> ads);
+        void error(Exception e);
+    }
+    public interface FetchOfferCallback {
+        void done(Offer offer);
+        void error(Exception e);
     }
 
     private static class ResultOffers {
@@ -161,6 +165,8 @@ public class OffersUtils {
         offer.setStore(jsonItem.optString("store"));
         offer.setUntil(jsonItem.optString("until"));
         offer.setStatus(jsonItem.optString("status"));
+        offer.setDescription(jsonItem.optString("description"));
+        offer.setUserID(jsonItem.optInt( "user_id" ));
 
         Image image = new Image();
         image.setLarge(jsonItem.optJSONObject("image").optString("large"));
@@ -171,4 +177,53 @@ public class OffersUtils {
 
         return offer;
     }
+
+    public static void fetchOffer(final int offerId, final FetchOfferCallback callback ){
+        Log.d(TAG, "fetchOffer() called with: offerId = [" + offerId + "], callback = [" + callback + "]");
+
+        AsyncTask<Void, Void, Void> fetchAdTask = new AsyncTask<Void, Void, Void>() {
+            JSONObject jObj = null;
+            JSONObject jsonData = null;
+            private Offer offer = null;
+//            private User user = null;
+            private Exception e = null;
+
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                String json = null;
+                try {
+                    json = Utils.downloadJsonUrl(Constants.OFFERS_API_URL+  "/" + offerId);
+                } catch (IOException e) {
+                    Log.e( TAG , "------ ERROR ----- IOExeption " + e.toString());
+                    this.e = e;
+                }
+
+                // try parse the string to a JSON object
+                try {
+                    jObj = new JSONObject(json);
+                } catch (JSONException e) {
+                    Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+                    this.e = e;
+                } catch (Throwable t) {
+                    Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
+                }
+                offer = createOffer(jObj);
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if ( e == null)
+                    callback.done(offer);
+                else
+                    callback.error(e);
+                super.onPostExecute(aVoid);
+            }
+        };
+        TasksUtils.execute(fetchAdTask);
+    }
+
+
 }

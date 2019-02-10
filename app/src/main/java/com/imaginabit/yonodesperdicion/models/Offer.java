@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Offer {
+    private static final String TAG = "Offer Model";
 
 
     @SerializedName("id")
@@ -29,14 +30,73 @@ public class Offer {
     @SerializedName("until")
     @Expose
     private String until;
+
     @SerializedName("status")
     @Expose
     private String status;
+
+    @SerializedName("description")
+    @Expose
+    private String description;
+
+    @SerializedName("user_id")
+    @Expose
+    private Integer userID;
+
     @SerializedName("image")
     @Expose
     private Image image;
 
+    public void setExpiration(Date expiration) {
+        this.expiration = expiration;
+    }
+
     private Date expiration;
+
+//    public Offer(Parcel in) {
+//        if (in.readByte() == 0) {
+//            id = null;
+//        } else {
+//            id = in.readInt();
+//        }
+//        title = in.readString();
+//        address = in.readString();
+//        store = in.readString();
+//        until = in.readString();
+//        status = in.readString();
+//    }
+
+//    public static final Creator<Offer> CREATOR = new Creator<Offer>() {
+//        @Override
+//        public Offer createFromParcel(Parcel in) {
+//            return new Offer(in);
+//        }
+//
+//        @Override
+//        public Offer[] newArray(int size) {
+//            return new Offer[size];
+//        }
+//    };
+
+    public Offer(){
+
+    }
+
+    public Offer(
+        String title,
+        String address,
+        String store,
+        String until,
+        String status,
+        Date expiration
+    ) {
+        this.title = title;
+        this.address = address;
+        this.store = store;
+        this.until = until;
+        this.expiration = expiration;
+        this.status = status;
+    }
 
     public Integer getId() {
         return id;
@@ -86,6 +146,12 @@ public class Offer {
         this.status = status;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) { this.description = description; }
+
     public Image getImage() {
         return image;
     }
@@ -115,11 +181,27 @@ public class Offer {
         return "";
     }
 
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", address='" + address + '\'' +
+                ", store='" + store + '\'' +
+                ", until='" + until + '\'' +
+                ", status='" + status + '\'' +
+                ", description='" + description + '\'' +
+                ", userID=" + userID +
+                ", image=" + image +
+                ", expiration=" + expiration +
+                '}';
+    }
+
     public Date getExpiration() {
 
         if (Utils.isNotEmptyOrNull(until) && ! "null".equals(until)) {
 //            DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
 
             try {
                 this.expiration = format.parse( until );
@@ -135,12 +217,36 @@ public class Offer {
         return expiration;
     }
 
+    public Integer getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer userID) {
+        this.userID = userID;
+    }
 
 //    @Override
 //    public int describeContents() {
 //        return 0;
 //    }
-//
+
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        if (id == null) {
+//            dest.writeByte((byte) 0);
+//        } else {
+//            dest.writeByte((byte) 1);
+//            dest.writeInt(id);
+//        }
+//        dest.writeString(title);
+//        dest.writeString(address);
+//        dest.writeString(store);
+//        dest.writeString(until);
+//        dest.writeString(status);
+//    }
+
+
+
 //    @Override
 //    public void writeToParcel(Parcel dest, int flags) {
 //        dest.writeInt(this.id);
@@ -158,4 +264,6 @@ public class Offer {
 //        private Date expiration;
 //
 //    }
+
+
 }

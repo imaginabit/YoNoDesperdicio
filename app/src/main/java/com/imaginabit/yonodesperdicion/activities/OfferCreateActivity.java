@@ -2,6 +2,7 @@ package com.imaginabit.yonodesperdicion.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -12,12 +13,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,6 +39,8 @@ import com.imaginabit.yonodesperdicion.helpers.VolleyErrorHelper;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Offer;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +65,7 @@ public class OfferCreateActivity extends NavigationBaseActivity
     EditText address;
     EditText until;
     EditText description;
+    Button delete;
 
     Offer offer;
 
@@ -104,10 +110,11 @@ public class OfferCreateActivity extends NavigationBaseActivity
         imageEditable.setVisibility(View.INVISIBLE);
 
         title = findViewById( R.id.title);
-        until = findViewById( R.id.expiration_date);
         description = findViewById(R.id.ad_description);
         store = findViewById(R.id.store);
         address = findViewById(R.id.offer_address);
+
+        delete = findViewById(R.id.delete);
 
         VolleySingleton.init(this);
 
@@ -121,15 +128,55 @@ public class OfferCreateActivity extends NavigationBaseActivity
         });
 
         // Retrieve args
-        Bundle data = getIntent().getExtras();
-        if (data != null) {
-            Log.d(TAG, "onCreate: data " + data.toString());
-            offer = (Offer) data.getSerializable("offer");
-        }
-        if (offer != null){
+        if (AppSession.currentOffer  != null ){
+            offer = AppSession.currentOffer;
             isEditing = true;
-            //TODO edit logic
+            Log.d(TAG, "onCreate: editing offer " + offer.getUserID() );
+
+            title.setText(offer.getTitle());
+            description.setText(offer.getDescription());
+            store.setText(offer.getStore());
+            address.setText(offer.getAddress());
+
+            ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
+            final String imageUri = offer.getImage().getMedium();
+
+            ImageSize targetSize = new ImageSize(300, 200); // result Bitmap will be fit to this size
+            imageLoader.displayImage(imageUri, image);
+            image.setVisibility(View.VISIBLE);
+
+            delete.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder( OfferCreateActivity.this ,R.style.yndDialog );
+
+                            builder.setMessage(getString(R.string.are_you_sure))
+                                    .setCancelable(false)
+                                    .setMessage(getString(R.string.delete_offer_msg))
+                                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            deleteOffer();
+                                        }
+                                    })
+                                    .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
+                    }
+            );
+
+
+        } else {
+            delete.setVisibility(View.GONE);
         }
+
+
     }
 
     private void addImageFromGalley() {
@@ -187,6 +234,7 @@ public class OfferCreateActivity extends NavigationBaseActivity
         JSONObject jsonOffer = new JSONObject();
         JSONObject jsonImage= null;
 
+
         try {
             if (Utils.isNotEmptyOrNull( title.getText().toString() )) jsonOffer.put("title", title.getText() );
             if (Utils.isNotEmptyOrNull( store.getText().toString() )) jsonOffer.put("store", store.getText() );
@@ -240,7 +288,11 @@ public class OfferCreateActivity extends NavigationBaseActivity
 //            request = sendDataEditAd(jsonRequest);
 //        else
 //            Log.d(TAG, "sendData: jsonReuest" + jsonRequest );
-            request = sendDataNew(jsonRequest);
+            if ( isEditing ){
+                request = sendDataEdit(jsonRequest);
+            }else {
+                request = sendDataNew(jsonRequest);
+            }
             queue.add(request);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -251,6 +303,11 @@ public class OfferCreateActivity extends NavigationBaseActivity
     private JsonObjectRequest sendDataNew(JSONObject jsonRequest){
         Log.d(TAG, "sendDataNewAd() called with: " + "jsonRequest = [" + jsonRequest + "]");
         return sendDataRequest(jsonRequest, Request.Method.POST, Constants.OFFERS_API_URL);
+    }
+    private JsonObjectRequest sendDataEdit(JSONObject jsonRequest){
+        Log.d(TAG, "sendDataEdit() called with: jsonRequest = [" + jsonRequest + "]");
+
+        return sendDataRequest(jsonRequest, Request.Method.PUT, Constants.OFFERS_API_URL + "/" + offer.getId() ) ;
     }
 
     private JsonObjectRequest sendDataRequest(JSONObject jsonRequest, int method, String url){
@@ -272,7 +329,10 @@ public class OfferCreateActivity extends NavigationBaseActivity
 //                        String id = offer.getString("id");
 
                         Toast.makeText(OfferCreateActivity.this, "Oferta creada " +  title , Toast.LENGTH_SHORT).show();
-                        OfferCreateActivity.this.finish();
+
+                        setResult( OfferDetailActivity.OFFER_EDIT_OK);
+                        finish();
+
                         } catch (JSONException e){
                             e.printStackTrace();
                         }
@@ -359,6 +419,52 @@ public class OfferCreateActivity extends NavigationBaseActivity
             }
         }
     }
+
+
+    private void deleteOffer(){
+        Log.d(TAG, "deleteOffer: called!" + offer );
+
+        RequestQueue queue = VolleySingleton.getRequestQueue();
+
+        JSONObject jsonRequest = new JSONObject();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, Constants.OFFERS_API_URL + "/" + offer.getId(),
+
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d( TAG, "deleteOffer success");
+                        Toast.makeText(OfferCreateActivity.this, "Oferta borrada", Toast.LENGTH_SHORT).show();
+
+                        setResult( OfferDetailActivity.OFFER_EDIT_DELETE);
+                        finish();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d( TAG, "deleteOffer error"  + error.getMessage() );
+                        Toast.makeText(OfferCreateActivity.this, "hubo un error al borrar", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(OfferCreateActivity.this,OffersOldActivity.class);
+                        startActivity(intent);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map headers = new HashMap();
+                String token = AppSession.getCurrentUser().authToken;
+                headers.put("Authorization", token);
+                Log.d(TAG, "getHeaders: authToken " + token);
+                headers.put("Content-Type", "application/json; charset=utf-8");
+
+                return headers;
+            }
+        };
+
+        queue.add(request);
+    }
+
+
 
 
 }

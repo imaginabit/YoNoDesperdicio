@@ -157,6 +157,8 @@
     <string name="store">Establecimiento</string>
     <string name="offer_description">Descripción de la oferta, añade tu comentario</string>
     <string name="offer_address">Dirección</string>
+    <string name="borrar_oferta">Borrar Oferta</string>
+    <string name="delete_offer_msg">¿Quieres eliminar esta oferta?</string>
 
     <!--<string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/google_maps_key</string>-->
 
