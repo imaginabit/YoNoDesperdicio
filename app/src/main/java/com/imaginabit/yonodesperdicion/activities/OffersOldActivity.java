@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -36,8 +37,11 @@ import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.models.Offer;
 import com.imaginabit.yonodesperdicion.utils.OffersUtils;
+import com.imaginabit.yonodesperdicion.utils.PrefsUtils;
 import com.imaginabit.yonodesperdicion.utils.UserUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+import com.rubengees.introduction.IntroductionBuilder;
+import com.rubengees.introduction.entity.Slide;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,6 +116,8 @@ public class OffersOldActivity extends NavigationBaseActivity
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        showIntroSlides();
 
 //        Log.d(TAG, "onCreate: ahora initialize data:");
 //        initializeData();
@@ -532,6 +538,37 @@ public class OffersOldActivity extends NavigationBaseActivity
         getOffersFromWeb();
         super.onResume();
     }
+
+    private void showIntroSlides() {
+        // First time?
+        if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME_OFFERS, true)) {
+            // TODO: use better alternative for last android versions
+                new IntroductionBuilder(this).withSlides(generateSlides())
+                .introduceMyself();
+        }
+
+    }
+    private List<Slide> generateSlides() {
+        List<Slide> slides = new ArrayList<>();
+
+        slides.add(new Slide().withTitle("Nueva sección ¡Ofertas!")
+                .withDescription("¿Tu tienda ha rebajado el precio de algún alimento para evitar tirarlo antes de que caduque?")
+                .withColorResource(R.color.primary).withImage(R.drawable.bottle));
+
+        slides.add(new Slide().withTitle("Comparte")
+                .withDescription("¿Quieres compartir esta oferta con la red Yonodesperdicio?")
+                .withColorResource(R.color.green_500).withImage(R.drawable.zanahoria));
+
+        slides.add(new Slide().withTitle("Recuerda")
+                .withDescription("Solo descuentos por próxima caducidad")
+                .withColorResource(R.color.indigo_500).withImage(R.drawable.apple));
+
+        // First time set to false
+        PrefsUtils.commit(this, PrefsUtils.KEY_FIRST_TIME_OFFERS, false);
+
+        return slides;
+    }
+
 
 
 }
