@@ -35,7 +35,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -98,8 +97,8 @@ public class AdCreateActivity extends NavigationBaseActivity
     private boolean isEditing= false;
 
     public interface AdCreateCallback {
-        public void onFinished();
-        public void onError(String errorMessage);
+        void onFinished();
+        void onError(String errorMessage);
     }
 
 
@@ -112,22 +111,22 @@ public class AdCreateActivity extends NavigationBaseActivity
 
         context = getApplicationContext();
 
-        image =  (ImageView) findViewById(R.id.ad_image);
+        image = findViewById(R.id.ad_image);
         image.setVisibility(View.INVISIBLE);
 
-        imageEditable =  (ImageView) findViewById(R.id.ad_image_editable);
+        imageEditable = findViewById(R.id.ad_image_editable);
         imageEditable.setVisibility(View.INVISIBLE);
 
-        title = (EditText) findViewById( R.id.title);
-        weight = (EditText) findViewById( R.id.weight);
-        expiration_date = (EditText) findViewById( R.id.expiration_date);
-        adDescription = (EditText) findViewById(R.id.ad_description);
-        adZipCode = (EditText) findViewById(R.id.postal_code);
+        title = findViewById( R.id.title);
+        weight = findViewById( R.id.weight);
+        expiration_date = findViewById( R.id.expiration_date);
+        adDescription = findViewById(R.id.ad_description);
+        adZipCode = findViewById(R.id.postal_code);
 
         VolleySingleton.init(this);
         thisAdCreateActivity = this;
 
-        final AppCompatSpinner spinner = (AppCompatSpinner) findViewById(R.id.input_categoria);
+        final AppCompatSpinner spinner = findViewById(R.id.input_categoria);
         // Create an ArrayAdapter using the string array and a default spinner layout
 
         AdUtils.fetchCategories(new AdUtils.categoriesCallback() {
@@ -167,10 +166,10 @@ public class AdCreateActivity extends NavigationBaseActivity
         });
 
 
-        Button btnDeleteAd = (Button) findViewById(R.id.delete_ad);
+        Button btnDeleteAd = findViewById(R.id.delete_ad);
         btnDeleteAd.setVisibility(View.GONE);
 
-        FrameLayout frameImage = (FrameLayout) findViewById(R.id.frame_image);
+        FrameLayout frameImage = findViewById(R.id.frame_image);
         frameImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,7 +184,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         Bundle data = getIntent().getExtras();
         if (data != null) {
             Log.d(TAG, "onCreate: data " + data.toString());
-            ad = (Ad) data.getParcelable("ad");
+            ad = data.getParcelable("ad");
         }
         if (ad != null) {
             isEditing= true;
@@ -249,7 +248,6 @@ public class AdCreateActivity extends NavigationBaseActivity
                                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                                        public void onClick(DialogInterface dialog, int id) {
                                            deleteAd();
-                                           AdCreateActivity.this.finish();
                                        }
                                    })
                                    .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -334,8 +332,12 @@ public class AdCreateActivity extends NavigationBaseActivity
                     public void onResponse(JSONObject response) {
                         Log.d( TAG, "deleteAd success");
                         Toast.makeText(AdCreateActivity.this, "Anuncio borrado", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(AdCreateActivity.this,MainActivity.class);
-                        startActivity(intent);
+
+                        setResult( AdDetailActivity.AD_EDIT_DELETE );
+                        finish();
+
+//                        Intent intent = new Intent(AdCreateActivity.this,MainActivity.class);
+//                        startActivity(intent);
 
                     }
                 },
@@ -350,7 +352,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                     }
                 }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map headers = new HashMap();
                 String token = AppSession.getCurrentUser().authToken;
                 headers.put("Authorization", token);
@@ -413,7 +415,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                 //scale image max 400px width
                 float aspectRatio = bitmap.getWidth() /
                         (float) bitmap.getHeight();
-                int width = 400;
+                int width = 500;
                 int height = Math.round(width / aspectRatio);
                 bitmap = Bitmap.createScaledBitmap(
                         bitmap, width, height, false);
@@ -469,7 +471,7 @@ public class AdCreateActivity extends NavigationBaseActivity
                 createResponseSuccessListener(), 
                 createReqErrorListener()) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map headers = new HashMap();
                 String token = AppSession.getCurrentUser().authToken;
                 headers.put("Authorization", token);
@@ -564,7 +566,6 @@ public class AdCreateActivity extends NavigationBaseActivity
 
     private void startDialogAddImage() {
         Log.d(TAG, "startDialogAddImage() called");
-;
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this ,R.style.yndDialog );
 
         myAlertDialog.setTitle(getString(R.string.Picture));
@@ -691,6 +692,7 @@ public class AdCreateActivity extends NavigationBaseActivity
         }
     }
 
+    // On activity result:
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

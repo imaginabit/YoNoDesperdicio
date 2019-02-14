@@ -16,9 +16,9 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.os.ResultReceiver;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,22 +32,15 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
-import com.imaginabit.yonodesperdicion.data.UserData;
-//import com.imaginabit.yonodesperdicion.gcm.RegistrationIntentService;
-import com.imaginabit.yonodesperdicion.gcm.MyFirebaseInstanceService;
 import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
-import com.imaginabit.yonodesperdicion.listeners.EndlessRecyclerOnScrollListener;
 import com.imaginabit.yonodesperdicion.models.Ad;
 import com.imaginabit.yonodesperdicion.utils.AdUtils;
 import com.imaginabit.yonodesperdicion.utils.OnLoadMoreListener;
@@ -65,14 +58,15 @@ import com.rubengees.introduction.entity.Slide;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.imaginabit.yonodesperdicion.utils.AdUtils.calculateLocation;
+
+//import android.support.v4.os.ResultReceiver;
+
+//import com.imaginabit.yonodesperdicion.gcm.RegistrationIntentService;
 
 public class MainActivity extends NavigationBaseActivity
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -151,18 +145,7 @@ public class MainActivity extends NavigationBaseActivity
             }
         });
 
-        // First time?
-        if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME, true)) {
-            if (Build.VERSION.SDK_INT <= 12) {
-                Log.v(TAG, "--- SDK_INT <= 12 ---");
-            } else {
-                Log.v(TAG, "--- SDK_INT > 12 ---");
-            }
-
-            // TODO: use better alternative for last android versions
-            new IntroductionBuilder(this).withSlides(generateSlides())
-                    .introduceMyself();
-        }
+        showIntroSlides();
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 
@@ -291,6 +274,21 @@ public class MainActivity extends NavigationBaseActivity
 
     }
 
+    private void showIntroSlides() {
+        // First time?
+        if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME, true)) {
+            if (Build.VERSION.SDK_INT <= 12) {
+                Log.v(TAG, "--- SDK_INT <= 12 ---");
+            } else {
+                Log.v(TAG, "--- SDK_INT > 12 ---");
+            }
+
+            // TODO: use better alternative for last android versions
+            new IntroductionBuilder(this).withSlides(generateSlides())
+                    .introduceMyself();
+        }
+    }
+
     /*
     comprueba que el token esta guardado en las preferencias
     */
@@ -326,7 +324,7 @@ public class MainActivity extends NavigationBaseActivity
                     if (ads != null) {
 
                         Log.d(TAG, "loadMoreData_done() called with: " + "ads = [" + ads + "], e = [" + e + "]");
-                        removeDeliveredAds(ads);
+//                        removeDeliveredAds(ads);
                         mAds.addAll(ads);
                         page = current_page;
                         ((AdsAdapter) adapter).setLoaded();
@@ -440,7 +438,7 @@ public class MainActivity extends NavigationBaseActivity
                         if (ads != null) {
                             Log.d(TAG, "done: current_page = 1 ");
                             page = 1;
-                            removeDeliveredAds(ads);
+//                            removeDeliveredAds(ads);
 
                             for (int i = 0; i < ads.size(); i++) {
                                 Ad ad = ads.get(i);
@@ -759,7 +757,7 @@ public class MainActivity extends NavigationBaseActivity
 
         public AddressResultReceiver(Handler handler) {
             super(handler);
-            Log.d(TAG, "AddressResultReceiver() called with: " + "handler = [" + handler + "]");
+//            Log.d(TAG, "AddressResultReceiver() called with: " + "handler = [" + handler + "]");
         }
 
 
@@ -851,19 +849,19 @@ public class MainActivity extends NavigationBaseActivity
         return true;
     }
 
-    private void removeDeliveredAds(List<Ad> ads){
-        //if status is delivered remove from list
-
-        //do nothing
-
-
-//        for(Iterator<Ad> i = ads.iterator(); i.hasNext(); ) {
-//            Ad item = i.next();
-//            if (item.getStatus() == Ad.Status.DELIVERED ) {
-//                i.remove();
-//                Log.d(TAG, "done: removido rollito");
-//            }
-//        }
-    }
+//    private void removeDeliveredAds(List<Ad> ads){
+//        //if status is delivered remove from list
+//
+//        //do nothing
+//
+//
+////        for(Iterator<Ad> i = ads.iterator(); i.hasNext(); ) {
+////            Ad item = i.next();
+////            if (item.getStatus() == Ad.Status.DELIVERED ) {
+////                i.remove();
+////                Log.d(TAG, "done: removido rollito");
+////            }
+////        }
+//    }
 
 }

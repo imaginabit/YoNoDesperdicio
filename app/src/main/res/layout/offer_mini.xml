@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView android:id="@+id/ad_item"
+    style="@style/IdeaCard"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <!--style="@style/AdCard"-->
+    <LinearLayout
+        style="@style/Widget.CardContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        >
+
+        <ImageView
+            android:id="@+id/ad_image"
+            android:layout_width="88dp"
+            android:layout_height="100dp"
+            android:layout_weight="0.35"
+            android:adjustViewBounds="true"
+            android:contentDescription="foto del articulo"
+            android:scaleType="centerCrop"
+            android:src="@drawable/brick_avatar"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp" />
+
+        <LinearLayout
+            android:id="@+id/ad_textos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
+            android:minHeight="100dp"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/ad_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:paddingTop="@dimen/card_margin"
+                android:text="Titulo"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="22sp"
+                />
+
+            <TextView
+                android:id="@+id/offer_store"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/store"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="18sp"
+                />
+            <TextView
+                android:id="@+id/offer_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="100dp"
+                android:layout_weight="1"
+                android:text="@string/description"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="16sp"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_margin="0dp"
+                android:layout_marginBottom="0dp"
+                android:orientation="horizontal"
+                android:paddingBottom="0dp">
+
+                <ImageView
+                    android:id="@+id/status_image"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/circle_white"
+                    android:contentDescription="status image"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:id="@+id/ad_expiration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:enabled="true"
+                    android:text="lorem ipsum"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@color/secondary_text"
+                    />
+
+                <!--<TextView-->
+                    <!--android:id="@+id/ad_distance"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_gravity="bottom"-->
+                    <!--android:layout_weight="0.4"-->
+                    <!--android:enabled="true"-->
+                    <!--android:gravity="right|bottom"-->
+                    <!--android:text="2.1 Km"-->
+                    <!--android:textAppearance="@style/TextAppearance.AppCompat.Small"-->
+                    <!--android:textColor="@color/secondary_text"-->
+                    <!--/>-->
+
+            </LinearLayout>
+            <!--<TextView-->
+            <!--android:id="@+id/anuncio_list_caducidad"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="0dp"-->
+            <!--android:text="Expira en 5 días"-->
+            <!--android:enabled="true"-->
+            <!--android:textAppearance="@style/TextAppearance.AppCompat.Small"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:layout_marginBottom="0dp"-->
+            <!--android:paddingBottom="0dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--/>-->
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>
+

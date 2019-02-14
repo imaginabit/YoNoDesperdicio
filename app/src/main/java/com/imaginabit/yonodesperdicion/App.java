@@ -4,7 +4,13 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.imaginabit.yonodesperdicion.models.Offers;
 import com.imaginabit.yonodesperdicion.utils.Utils;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  *
@@ -32,7 +38,9 @@ public class App extends Application {
 			defaultUncaughtExceptionHandler.uncaughtException(thread, t);
 		}
 	};
-	
+
+	private Offers offersApi;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -59,5 +67,19 @@ public class App extends Application {
 
 	public static void release() {
 		isAppRunning = false;
+	}
+
+	private void initializeFeedApi() {
+
+		Gson gson = new GsonBuilder()
+				.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+				.create();
+
+		Retrofit retrofit = new Retrofit.Builder()
+				.baseUrl(Constants.HOME_URL)
+				.addConverterFactory(GsonConverterFactory.create(gson))
+				.build();
+
+		
 	}
 }

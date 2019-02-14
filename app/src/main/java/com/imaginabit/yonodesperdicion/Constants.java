@@ -13,6 +13,7 @@ public class Constants {
     public static final String HOME_URL = "https://yonodesperdicio.org/";
     public static final String IDEAS_API_URL = HOME_URL + "api/ideas";
     public static final String ADS_API_URL = HOME_URL + "api/ads";
+    public static final String OFFERS_API_URL = HOME_URL + "api/offers";
 
 
     public static final String USER_ADS_API_URL = ADS_API_URL + "?user_id="; // pe: + "10"
