@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
  */
 public class PrefsUtils {
     public static final String KEY_FIRST_TIME = "first_time";
+    public static final String KEY_FIRST_TIME_OFFERS = "first_time_offers";
 
     // Editor
 
