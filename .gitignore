@@ -74,3 +74,5 @@ dia\.puml
 proguard-rules\.pro
 
 test\.puml
+
+py-test/send-notif\.py
