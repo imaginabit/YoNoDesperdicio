@@ -31,6 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.OffersAdapter;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
@@ -544,7 +545,7 @@ public class OffersOldActivity extends NavigationBaseActivity
     }
 
     private void showIntroSlides() {
-        String valid_until = "20/2/2019";
+        String valid_until = Constants.OFFERS_SHOW_UNTIL;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",  new Locale("es","ES") );
         Date strDate = null;
         try {

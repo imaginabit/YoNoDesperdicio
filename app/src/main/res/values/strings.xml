@@ -1,7 +1,10 @@
 <resources>
 
     <string name="app_name">Yo No Desperdicio</string>
-    <string name="web_url">http://yonodesperdicio.com/</string>
+    <string name="web_url">http://yonodesperdicio.org/</string>
+    <string name="default_notification_channel_id">yonodesperdicio</string>
+    <string name="default_notification_channel_description">Notificaciones Yo No Desperdicio</string>
+
 
     <string name="navigation_drawer_open">Abrir menu lateral</string>
     <string name="navigation_drawer_close">Cerrar menu lateral</string>

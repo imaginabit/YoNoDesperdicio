@@ -14,27 +14,19 @@ public class Constants {
     public static final String IDEAS_API_URL = HOME_URL + "api/ideas";
     public static final String ADS_API_URL = HOME_URL + "api/ads";
     public static final String OFFERS_API_URL = HOME_URL + "api/offers";
-
-
     public static final String USER_ADS_API_URL = ADS_API_URL + "?user_id="; // pe: + "10"
-    //http://beta.yonodesperdicio.org/api/ads?user_id=5
-
     // Create users accounts endpoint
     public static final String USERS_API_URL = HOME_URL + "api/users";
-
-    // Authenticate users endpoint
+    // Authenticate users endpoinfun
     public static final String USERS_SESSIONS_API_URL = HOME_URL + "api/sessions";
-
     public static final String CONVERSATIONS_API_URL = HOME_URL + "api/mailboxes/inbox/conversations";
     public static final String CONVERSATIONS_SENT_API_URL = HOME_URL + "api/mailboxes/sent/conversations";
     public static final String NEW_CONVERSATION_API_URL = HOME_URL + "api/new_message/"; // + RECIPIENT_ID
-
     public static final String IDEA_URL = HOME_URL + "idea/"; //+ idea id
     public static final String CATEGORIES_URL = HOME_URL + "api/categories";
 
-
+    public static final String OFFERS_SHOW_UNTIL = "20/12/2019";
     public static final String longline = "--------------------------------------------------------";
-
     public static final String WEIGHT_TOTAL_KG_URL = HOME_URL + "api/total_kg";
 
     //time costants
@@ -42,18 +34,16 @@ public class Constants {
     public static int MINUTE = 60 * SECOND;
     public static int HOUR = 60 * MINUTE;
 
-
     public static Double weightTotal;
 
     public static java.text.DateFormat DATE_JSON_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
-    public static java.text.DateFormat DATE_LOCAL_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-    public static java.text.DateFormat DATE_JSON_SORT_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static java.text.DateFormat DATE_LOCAL_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    public static java.text.DateFormat DATE_JSON_SORT_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
 
     //GPS SERVICE
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;
-
 
     public static final String PACKAGE_NAME_BASE = "com.imaginabit.yonodesperdicion";
     public static final String PACKAGE_NAME = PACKAGE_NAME_BASE ;

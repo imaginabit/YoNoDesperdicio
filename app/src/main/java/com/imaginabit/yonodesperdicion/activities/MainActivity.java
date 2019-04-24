@@ -39,6 +39,7 @@ import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.AdsAdapter;
+import com.imaginabit.yonodesperdicion.gcm.MyFirebaseMessagingService;
 import com.imaginabit.yonodesperdicion.helpers.FetchAddressIntentService;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
 import com.imaginabit.yonodesperdicion.models.Ad;
@@ -121,6 +122,9 @@ public class MainActivity extends NavigationBaseActivity
                 .build();
         ImageLoader.getInstance().init(config);
 
+        // por si no esta funcionando
+        Intent myIntent = new Intent(context, MyFirebaseMessagingService.class);
+        startService(myIntent);
 
         // Put on session
         UserUtils.putUserSessionOn(this);
