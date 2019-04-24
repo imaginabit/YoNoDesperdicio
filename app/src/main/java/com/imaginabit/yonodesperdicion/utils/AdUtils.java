@@ -370,9 +370,9 @@ public class AdUtils {
 
             @Override
             protected void onPreExecute() {
-                pd.setTitle("Cargando");
-                pd.setMessage("Recibiendo datos...");
-                pd.show();
+//                pd.setTitle("Cargando");
+//                pd.setMessage("Recibiendo datos...");
+//                pd.show();
             }
 
             @Override
@@ -389,10 +389,10 @@ public class AdUtils {
                 try {
                     jObj = new JSONObject(json);
                 } catch (JSONException e) {
-                    Log.e(TAG + " JSON Parser", "Error parsing data " + e.toString());
+                    Log.e(TAG, " JSON Parser: Error parsing data " + e.toString());
                     this.e = e;
                 } catch (Throwable t) {
-                    Log.e(TAG, "Could not parse malformed JSON: \"" + json + "\"");
+                    Log.e(TAG, "\" JSON Parser\" Could not parse malformed JSON: \"" + json + "\"");
                 }
 
                 try {

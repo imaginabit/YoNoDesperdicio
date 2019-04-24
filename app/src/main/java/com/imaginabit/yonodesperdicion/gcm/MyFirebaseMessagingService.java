@@ -16,6 +16,11 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.imaginabit.yonodesperdicion.AppSession;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.activities.MainActivity;
@@ -28,6 +33,9 @@ import com.imaginabit.yonodesperdicion.models.Message;
 import com.imaginabit.yonodesperdicion.utils.MessagesUtils;
 import com.imaginabit.yonodesperdicion.utils.Utils;
 
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +51,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        Log.d("msg", "onMessageReceived: called");
         // TODO(developer): Handle FCM messages here.
         // If the application is in the foreground handle both data and notification messages here.
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+        super.onMessageReceived(remoteMessage);
+
+
 
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         //Log.d(TAG, "Notification Message Body: " + remoteMessage.getNotification().getBody());
@@ -54,24 +66,71 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Map<String, String> data = remoteMessage.getData();
-            Log.d(TAG, "Message data payload: " + data);
-            Log.d(TAG, "onMessageReceived: data message_id : " + data.get("message_id"));
-            Log.d(TAG, "onMessageReceived: data author_id : " + data.get("author_id"));
-            Log.d(TAG, "onMessageReceived: data conversation : " + data.get("conversation"));
+//            Log.d(TAG, "Message data payload: " + data);
+            JSONObject object = new JSONObject(data);
+
+            Log.d(TAG, "Message data payload: " + object.toString() );
+            String jsonstr = object.toString();
+
+            String message_id;
+            String author_id;
+            String conversation_id ;
+
+
+//            if ( jsonstr.indexOf("data")  > 0 ){
+//                Gson gson = new Gson();
+//                JsonElement element = new JsonParser().parse(jsonstr);
+//                JsonObject jsonObj = element.getAsJsonObject();
+//
+//                Log.d(TAG, "hi! : " + jsonObj );
+//                JsonObject jdata = jsonObj.getAsJsonObject();
+//
+//
+////                String plano = jdata.get("data").toString();
+////                String src = "\\\"";
+////                String dst = "\"";
+//
+////                plano = plano.replace(src, dst);
+////                Log.d(TAG, "hi! : " + plano );
+//                JsonElement elementPlano = jsonObj.get("data");
+//                Log.d(TAG, "hi! : " + elementPlano );
+//                JsonObject d = elementPlano.getAsJsonObject();
+//
+//
+//                message_id = d.get("message_id").toString();
+//                author_id = d.get("author_id").toString();
+//                conversation_id = d.get("conversation_id").toString();
+//
+//            } else {
+                message_id = data.get("message_id");
+                author_id = data.get("author_id");
+                conversation_id = data.get("conversation") ;
+//            }
+
+//            for (Map.Entry<String, String> entry : data.entrySet()) {
+//                Log.d(TAG, "onMessageReceived: entry  : " + entry );
+//                Log.d(TAG, "onMessageReceived: son  : " + son );
+//            }
+
+
+            Log.d(TAG, "onMessageReceived: data  : " + data.get("data"));
+            Log.d(TAG, "onMessageReceived: data message_id : " + message_id );
+            Log.d(TAG, "onMessageReceived: data author_id : " + author_id);
+            Log.d(TAG, "onMessageReceived: data conversation : " + conversation_id );
 
 
             // Check if message contains a notification payload.
-            if (remoteMessage.getNotification() != null) {
-                Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-                //data in indent extra
-            }
+//            if (remoteMessage.getNotification() != null) {
+//                Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+//                //data in indent extra
+//            }
 
 
             largeicon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
                     R.drawable.brick_avatar);
 
             //if is a conversation notification get the info
-            String conversation_id = data.get("conversation");
+//            String conversation_id = data.get("conversation");
             final String[] notificationText = new String[1];
             String notificationBody = "";
 
@@ -128,26 +187,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     showNotificationBasic("Yo No Desperdicio","Tienes un mensaje nuevo",100);
                 }
 
+            } else {
+                //conversation id is empty or null
+                showNotificationBasic("Yo No Desperdicio","Tienes un mensaje nuevo <conversation is null>",100);
             }
         }
     }
 
     private void showNotificationBasic(String body, String title, int notification_id){
+        Log.d(TAG, "showNotificationBasic called");
         Log.d(TAG, "showNotificationBasic() called with: body = [" + body + "], title = [" + title + "]");
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        String CHANNEL_ID = "my_channel_01";
+        String CHANNEL_ID = getString(R.string.default_notification_channel_id);
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-            CHANNEL_ID = "channel_ynd_1";
+            CHANNEL_ID = getString(R.string.default_notification_channel_id);
             CharSequence name = "ynd";
-            String Description = "Yo no desperdicio";
+            String Description = getString(R.string.default_notification_channel_description);
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
             mChannel.setDescription(Description);
             mChannel.enableLights(true);
-            mChannel.setLightColor(Color.BLUE);
+            mChannel.setLightColor(Color.RED);
             mChannel.enableVibration(true);
             mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             mChannel.setShowBadge(false);
@@ -157,7 +220,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_brick_notif)
                 .setLargeIcon(largeicon)
-                .setContentTitle( title )
+                .setContentTitle( title  )
                 .setContentText( body )
                 .setAutoCancel(true);
 
@@ -207,8 +270,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             CHANNEL_ID = "channel_ynd_1";
             CharSequence name = "ynd";
             String Description = "Yo no desperdicio";
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
             mChannel.setDescription(Description);
             mChannel.enableLights(true);
@@ -310,5 +373,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         super.onNewToken(s);
         Log.e(TAG, "onNewToken: s:"+ s+"." );
     }
+
 
 }

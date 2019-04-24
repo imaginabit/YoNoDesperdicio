@@ -31,6 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.imaginabit.yonodesperdicion.App;
 import com.imaginabit.yonodesperdicion.AppSession;
+import com.imaginabit.yonodesperdicion.Constants;
 import com.imaginabit.yonodesperdicion.R;
 import com.imaginabit.yonodesperdicion.adapters.OffersAdapter;
 import com.imaginabit.yonodesperdicion.helpers.VolleySingleton;
@@ -43,10 +44,14 @@ import com.imaginabit.yonodesperdicion.utils.Utils;
 import com.rubengees.introduction.IntroductionBuilder;
 import com.rubengees.introduction.entity.Slide;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 //import com.imaginabit.yonodesperdicion.gcm.RegistrationIntentService;
 
@@ -540,8 +545,20 @@ public class OffersOldActivity extends NavigationBaseActivity
     }
 
     private void showIntroSlides() {
-        // First time?
-        if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME_OFFERS, true)) {
+        String valid_until = Constants.OFFERS_SHOW_UNTIL;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",  new Locale("es","ES") );
+        Date strDate = null;
+        try {
+            strDate = sdf.parse(valid_until);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        // show if is First time or if is before date "valid_until"
+        if (
+                PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME_OFFERS, true)
+                || new Date().before(strDate)
+        ) {
             // TODO: use better alternative for last android versions
                 new IntroductionBuilder(this).withSlides(generateSlides())
                 .introduceMyself();
