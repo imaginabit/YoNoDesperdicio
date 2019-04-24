@@ -145,18 +145,7 @@ public class MainActivity extends NavigationBaseActivity
             }
         });
 
-        // First time?
-        if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME, true)) {
-            if (Build.VERSION.SDK_INT <= 12) {
-                Log.v(TAG, "--- SDK_INT <= 12 ---");
-            } else {
-                Log.v(TAG, "--- SDK_INT > 12 ---");
-            }
-
-            // TODO: use better alternative for last android versions
-            new IntroductionBuilder(this).withSlides(generateSlides())
-                    .introduceMyself();
-        }
+        showIntroSlides();
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 
@@ -283,6 +272,22 @@ public class MainActivity extends NavigationBaseActivity
             saveToken("");
         }
 
+    }
+
+
+    private void showIntroSlides() {
+        // First time?
+        if (PrefsUtils.getBoolean(this, PrefsUtils.KEY_FIRST_TIME, true)) {
+            if (Build.VERSION.SDK_INT <= 12) {
+                Log.v(TAG, "--- SDK_INT <= 12 ---");
+            } else {
+                Log.v(TAG, "--- SDK_INT > 12 ---");
+            }
+
+            // TODO: use better alternative for last android versions
+            new IntroductionBuilder(this).withSlides(generateSlides())
+                    .introduceMyself();
+        }
     }
 
     /*
