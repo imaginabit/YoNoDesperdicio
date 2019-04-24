@@ -22,8 +22,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -156,6 +158,7 @@ public class MainActivity extends NavigationBaseActivity
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_ads);
         recyclerView.setHasFixedSize(true);
+        //recyclerView.getItemAnimator().setChangeDuration(0);
 
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
@@ -165,7 +168,10 @@ public class MainActivity extends NavigationBaseActivity
 //        initializeData();
 
         adapter = new AdsAdapter(context, mAds, recyclerView);
+//        adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
+
+
 
 //        if (mAds.isEmpty()){
 //            recyclerView.setVisibility(View.GONE);
@@ -201,6 +207,12 @@ public class MainActivity extends NavigationBaseActivity
                 Log.d(TAG, "onLoadMore: called");
                 //add null , so the adapter will check view_type and show progress bar at bottom
                 mAds.add(null);
+
+                TypedValue typed_value = new TypedValue();
+                getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+                mSwipeRefreshLayout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId) + 30);
+                mSwipeRefreshLayout.setRefreshing(true);
+
                 adapter.notifyItemInserted(mAds.size()-1);
 
                 handler.postDelayed(new Runnable() {
@@ -332,7 +344,7 @@ public class MainActivity extends NavigationBaseActivity
                         mAds.addAll(ads);
                         page = current_page;
                         ((AdsAdapter) adapter).setLoaded();
-                        adapter.notifyDataSetChanged();
+                        //adapter.notifyDataSetChanged();
                         Log.d(TAG, "done: current scroll " + recyclerView.getScrollY());
 
 //                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -347,8 +359,10 @@ public class MainActivity extends NavigationBaseActivity
                     } else {
                         Log.d(TAG, "done: current scroll, ads==null " );
                     }
+                    mSwipeRefreshLayout.setRefreshing(false);
                 } else {
                     Log.e(TAG, "error al obtener los Anuncios");
+                    mSwipeRefreshLayout.setRefreshing(false);
                     e.printStackTrace();
                 }
             }
